@@ -1,6 +1,8 @@
 import React, { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+import './index.css';
+
 
 import Login from './pages/Login';
 import RegisterSelect from './pages/RegisterSelect';
