@@ -15,6 +15,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import API_BASE_URL from '../api/api';
 
 let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -75,7 +76,7 @@ export default function ApplicantDashboard() {
       // Fallback to profile.id if profile.user_id isn't set yet
       const userId = profile?.user_id || profile?.id; 
       
-      const res = await fetch(`http://localhost:5001/api/users/${userId}/verify-password`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${userId}/verify-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: authPassword })
@@ -183,7 +184,7 @@ export default function ApplicantDashboard() {
 
     const fetchData = async () => {
       try {
-        const profileRes = await fetch(`http://localhost:5001/api/applicant/${storedUser.id}/profile`);
+        const profileRes = await fetch(`${API_BASE_URL}/api/applicant/${storedUser.id}/profile`);
         const profileData = await profileRes.json();
         if (profileRes.ok) {
           const userPicKey = `profile_picture_${storedUser.id}`;
@@ -198,15 +199,15 @@ export default function ApplicantDashboard() {
           });
         }
 
-        const matchesRes = await fetch(`http://localhost:5001/api/applicant/${storedUser.id}/matches`);
+        const matchesRes = await fetch(`${API_BASE_URL}/api/applicant/${storedUser.id}/matches`);
         const matchesData = await matchesRes.json();
         if (matchesRes.ok) setMatches(matchesData);
 
-        const trackerRes = await fetch(`http://localhost:5001/api/applicant/${storedUser.id}/applications`);
+        const trackerRes = await fetch(`${API_BASE_URL}/api/applicant/${storedUser.id}/applications`);
         const trackerData = await trackerRes.json();
         if (trackerRes.ok) setApplications(trackerData);
 
-        const notifRes = await fetch(`http://localhost:5001/api/users/${storedUser.id}/notifications`);
+        const notifRes = await fetch(`${API_BASE_URL}/api/users/${storedUser.id}/notifications`);
         const notifData = await notifRes.json();
         if (notifRes.ok) setNotifications(notifData);
 
@@ -223,10 +224,10 @@ export default function ApplicantDashboard() {
   const refreshData = async () => {
     if(!profile) return;
     try {
-      const matchesRes = await fetch(`http://localhost:5001/api/applicant/${profile.user_id}/matches`);
+      const matchesRes = await fetch(`${API_BASE_URL}/api/applicant/${profile.user_id}/matches`);
       if (matchesRes.ok) setMatches(await matchesRes.json());
       
-      const trackerRes = await fetch(`http://localhost:5001/api/applicant/${profile.user_id}/applications`);
+      const trackerRes = await fetch(`${API_BASE_URL}/api/applicant/${profile.user_id}/applications`);
       if (trackerRes.ok) setApplications(await trackerRes.json());
     } catch(err) {
       console.error("Failed to refresh data", err);
@@ -235,7 +236,7 @@ export default function ApplicantDashboard() {
 
   const handleMarkAsRead = async (notifId) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/notifications/${notifId}/read`, { method: 'PUT' });
+      const res = await fetch(`${API_BASE_URL}/api/notifications/${notifId}/read`, { method: 'PUT' });
       if (res.ok) {
         setNotifications(notifications.map(n => n.id === notifId ? { ...n, is_read: 1 } : n));
       }
@@ -279,7 +280,7 @@ export default function ApplicantDashboard() {
     if (pic.startsWith('http') || pic.startsWith('blob') || pic.startsWith('data:image')) {
       return pic;
     }
-    return `http://localhost:5001${pic}`;
+    return `${API_BASE_URL}${pic}`;
   };
 
   return (

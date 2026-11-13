@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
+import API_BASE_URL from '../api/api';
 
 export default function EmployerApplications({ profile, refreshStats }) {
   const { mode } = useContext(AccessibilityContext);
@@ -30,7 +31,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
 
   const fetchApplications = async () => {
     try {
-      const res = await fetch(`http://localhost:5001/api/employer/${profile.user_id}/applications`);
+      const res = await fetch(`${API_BASE_URL}/api/employer/${profile.user_id}/applications`);
       if (res.ok) {
         const data = await res.json();
         setApplications(data);
@@ -51,7 +52,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
     const jobTitle = selectedApp?.job_title || 'the position';
 
     try {
-      const res = await fetch(`http://localhost:5001/api/applications/${applicationId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/applications/${applicationId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -290,7 +291,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
                               
                               // 2. Call your dedicated backend 'view' route to safely send notifications!
                               try {
-                                  await fetch(`http://localhost:5001/api/applications/${app.application_id}/view`, { 
+                                  await fetch(`${API_BASE_URL}/api/applications/${app.application_id}/view`, { 
                                       method: 'PUT' 
                                   });
                                   fetchApplications();
@@ -418,7 +419,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
                         
                         return (
                           <a 
-                            href={`http://localhost:5001/${cleanPath}`}
+                            href={`${API_BASE_URL}/${cleanPath}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl border-2 shadow-sm transition-all hover:shadow-md ${
@@ -451,7 +452,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
 
                         return (
                           <a 
-                            href={`http://localhost:5001/${cleanCertPath}`}
+                            href={`${API_BASE_URL}/${cleanCertPath}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl border-2 shadow-sm transition-all hover:shadow-md ${

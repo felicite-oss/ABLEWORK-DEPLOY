@@ -177,7 +177,7 @@ export default function AdminDashboard() {
 
   const handleVerification = async (userId, newStatus, reason = null) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/admin/users/${userId}/verify`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/verify`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, rejection_reason: reason })
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
 
   const handleAccountStatus = async (userId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/admin/users/${userId}/account-status`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/account-status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ account_status: newStatus })
@@ -1463,13 +1463,13 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                       {pwdModal.user.pwd_document_path ? (
                         pwdModal.user.pwd_document_path.match(/\.(jpeg|jpg|png|gif)$/i) ? (
                           <img
-                            src={`http://localhost:5001/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
+                            src={`${API_BASE_URL}/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
                             alt="Applicant PWD ID"
                             className="max-h-full max-w-full object-contain rounded-lg shadow-md"
                           />
                         ) : (
                           <iframe
-                            src={`http://localhost:5001/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
+                            src={`${API_BASE_URL}/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
                             title="PWD ID Document PDF"
                             className="w-full h-full rounded-lg"
                           ></iframe>
@@ -1584,7 +1584,7 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                         if (cleanPath.startsWith('/uploads/')) cleanPath = cleanPath.replace('/uploads/', '');
                         else if (cleanPath.startsWith('uploads/')) cleanPath = cleanPath.replace('uploads/', '');
                         
-                        const fileUrl = `http://localhost:5001/uploads/${cleanPath}`;
+                        const fileUrl = `${API_BASE_URL}/uploads/${cleanPath}`;
                         const isImage = /\.(jpeg|jpg|png|gif)$/i.test(cleanPath);
 
                         return (

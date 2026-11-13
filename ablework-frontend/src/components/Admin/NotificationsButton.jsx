@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../api/api';
 
 export default function NotificationsButton({ userId }) {
   const [showPanel, setShowPanel] = useState(false);
@@ -9,7 +10,7 @@ export default function NotificationsButton({ userId }) {
   const fetchNotifications = async () => {
     if (!userId) return;
     try {
-      const response = await fetch(`http://localhost:5001/api/users/${userId}/notifications`);
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/notifications`);
       if (response.ok) {
         const data = await response.json();
         setNotifications(data);
@@ -35,7 +36,7 @@ export default function NotificationsButton({ userId }) {
     try {
       // Loop through and update each unread notification via API
       for (let n of unread) {
-        await fetch(`http://localhost:5001/api/notifications/${n.id}/read`, {
+        await fetch(`/api/notifications/${n.id}/read`, {
           method: 'PUT'
         });
       }

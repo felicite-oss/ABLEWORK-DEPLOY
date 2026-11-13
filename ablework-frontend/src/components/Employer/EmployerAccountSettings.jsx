@@ -2,6 +2,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
+import API_BASE_URL from '../api/api';
 
 export default function EmployerAccountSettings({ profile }) {
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ export default function EmployerAccountSettings({ profile }) {
     setEmailStatus({ type: '', msg: '' });
 
     try {
-      const response = await fetch(`http://localhost:5001/api/users/${profile.user_id}/request-otp`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, type: 'email' })
@@ -142,7 +143,7 @@ export default function EmployerAccountSettings({ profile }) {
     setIsUpdatingEmail(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/employer/${profile.user_id}/credentials`, {
+      const response = await fetch(`${API_BASE_URL}/api/employer/${profile.user_id}/credentials`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: emailOtp })
@@ -180,7 +181,7 @@ export default function EmployerAccountSettings({ profile }) {
 
     try {
       const [response] = await Promise.all([
-        fetch(`http://localhost:5001/api/users/${profile.user_id}/request-otp`, {
+        fetch(`${API_BASE_URL}/api/users/${profile.user_id}/request-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: profile?.email, type: 'password' })
@@ -212,7 +213,7 @@ export default function EmployerAccountSettings({ profile }) {
     setIsUpdatingPassword(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/employer/${profile.user_id}/credentials`, {
+      const response = await fetch(`${API_BASE_URL}/api/employer/${profile.user_id}/credentials`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword, newPassword, otp: passwordOtp })
@@ -260,7 +261,7 @@ export default function EmployerAccountSettings({ profile }) {
     });
 
     try {
-      const response = await fetch(`http://localhost:5001/api/users/${profile.user_id}/resubmit`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}/resubmit`, {
         method: 'POST',
         body: formData
       });
@@ -290,7 +291,7 @@ export default function EmployerAccountSettings({ profile }) {
 
     try {
       const [res] = await Promise.all([
-        fetch(`http://localhost:5001/api/users/${profile.user_id}/toggle-status`, {
+        fetch(`${API_BASE_URL}/api/users/${profile.user_id}/toggle-status`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: deactivateTargetState ? 'activate' : 'deactivate' })
@@ -314,7 +315,7 @@ export default function EmployerAccountSettings({ profile }) {
     setDangerStatus({ type: '', msg: '' });
 
     try {
-      const res = await fetch(`http://localhost:5001/api/users/${profile.user_id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: deletePassword })
@@ -469,7 +470,7 @@ export default function EmployerAccountSettings({ profile }) {
                           return (
                             <a
                               key={idx}
-                              href={`http://localhost:5001/${cleanPath}`}
+                              href={`${API_BASE_URL}/${cleanPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label={`View Business Document ${docs.length > 1 ? idx + 1 : ''} on File, opens in new tab`}

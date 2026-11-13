@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import API_BASE_URL from '../api/api';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -50,7 +51,7 @@ export default function EmployerSettings({ profile, refreshData }) {
     company_logo: profile?.company_logo || ''
   });
   
-  const [logoPreview, setLogoPreview] = useState(profile?.company_logo ? `http://localhost:5001${profile.company_logo}` : null);
+  const [logoPreview, setLogoPreview] = useState(profile?.company_logo ? `${API_BASE_URL}${profile.company_logo}` : null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -143,7 +144,7 @@ export default function EmployerSettings({ profile, refreshData }) {
     submitData.append('company_logo', profilePicFile);
 
     try {
-      const res = await fetch(`http://localhost:5001/api/employer/${profile.user_id}/settings`, {
+      const res = await fetch(`${API_BASE_URL}/api/employer/${profile.user_id}/settings`, {
         method: 'PUT',
         body: submitData 
       });
@@ -151,7 +152,7 @@ export default function EmployerSettings({ profile, refreshData }) {
       if (res.ok) {
         const responseData = await res.json();
         
-        const newLogoUrl = responseData.logo_url ? `http://localhost:5001${responseData.logo_url}` : tempImagePreview;
+        const newLogoUrl = responseData.logo_url ? `${API_BASE_URL}${responseData.logo_url}` : tempImagePreview;
         setLogoPreview(newLogoUrl);
         setFormData(prev => ({ ...prev, company_logo: responseData.logo_url }));
         
@@ -230,7 +231,7 @@ export default function EmployerSettings({ profile, refreshData }) {
     }
 
     try {
-      const res = await fetch(`http://localhost:5001/api/employer/${profile.user_id}/settings`, {
+      const res = await fetch(`${API_BASE_URL}/api/employer/${profile.user_id}/settings`, {
         method: 'PUT',
         body: submitData 
       });

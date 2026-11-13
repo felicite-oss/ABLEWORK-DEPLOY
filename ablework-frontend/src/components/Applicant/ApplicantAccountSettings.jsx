@@ -2,6 +2,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
+import API_BASE_URL from '../api/api';
 
 export default function ApplicantAccountSettings({ profile }) {
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ export default function ApplicantAccountSettings({ profile }) {
     setEmailStatus({ type: '', msg: '' });
     
     try {
-      const response = await fetch(`http://localhost:5001/api/users/${profile.user_id}/request-otp`, {
+      const response = await fetch(`/api/users/${profile.user_id}/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, type: 'email' }) 
@@ -142,7 +143,7 @@ export default function ApplicantAccountSettings({ profile }) {
     setIsUpdatingEmail(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/applicant/${profile.user_id}/credentials`, {
+      const response = await fetch(`${API_BASE_URL}/api/applicant/${profile.user_id}/credentials`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: emailOtp })
@@ -180,7 +181,7 @@ export default function ApplicantAccountSettings({ profile }) {
 
     try {
       const [response] = await Promise.all([
-        fetch(`http://localhost:5001/api/users/${profile.user_id}/request-otp`, {
+        fetch(`${API_BASE_URL}/api/users/${profile.user_id}/request-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: profile?.email, type: 'password' }) 
@@ -212,7 +213,7 @@ export default function ApplicantAccountSettings({ profile }) {
     setIsUpdatingPassword(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/applicant/${profile.user_id}/credentials`, {
+      const response = await fetch(`${API_BASE_URL}/api/applicant/${profile.user_id}/credentials`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword, newPassword, otp: passwordOtp })
@@ -263,7 +264,7 @@ export default function ApplicantAccountSettings({ profile }) {
     formData.append('document', verificationDoc);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/users/${profile.user_id}/resubmit`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}/resubmit`, {
         method: 'POST',
         body: formData
       });
@@ -294,7 +295,7 @@ export default function ApplicantAccountSettings({ profile }) {
 
     try {
       const [res] = await Promise.all([
-        fetch(`http://localhost:5001/api/users/${profile.user_id}/toggle-status`, { 
+        fetch(`${API_BASE_URL}/api/users/${profile.user_id}/toggle-status`, { 
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: deactivateTargetState ? 'activate' : 'deactivate' })
@@ -318,7 +319,7 @@ export default function ApplicantAccountSettings({ profile }) {
     setDangerStatus({ type: '', msg: '' });
 
     try {
-      const res = await fetch(`http://localhost:5001/api/users/${profile.user_id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: deletePassword })
@@ -459,7 +460,7 @@ export default function ApplicantAccountSettings({ profile }) {
                     </div>
 <p tabIndex={0} role="text" aria-label="Uploaded Document" className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Uploaded Document</p>
                   </div>
-                  <a href={`http://localhost:5001/${profile?.pwd_document_path?.replace(/\\/g, '/')}`} target="_blank" rel="noopener noreferrer" aria-label="View Document on File, opens in new tab" tabIndex="0" className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2C7FFF] hover:underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
+                  <a href={`${API_BASE_URL}/${profile?.pwd_document_path?.replace(/\\/g, '/')}`} target="_blank" rel="noopener noreferrer" aria-label="View Document on File, opens in new tab" tabIndex="0" className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2C7FFF] hover:underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
                     View Document on File
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </a>

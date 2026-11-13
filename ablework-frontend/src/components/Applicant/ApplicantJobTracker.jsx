@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../api/api';
 
 export default function ApplicantJobTracker({ applications, profile }) {
   const [filter, setFilter] = useState('All');
@@ -18,7 +19,7 @@ export default function ApplicantJobTracker({ applications, profile }) {
     setConfirmWithdraw(prev => ({ ...prev, loading: true }));
 
     try {
-      const res = await fetch(`http://localhost:5001/api/applications/${confirmWithdraw.appId}/withdraw`, {
+      const res = await fetch(`${API_BASE_URL}/api/applications/${confirmWithdraw.appId}/withdraw`, {
         method: 'PUT'
       });
       if (res.ok) {
