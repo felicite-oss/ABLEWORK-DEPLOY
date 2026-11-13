@@ -17,8 +17,8 @@ const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.resend.com',
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false,
   auth: {
     user: 'resend',
     pass: process.env.RESEND_API_KEY
@@ -369,13 +369,14 @@ app.post('/api/auth/login', async (req, res) => {
         );
 
         // Send OTP via Resend
-        await transporter.sendMail({
+        transporter.sendMail({
             from: '"AbleWork Security" <no-reply@ableworksystem.online>',
             to: email,
             subject: "AbleWork Login Verification Code",
             html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
-        });
+        }).catch(err => console.error("Background Email Dispatch Error:", err.message));
 
+        // Immediately return response to the frontend
         res.status(200).json({ 
             message: "Credentials verified. OTP sent to email.", 
             requiresOtp: true,
