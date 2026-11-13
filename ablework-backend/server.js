@@ -383,21 +383,13 @@ app.post('/api/auth/login', async (req, res) => {
             [otpCode, expires, user.id]
         );
 
-        // 4. Email the OTP to the user via Brevo HTTP API
-            await fetch('https://api.brevo.com/v3/smtp/email', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'api-key': process.env.BREVO_SMTP_KEY,
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
-                    to: [{ email: email }],
-                    subject: "AbleWork Login Verification Code",
-                    htmlContent: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 10 minutes. Do not share this code with anyone.</p>`
-                })
-            });
+        // 4. Email the OTP to the user
+        await transporter.sendMail({
+            from: '"AbleWork Security" <ableworksys5i@gmail.com>',
+            to: email,
+            subject: 'AbleWork Login Verification Code',
+            text: `Hello,\n\nYour 6-digit login verification code is: ${otpCode}\n\nThis code will expire in 10 minutes. Do not share this code with anyone.`
+        });
 
         // 5. Tell the frontend to show the OTP input screen
         res.status(200).json({ 
