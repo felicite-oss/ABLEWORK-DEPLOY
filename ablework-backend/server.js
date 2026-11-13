@@ -106,7 +106,7 @@ async function sendNotification(userId, title, message, type) {
             'content-type': 'application/json'
           },
           body: JSON.stringify({
-            sender: { name: "AbleWork Notifications", email: "ableworksys5i@gmail.com" },
+            sender: { name: "AbleWork Notifications", email: "no-reply@ablework.com" },
             to: [{ email: users[0].email }],
             subject: title,
             htmlContent: generateEmailTemplate(title, inAppMessage)
@@ -394,7 +394,7 @@ app.post('/api/auth/login', async (req, res) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                sender: { name: "AbleWork Security", email: "no-reply@ablework.com" },
                 to: [{ email: email }],
                 subject: "AbleWork Login Verification Code",
                 htmlContent: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
@@ -2007,7 +2007,7 @@ app.post('/api/users/:id/request-otp', async (req, res) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                sender: { name: "AbleWork Security", email: "no-reply@ablework.com" },
                 to: [{ email: email }],
                 subject: subjectLine,
                 htmlContent: messageBody
@@ -2104,7 +2104,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                sender: { name: "AbleWork Security", email: "no-reply@ablework.com" },
                 to: [{ email: email }],
                 subject: 'AbleWork Password Reset Code',
                 htmlContent: `<p>Hello,</p><p>We received a request to reset your AbleWork password.</p><p>Your 6-digit recovery code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`
