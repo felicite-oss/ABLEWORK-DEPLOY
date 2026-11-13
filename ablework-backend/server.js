@@ -670,14 +670,14 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 }
 
 // ---------------------------------------------------------
-// HELPER: Semantic Similarity using SBERT (Hugging Face)
+// HELPER: Semantic Similarity using SBERT (Fortified Fetch)
 // ---------------------------------------------------------
 async function getSemanticSimilarity(sourceText, targetTexts) {
     if (!process.env.HUGGINGFACE_API_KEY) {
         console.warn("Missing HUGGINGFACE_API_KEY. Falling back to 0 semantic score.");
         return targetTexts.map(() => 0);
     }
-    
+
     try {
         const response = await fetch(
             "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
@@ -686,21 +686,29 @@ async function getSemanticSimilarity(sourceText, targetTexts) {
                 headers: {
                     "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
                     "Content-Type": "application/json",
+                    "User-Agent": "AbleWork-Capstone/1.0" // Bypasses the Hugging Face bot block
                 },
                 body: JSON.stringify({
                     inputs: {
                         source_sentence: sourceText,
                         sentences: targetTexts
                     }
-                }),
+                })
             }
         );
-        
+
+        if (!response.ok) {
+            // Catches 503 Cold Starts gracefully without crashing the fetch
+            const errorData = await response.text();
+            console.error(`Hugging Face API Error (${response.status}):`, errorData);
+            return targetTexts.map(() => 0);
+        }
+
         const data = await response.json();
         if (Array.isArray(data)) return data;
         return targetTexts.map(() => 0);
     } catch (error) {
-        console.error("SBERT API Error:", error.message);
+        console.error("SBERT API Fetch Failed Details:", error.message);
         return targetTexts.map(() => 0);
     }
 }
