@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@scragg0x/react-google-autocomplete": "^3.2.1",
+    "esbuild": "^0.28.2",
     "leaflet": "^1.9.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
