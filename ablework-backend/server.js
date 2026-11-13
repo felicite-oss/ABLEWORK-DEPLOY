@@ -44,7 +44,7 @@ const generateEmailTemplate = (title, message) => {
           
           <!-- ACTION BUTTON -->
           <div style="text-align: center;">
-            <a href="https://ablework-deploy.vercel.app" style="background-color: #2C7FFF; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 14px; font-weight: bold; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">Log In to Dashboard</a>
+            <a href="https://ablework-gama.vercel.app" style="background-color: #2C7FFF; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 14px; font-weight: bold; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">Log In to Dashboard</a>
             </div>
         </td>
       </tr>
