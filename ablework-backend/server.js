@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const helmet = require('helmet');
 const { Resend } = require('resend');
+const axios = require('axios');
 require('dotenv').config();
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -670,45 +671,44 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 }
 
 // ---------------------------------------------------------
-// HELPER: Semantic Similarity using SBERT (Fortified Fetch)
+// HELPER: Semantic Similarity using SBERT (Bulletproof Axios Version)
 // ---------------------------------------------------------
 async function getSemanticSimilarity(sourceText, targetTexts) {
     if (!process.env.HUGGINGFACE_API_KEY) {
         console.warn("Missing HUGGINGFACE_API_KEY. Falling back to 0 semantic score.");
         return targetTexts.map(() => 0);
     }
-
+    
     try {
-        const response = await fetch(
+        const response = await axios.post(
             "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
             {
-                method: "POST",
+                inputs: {
+                    source_sentence: sourceText,
+                    sentences: targetTexts
+                }
+            },
+            {
                 headers: {
                     "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
                     "Content-Type": "application/json",
-                    "User-Agent": "AbleWork-Capstone/1.0" // Bypasses the Hugging Face bot block
+                    "User-Agent": "AbleWork-Capstone/1.0"
                 },
-                body: JSON.stringify({
-                    inputs: {
-                        source_sentence: sourceText,
-                        sentences: targetTexts
-                    }
-                })
+                timeout: 20000 // 20-second timeout to easily survive AI Cold Starts
             }
         );
-
-        if (!response.ok) {
-            // Catches 503 Cold Starts gracefully without crashing the fetch
-            const errorData = await response.text();
-            console.error(`Hugging Face API Error (${response.status}):`, errorData);
-            return targetTexts.map(() => 0);
-        }
-
-        const data = await response.json();
-        if (Array.isArray(data)) return data;
+        
+        if (Array.isArray(response.data)) return response.data;
         return targetTexts.map(() => 0);
     } catch (error) {
-        console.error("SBERT API Fetch Failed Details:", error.message);
+        console.error("--- SBERT API ERROR DETAILS ---");
+        if (error.response) {
+            console.error("Status:", error.response.status);
+            console.error("Data:", error.response.data);
+        } else {
+            console.error("Axios Network Error:", error.message);
+        }
+        console.error("-------------------------------");
         return targetTexts.map(() => 0);
     }
 }
