@@ -1242,21 +1242,66 @@ const handleAddressType = (e) => {
                 )}
               </fieldset>
 
+              {/* --- SEMANTIC AI ALIGNED SKILLS SECTION --- */}
               <fieldset className="flex flex-col gap-3">
                 <legend tabIndex="0" title="Your Skills" className="text-xs sm:text-sm font-bold text-[#03045E] focus:outline-none">Your Skills <span className="text-[#03045E]">*</span></legend>
+                
+                {/* Primary Input for Semantic SBERT with detailed TalkBack instructions */}
+                <div className="flex flex-col gap-2 mt-1 relative">
+                  <input
+                    type="text"
+                    value={otherSkill}
+                    onChange={(e) => setOtherSkill(e.target.value)}
+                    onKeyDown={handleCustomSkillKeyDown}
+                    placeholder="Type a skill or phrase and press Enter..."
+                    className="w-full p-3.5 sm:p-4 border-2 border-[#03045E]/20 rounded-xl bg-white text-[#03045E] focus:border-[#2C7FFF] outline-none transition font-bold text-xs sm:text-sm shadow-inner"
+                    title="Type a skill or experience and press Enter."
+                    aria-label="Your Skills text input. Describe your abilities in your own words, like a phrase or sentence, and press Enter to add it. Alternatively, you can browse and select from the popular recommendation chips listed below to add skills to your profile."
+                  />
+                  
+                  {/* Visual 'Press Enter' hint (Hidden from screen readers) */}
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none opacity-50" aria-hidden="true">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#03045E]">Press Enter</span>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                  </div>
+                  
+                  {otherSkill.length > 0 && (
+                    <div className="flex flex-wrap gap-2 animate-fadeIn mt-1">
+                      {extendedSkills
+                        .filter(s => s.toLowerCase().includes(otherSkill.toLowerCase()) && !selectedSkills.includes(s))
+                        .slice(0, 6)
+                        .map(suggestion => (
+                          <button
+                            key={suggestion}
+                            type="button"
+                            onClick={() => {
+                              toggleSelection(suggestion, selectedSkills, setSelectedSkills);
+                              setOtherSkill(''); 
+                            }}
+                            className={`suggestion-btn px-3 py-1.5 bg-[#2C7FFF]/10 ${isDarkMode ? 'text-white' : 'text-[#03045E]'} text-[10px] sm:text-xs font-bold rounded-md border border-[#2C7FFF]/20`}
+                            title={`Click to add ${suggestion}`}
+                            aria-label={`Add suggested skill ${suggestion}`}
+                          >
+                            + {suggestion}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
 
+                {/* Selected Skills Display */}
                 {selectedSkills.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <span className="w-full text-xs font-bold text-gray-500 uppercase tracking-wider">Selected Skills:</span>
+                  <div className="flex flex-wrap gap-2 p-3 bg-[#f4f4f4] rounded-lg border border-[#03045E]/15 mt-1" role="list" aria-label="Your selected skills">
+                    <span className="w-full text-[10px] font-black text-[#03045E]/60 uppercase tracking-widest" aria-hidden="true">Your AI Profile:</span>
                     {selectedSkills.map(skill => (
-                      <span key={skill} className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#03045E]/15 text-[#03045E] text-[10px] sm:text-xs font-bold rounded-md shadow-sm border border-[#03045E]/30">
+                      <span key={skill} role="listitem" tabIndex="0" aria-label={`${skill}. Press to remove.`} className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#03045E] text-white text-[10px] sm:text-xs font-bold rounded-md shadow-sm border border-[#03045E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
                         {skill}
                         <button 
                           type="button" 
                           onClick={() => setSelectedSkills(selectedSkills.filter(s => s !== skill))}
-                          className="hover:text-red-500 font-bold ml-0.5"
+                          className="hover:text-red-400 font-bold ml-0.5 transition focus:outline-none"
                           title={`Remove ${skill}`}
-                          aria-label={`Remove ${skill} from selected skills`}
+                          aria-label={`Remove ${skill} from your profile`}
                         >
                           ✕
                         </button>
@@ -1265,76 +1310,29 @@ const handleAddressType = (e) => {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-2">
-                  {availableSkills.map((skill) => (
-                    <button
-                      type="button"
-                      key={skill}
-                      onClick={() => toggleSelection(skill, selectedSkills, setSelectedSkills)}
-                      className={`px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border transition ${
-                        selectedSkills.includes(skill)
-                          ? 'bg-[#03045E] text-white border-[#03045E]'
-                          : 'bg-white text-[#03045E] border-[#03045E]/30 hover:border-[#2C7FFF]'
-                      }`}
-                      title={`Click to select or deselect ${skill}`}
-                      aria-label={`Select ${skill} as a professional skill`}
-                      aria-pressed={selectedSkills.includes(skill)}
-                    >
-                      {skill} {selectedSkills.includes(skill) ? '✓' : '+'}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setShowOtherSkill(!showOtherSkill)}
-                    className={`px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border transition ${
-                      showOtherSkill
-                        ? 'bg-[#03045E] text-white border-[#03045E]'
-                        : 'bg-white text-[#03045E] border-[#03045E]/30 hover:border-[#2C7FFF]'
-                    }`}
-                    title="Click to type an unlisted professional skill"
-                    aria-label="Add other professional skill"
-                    aria-expanded={showOtherSkill}
-                  >
-                    Other {showOtherSkill ? '✓' : '+'}
-                  </button>
-                </div>
-
-                {showOtherSkill && (
-                  <div className="flex flex-col gap-2 mt-1">
-                    <input
-                      type="text"
-                      value={otherSkill}
-                      onChange={(e) => setOtherSkill(e.target.value)}
-                      onKeyDown={handleCustomSkillKeyDown}
-                      placeholder="Type custom skill and press Enter (or pick below)..."
-                      className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E]"
-                      title="Type a custom professional skill and press Enter."
-                      aria-label="Custom skill input. Type a custom professional skill and press Enter to add it."
-                    />
-                    {otherSkill.length > 0 && (
-                      <div className="flex flex-wrap gap-2 animate-fadeIn">
-                        {extendedSkills
-                          .filter(s => s.toLowerCase().includes(otherSkill.toLowerCase()) && !selectedSkills.includes(s))
-                          .slice(0, 6)
-                          .map(suggestion => (
-                            <button
-                              key={suggestion}
-                              type="button"
-                              onClick={() => {
-                                toggleSelection(suggestion, selectedSkills, setSelectedSkills);
-                                setOtherSkill(''); 
-                              }}
-                              className={`suggestion-btn px-3 py-1.5 bg-[#2C7FFF]/10 ${isDarkMode ? 'text-white' : 'text-[#03045E]'} text-[10px] sm:text-xs font-bold rounded-md border border-[#2C7FFF]/20`}
-                              title={`Click to add ${suggestion}`}
-                              aria-label={`Add suggested skill ${suggestion}`}
-                            >
-                              + {suggestion}
-                            </button>
-                          ))}
-                      </div>
-                    )}
+                {/* Secondary: Popular Suggestions */}
+                <div className="mt-2 pt-3 border-t border-[#03045E]/10">
+                  <span className="text-[10px] sm:text-[11px] font-black text-[#03045E]/50 uppercase tracking-widest mb-2.5 block" aria-hidden="true">Or pick from popular suggestions:</span>
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Popular skill recommendation chips">
+                    {availableSkills.map((skill) => (
+                      <button
+                        type="button"
+                        key={skill}
+                        onClick={() => toggleSelection(skill, selectedSkills, setSelectedSkills)}
+                        className={`px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border transition ${
+                          selectedSkills.includes(skill)
+                            ? 'bg-[#2C7FFF] text-white border-[#2C7FFF] shadow-md'
+                            : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF]'
+                        }`}
+                        title={`Click to select or deselect ${skill}`}
+                        aria-label={`Recommendation chip: Select popular skill ${skill}`}
+                        aria-pressed={selectedSkills.includes(skill)}
+                      >
+                        {skill} {selectedSkills.includes(skill) ? '✓' : '+'}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </fieldset>
 
               <hr aria-hidden="true" className="border-[#03045E]/10" />
