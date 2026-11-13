@@ -10,6 +10,7 @@ import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import API_BASE_URL from '../api/api';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -214,7 +215,7 @@ const defaultAvailable = [
 useEffect(() => {
     const fetchPopularSkills = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/skills/popular');
+        const response = await fetch(`${API_BASE_URL}/api/skills/popular`);
         if (response.ok) {
           const popularSkills = await response.json();
           
@@ -399,7 +400,7 @@ const handleAddressType = (e) => {
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register/applicant', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register/applicant`, {
         method: 'POST',
         body: formData,
         signal: controller.signal

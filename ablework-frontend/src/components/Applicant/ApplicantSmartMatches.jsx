@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../api/api';
 
 const safeParse = (data) => {
   if (!data) return [];
@@ -52,7 +53,7 @@ export default function ApplicantSmartMatches({ profile, matches, applications =
     formData.append('cover_letter', coverLetter);
 
     try {
-      const res = await fetch('http://localhost:5001/api/applications/apply', {
+      const res = await fetch(`${API_BASE_URL}/api/applications/apply`, {
         method: 'POST',
         body: formData 
       });

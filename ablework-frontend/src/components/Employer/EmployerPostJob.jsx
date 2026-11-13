@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
+import API_BASE_URL from '../api/api';
 
 export default function EmployerPostJob({ profile, refreshData, setActiveTab }) {
   const { mode } = useContext(AccessibilityContext);
@@ -215,7 +216,7 @@ const accommodationSuggestions = [
     };
 
     try {
-      const response = await fetch('http://localhost:5001/api/jobs/create', {
+      const response = await fetch(`${API_BASE_URL}/api/jobs/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -5,6 +5,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../context/AccessibilityContext';
 import { useColorPalette } from '../context/ColorPaletteContext';
 import { AccessibilityWelcome } from '../components/AccessibilityWelcome';
+import API_BASE_URL from '../api/api';
 import lightLogo from '../assets/LIGHT MODE.png';
 import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
@@ -21,7 +22,6 @@ import gifVideo from '../assets/GIF.mp4';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 let DefaultIcon = L.icon({
@@ -346,7 +346,7 @@ export function Home() {
   useEffect(() => {
     const fetchActiveJobs = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/jobs');
+        const res = await fetch(`${API_BASE_URL}/api/jobs`);
         if (res.ok) {
           const data = await res.json();
           setJobs(data);
@@ -2464,7 +2464,7 @@ export default function ApplicantRegister() {
   useEffect(() => {
     const fetchPopularSkills = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/skills/popular');
+        const response = await fetch(`${API_BASE_URL}/api/skills/popular`);
         if (response.ok) {
           const popularSkills = await response.json();
           
@@ -2566,7 +2566,7 @@ export default function ApplicantRegister() {
     formData.append('pwdDocument', pwdFile);
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register/applicant', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register/applicant`, {
         method: 'POST',
         body: formData,
       });

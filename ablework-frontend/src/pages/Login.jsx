@@ -5,6 +5,7 @@ import { useColorPalette } from '../context/ColorPaletteContext';
 import lightLogo from '../assets/LIGHT MODE.png';
 import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
+import API_BASE_URL from '../api/api';
 
 export default function Login() {
   const { mode } = useContext(AccessibilityContext);
@@ -106,7 +107,7 @@ const handleLogin = async (e) => {
           return;
         }
 
-        const response = await fetch('http://localhost:5001/api/auth/verify-login-otp', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify-login-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, otpCode })
@@ -136,7 +137,7 @@ const handleLogin = async (e) => {
       // ----------------------------------------
       // STEP 1: Verify Password & Request OTP
       // ----------------------------------------
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import API_BASE_URL from '../api/api';
 
 let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -312,7 +313,7 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
     }
 
     try {
-      const res = await fetch('http://localhost:5001/api/applications/apply', {
+      const res = await fetch(`${API_BASE_URL}/api/applications/apply`, {
         method: 'POST',
         body: formData 
       });

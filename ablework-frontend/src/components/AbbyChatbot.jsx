@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import abbyVideo from '../assets/Abby.mp4';
+import API_BASE_URL from '../api/api';
 
 export default function AbbyChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +65,7 @@ export default function AbbyChatbot() {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
