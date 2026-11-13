@@ -98,24 +98,14 @@ async function sendNotification(userId, title, message, type) {
     
     if (users.length > 0 && users[0].email) {
       try {
-        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
-          method: 'POST',
-          headers: {
-            'accept': 'application/json',
-            'api-key': process.env.BREVO_SMTP_KEY,
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify({
-            sender: { name: "AbleWork Notifications", email: "no-reply@ableworksystem.online" },
-            to: [{ email: users[0].email }],
-            subject: title,
-            htmlContent: generateEmailTemplate(title, inAppMessage)
-          })
+        await transporter.sendMail({
+          from: '"AbleWork Notifications" <no-reply@ableworksystem.online>',
+          to: users[0].email,
+          subject: title,
+          html: generateEmailTemplate(title, inAppMessage)
         });
-        const brevoData = await brevoRes.json();
-        console.log("Notification Email Brevo Response Status:", brevoRes.status, brevoData);
       } catch (mailError) {
-        console.error("Brevo Email Dispatch Error:", mailError.message);
+        console.error("Resend Email Dispatch Error:", mailError.message);
       }
     }
   } catch (error) {
@@ -237,17 +227,14 @@ app.post('/api/chat', async (req, res) => {
             liveContext = await getUserLiveContext(userId, role);
         }
 
-        // 1. Generate the current date dynamically
         const today = new Date().toLocaleDateString('en-US', { 
           weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
         });
 
-        // 2. Safely format the user context to prevent empty-state hallucinations
         const userContextString = liveContext && Object.keys(liveContext).length > 0 
           ? JSON.stringify(liveContext, null, 2) 
           : "GUEST USER - NOT LOGGED IN";
 
-        // 3. The hardened F1-optimized prompt
         const systemInstruction = `
 You are Abby, the official AI assistant for AbleWork, a job application platform connecting Persons with Disabilities (PWD) to inclusive employers. 
 
@@ -293,7 +280,7 @@ PLATFORM PROCESSES & BUSINESS LOGIC (Use this to explain how the app works):
 
 STRICT RULES FOR ANSWERING (CRITICAL FOR EVALUATION):
 1. DOMAIN LOCK: You MUST NOT answer questions unrelated to AbleWork, job searching, platform navigation, or accessibility. If asked about unrelated topics (e.g., food recipes, weather, math, general trivia), you must reply EXACTLY: "I am Abby, the AbleWork assistant. I can only answer questions related to the AbleWork platform."
-​2. GUEST USERS (NO HALLUCINATION): If the CURRENT LIVE DATABASE STATE says "GUEST USER - NOT LOGGED IN", the user is browsing anonymously. You MUST NOT invent a name, skills, or account status for them. Greet them simply as "there" or "Guest".
+2. GUEST USERS (NO HALLUCINATION): If the CURRENT LIVE DATABASE STATE says "GUEST USER - NOT LOGGED IN", the user is browsing anonymously. You MUST NOT invent a name, skills, or account status for them. Greet them simply as "there" or "Guest".
 3. DATA GROUNDING: You must use the LIVE DATABASE STATE above to answer questions about the user's account, active jobs, applications, or profile. If the user asks about data not present in the LIVE DATABASE STATE, you must reply EXACTLY: "I do not currently have that information." Do not guess or provide hypothetical data.
 4. DIRECT METRICS: If the user asks for a count or status (e.g., "How many active jobs do I have?"), state the exact number from the JSON data in your very first sentence.
 5. CAPABILITIES: You are an informational assistant. You cannot apply to jobs, archive jobs, or approve accounts on behalf of the user. Guide them on how to do it themselves using the UI.
@@ -352,18 +339,13 @@ app.post('/api/auth/login', async (req, res) => {
         if (users.length === 0) return res.status(401).json({ error: "Invalid credentials." });
         const user = users[0];
 
-        // 1. Check if account is disabled before proceeding
         if (user.account_status === 'Disabled') {
             return res.status(403).json({ error: "This account has been disabled. Please contact support." });
         }
 
-        // 2. Verify Password
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) return res.status(401).json({ error: "Invalid credentials." });
 
-        // ==========================================
-        // ADMIN BYPASS: Instantly log in the Admin
-        // ==========================================
         if (user.role === 'admin') {
             return res.status(200).json({ 
                 message: "Admin login successful", 
@@ -378,7 +360,6 @@ app.post('/api/auth/login', async (req, res) => {
             });
         }
 
-        // 3. Generate 6-digit OTP for Applicants & Employers
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         const expires = new Date(Date.now() + 10 * 60000);
 
@@ -387,25 +368,14 @@ app.post('/api/auth/login', async (req, res) => {
             [otpCode, expires, user.id]
         );
 
-        // 4. Email the OTP to the user
-        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'api-key': process.env.BREVO_SMTP_KEY,
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "no-reply@ableworksystem.online" },
-                to: [{ email: email }],
-                subject: "AbleWork Login Verification Code",
-                htmlContent: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
-            })
+        // Send OTP via Resend
+        await transporter.sendMail({
+            from: '"AbleWork Security" <no-reply@ableworksystem.online>',
+            to: email,
+            subject: "AbleWork Login Verification Code",
+            html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
         });
-        const brevoData = await brevoRes.json();
-        console.log("Brevo API Response Status:", brevoRes.status, brevoData);
 
-        // 5. Tell the frontend to show the OTP input screen
         res.status(200).json({ 
             message: "Credentials verified. OTP sent to email.", 
             requiresOtp: true,
@@ -429,23 +399,19 @@ app.post('/api/auth/verify-login-otp', async (req, res) => {
         if (users.length === 0) return res.status(404).json({ error: "User not found." });
         const user = users[0];
 
-        // 1. Verify the OTP code
         if (!user.otp_code || user.otp_code !== otpCode) {
             return res.status(401).json({ error: "Invalid verification code." });
         }
 
-        // 2. Check if the OTP has expired
         if (new Date() > new Date(user.otp_expires)) {
             return res.status(401).json({ error: "Verification code has expired. Please log in again." });
         }
 
-        // 3. Clear the OTP from the database for security
         await db.execute(
             "UPDATE users SET otp_code = NULL, otp_expires = NULL WHERE id = ?",
             [user.id]
         );
 
-        // 4. Send success response with user data to complete the login
         res.status(200).json({ 
             message: "Login successful", 
             user: { 
@@ -636,11 +602,10 @@ app.post('/api/auth/register/employer', upload.array('verificationDocuments', 2)
         return res.status(400).json({ message: "Password must be at least 8 characters long, with an uppercase, lowercase, number, and special character." });
     }
 
-    // Process the array of files instead of a single file
     let documentPaths = null;
     if (req.files && req.files.length > 0) {
         const pathsArray = req.files.map(file => file.path);
-        documentPaths = JSON.stringify(pathsArray); // Store as stringified array in DB
+        documentPaths = JSON.stringify(pathsArray);
     }
 
     if (!documentPaths) {
@@ -866,13 +831,11 @@ app.post('/api/applications/apply', upload.fields([
     }
 
     try {
-        // 0. STRICT LOCK: Check if applicant is deactivated
         const [userCheck] = await db.execute('SELECT IFNULL(account_status, "Active") as account_status FROM users WHERE id = ?', [applicant_id]);
         if (userCheck.length > 0 && (userCheck[0].account_status === 'Deactivated' || userCheck[0].account_status === 'Disabled')) {
             return res.status(403).json({ message: "Your account is deactivated. Please reactivate your account in Settings to apply for jobs." });
         }
 
-        // 1. Check if the applicant already applied
         const [existing] = await db.execute(
             'SELECT id FROM applications WHERE applicant_id = ? AND job_id = ?', 
             [applicant_id, job_id]
@@ -882,27 +845,18 @@ app.post('/api/applications/apply', upload.fields([
             return res.status(400).json({ message: "You have already applied for this job." });
         }
 
-        // ========================================================
-        // ENFORCEMENT: Check the dynamic application limit
-        // ========================================================
-        
-        // A. Fetch the dynamic limit set by the employer
         const [jobCheck] = await db.execute('SELECT max_applications FROM job_postings WHERE id = ?', [job_id]);
         if (jobCheck.length === 0) {
             return res.status(404).json({ message: "Job not found." });
         }
         
-        // Use the employer's limit, or default to 50 if it's null/empty
         const dynamicLimit = jobCheck[0].max_applications || 50; 
 
-        // B. Count current applications (IGNORING REJECTED ONES) and block if limit is reached
         const [appCount] = await db.execute("SELECT COUNT(*) as total FROM applications WHERE job_id = ? AND status != 'Rejected'", [job_id]);
         if (appCount[0].total >= dynamicLimit) {
             return res.status(403).json({ message: `This job has reached its maximum limit of ${dynamicLimit} applications.` });
         }
-        // ========================================================
 
-        // 2. Insert the new application
         await db.execute(
             'INSERT INTO applications (applicant_id, job_id, status, resume_path, certificate_path, cover_letter) VALUES (?, ?, ?, ?, ?, ?)',
             [applicant_id, job_id, 'Received', resumePath, certificatePath, cover_letter || null] 
@@ -942,7 +896,6 @@ app.post('/api/applications/apply', upload.fields([
 app.put('/api/applications/:id/view', async (req, res) => {
     const applicationId = req.params.id;
     try {
-        // 1. Update the status to Under Review
         const [updateResult] = await db.execute(
             `UPDATE applications 
              SET status = 'Under Review' 
@@ -950,7 +903,6 @@ app.put('/api/applications/:id/view', async (req, res) => {
             [applicationId]
         );
 
-        // 2. If successfully updated, fetch details to send a notification
         if (updateResult.affectedRows > 0) {
             const [appDetails] = await db.execute(`
                 SELECT a.applicant_id, j.job_title, j.company_name 
@@ -965,7 +917,6 @@ app.put('/api/applications/:id/view', async (req, res) => {
                 const alertTitle = `Application Update: Under Review`;
                 const alertMessage = `Great news! Your application for the ${job_title} role at ${company_name} has been viewed and marked as Under Review.`;
 
-                // Trigger your existing notification system (in-app + Brevo email)
                 await sendNotification(applicant_id, alertTitle, alertMessage, 'update');
             }
         }
@@ -1097,9 +1048,6 @@ app.get('/api/employer/:id/dashboard-stats', async (req, res) => {
             });
         }
 
-        // =========================================================
-        // NEW: CALCULATE REAL DISABILITY BREAKDOWN FOR THIS EMPLOYER
-        // =========================================================
         const [disabilityRows] = await db.execute(
             `SELECT ap.disability_type 
              FROM applications a
@@ -1158,7 +1106,6 @@ app.get('/api/employer/:id/dashboard-stats', async (req, res) => {
             color: categoryColors[cat]
         }));
 
-        // Sort highest to lowest so index [0] is always the top category for Key Insight
         disabilityData.sort((a, b) => b.value - a.value);
 
         res.status(200).json({
@@ -1208,14 +1155,12 @@ app.post('/api/jobs/create', async (req, res) => {
     } = req.body;
 
     try {
-        // 1. Select both verification AND account status
         const [users] = await db.execute('SELECT verification_status, IFNULL(account_status, "Active") as account_status FROM users WHERE id = ?', [employer_id]);
         
         if (users.length === 0 || users[0].verification_status !== 'Approved') {
             return res.status(403).json({ message: "You must be an approved employer to post jobs." });
         }
 
-        // 2. BLOCK the post if the account is deactivated or disabled
         if (users[0].account_status === 'Deactivated' || users[0].account_status === 'Disabled') {
             return res.status(403).json({ message: "Your account is deactivated. Please reactivate your account in Settings to post new jobs." });
         }
@@ -1273,7 +1218,7 @@ app.post('/api/jobs/create', async (req, res) => {
                 const jobAcceptedDisabilities = safeParse(job.accepted_disabilities).map(d => d.toLowerCase());
                 const jobSkills = safeParse(job.required_skills).map(s => s.toLowerCase());
 
-for (let applicant of applicants) {
+                for (let applicant of applicants) {
                     const appRadius = Number(applicant.travel_radius_km) || 5;
                     const appAccommodations = safeParse(applicant.accommodations_needed).map(a => a.toLowerCase());
                     
@@ -2001,22 +1946,13 @@ app.post('/api/users/:id/request-otp', async (req, res) => {
         const subjectLine = type === 'email' ? 'Verify your new Email Address' : 'Verify your Password Change';
         const messageBody = `<p>Hello!</p><p>Your 6-digit AbleWork verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`;
 
-        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'api-key': process.env.BREVO_SMTP_KEY,
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "no-reply@ableworksystem.online" },
-                to: [{ email: email }],
-                subject: subjectLine,
-                htmlContent: messageBody
-            })
+        // Send security OTP via Resend
+        await transporter.sendMail({
+            from: '"AbleWork Security" <no-reply@ableworksystem.online>',
+            to: email,
+            subject: subjectLine,
+            html: messageBody
         });
-        const brevoData = await brevoRes.json();
-        console.log("Security OTP Brevo Response Status:", brevoRes.status, brevoData);
 
         res.status(200).json({ message: "Verification code sent successfully." });
 
@@ -2050,14 +1986,11 @@ app.put('/api/users/:id/toggle-status', async (req, res) => {
             
             if (role === 'employer') {
                 if (newStatus === 'Deactivated') {
-                    // Temporarily hide jobs by marking them as 'Hidden' instead of 'Archived'
-                    // This separates them from jobs the employer actually wanted to permanently archive
                     await db.execute(
                         "UPDATE job_postings SET status = 'Hidden' WHERE employer_id = ? AND status = 'Active'", 
                         [userId]
                     );
                 } else if (newStatus === 'Active') {
-                    // Bring the temporarily hidden jobs back
                     await db.execute(
                         "UPDATE job_postings SET status = 'Active' WHERE employer_id = ? AND status = 'Hidden'", 
                         [userId]
@@ -2065,7 +1998,6 @@ app.put('/api/users/:id/toggle-status', async (req, res) => {
                 }
             } 
             else if (role === 'applicant' && newStatus === 'Deactivated') {
-                // WITHDRAW pending applications so employers don't review ghost applicants
                 await db.execute(
                     "UPDATE applications SET status = 'Withdrawn', employer_message = 'Applicant deactivated their account.' WHERE applicant_id = ? AND status IN ('Received', 'Under Review')", 
                     [userId]
@@ -2098,22 +2030,13 @@ app.post('/api/auth/forgot-password', async (req, res) => {
             [otpCode, expires, userId]
         );
 
-        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'api-key': process.env.BREVO_SMTP_KEY,
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "no-reply@ableworksystem.online" },
-                to: [{ email: email }],
-                subject: 'AbleWork Password Reset Code',
-                htmlContent: `<p>Hello,</p><p>We received a request to reset your AbleWork password.</p><p>Your 6-digit recovery code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`
-            })
+        // Send Forgot Password Code via Resend
+        await transporter.sendMail({
+            from: '"AbleWork Security" <no-reply@ableworksystem.online>',
+            to: email,
+            subject: 'AbleWork Password Reset Code',
+            html: `<p>Hello,</p><p>We received a request to reset your AbleWork password.</p><p>Your 6-digit recovery code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`
         });
-        const brevoData = await brevoRes.json();
-        console.log("Forgot Password Brevo Response Status:", brevoRes.status, brevoData);
 
         res.status(200).json({ message: "Recovery code sent to your email!" });
     } catch (error) {
@@ -2183,7 +2106,7 @@ app.post('/api/users/:id/verify-password', async (req, res) => {
             return res.status(401).json({ message: "Incorrect password." });
         }
 
-        // If it matches, send a success response   
+        // If it matches, send a success response    
         res.status(200).json({ message: "Password verified successfully." });
         
     } catch (error) {
