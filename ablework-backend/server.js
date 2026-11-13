@@ -2106,7 +2106,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                sender: { name: "AbleWork Security", email: "no-reply@ableworksystem.online" },
                 to: [{ email: email }],
                 subject: 'AbleWork Password Reset Code',
                 htmlContent: `<p>Hello,</p><p>We received a request to reset your AbleWork password.</p><p>Your 6-digit recovery code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`
