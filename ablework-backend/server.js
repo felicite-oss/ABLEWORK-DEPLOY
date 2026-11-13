@@ -670,7 +670,43 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 }
 
 // ---------------------------------------------------------
-// ROUTE: SMART MATCHING ENGINE 
+// HELPER: Semantic Similarity using SBERT (Hugging Face)
+// ---------------------------------------------------------
+async function getSemanticSimilarity(sourceText, targetTexts) {
+    if (!process.env.HUGGINGFACE_API_KEY) {
+        console.warn("Missing HUGGINGFACE_API_KEY. Falling back to 0 semantic score.");
+        return targetTexts.map(() => 0);
+    }
+    
+    try {
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    inputs: {
+                        source_sentence: sourceText,
+                        sentences: targetTexts
+                    }
+                }),
+            }
+        );
+        
+        const data = await response.json();
+        if (Array.isArray(data)) return data;
+        return targetTexts.map(() => 0);
+    } catch (error) {
+        console.error("SBERT API Error:", error.message);
+        return targetTexts.map(() => 0);
+    }
+}
+
+// ---------------------------------------------------------
+// ROUTE: SMART MATCHING ENGINE (Hybrid: 60% Rules, 40% AI)
 // ---------------------------------------------------------
 app.get('/api/applicant/:id/matches', async (req, res) => {
     const userId = req.params.id;
@@ -685,7 +721,6 @@ app.get('/api/applicant/:id/matches', async (req, res) => {
         if (applicantRows.length === 0) return res.status(404).json({ message: "Applicant not found." });
         const applicant = applicantRows[0];
 
-    
         const safeParse = (data) => {
             if (!data) return [];
             if (Array.isArray(data)) return data;
@@ -701,8 +736,8 @@ app.get('/api/applicant/:id/matches', async (req, res) => {
             return [];
         };
 
-        
-        const appSkills = safeParse(applicant.skills).map(s => s.toLowerCase());
+        const appSkillsArray = safeParse(applicant.skills);
+        const appSkillsString = appSkillsArray.join(", "); 
         const appAccommodations = safeParse(applicant.accommodations_needed).map(a => a.toLowerCase());
         const appDisabilities = safeParse(applicant.disability_type).map(d => d.toLowerCase()); 
         const maxRadius = Number(applicant.travel_radius_km) || 5; 
@@ -723,64 +758,73 @@ app.get('/api/applicant/:id/matches', async (req, res) => {
             ) < IFNULL(jp.max_applications, 50)
         `);
 
-        let matchedJobs = [];
+        let ruleFilteredJobs = [];
+        let jobDescriptionsToCompare = [];
 
+        // --- PHASE 1: RULE-BASED MATCHING (60% WEIGHT) ---
         for (let job of jobs) {
-            
             let distance = 0;
-            let distanceScore = 40; 
+            let distanceScore = 60; 
 
+            // Rule 1: Geofencing
             if (applicant.latitude && applicant.longitude && job.latitude && job.longitude) {
-                const R = 6371; 
-                const dLat = (job.latitude - applicant.latitude) * (Math.PI / 180);
-                const dLon = (job.longitude - applicant.longitude) * (Math.PI / 180);
-                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                          Math.cos(applicant.latitude * (Math.PI / 180)) * Math.cos(job.latitude * (Math.PI / 180)) * 
-                          Math.sin(dLon / 2) * Math.sin(dLon / 2); 
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
-                distance = R * c;
-                
+                distance = getDistanceFromLatLonInKm(applicant.latitude, applicant.longitude, job.latitude, job.longitude);
                 if (distance > maxRadius) continue; 
-
-                distanceScore = Math.max(0, 40 - ((distance / maxRadius) * 40));
+                distanceScore = Math.max(0, 60 - ((distance / maxRadius) * 60));
             }
 
+            // Rule 2: Accommodations Constraint (Dealbreaker)
             const jobAccommodations = safeParse(job.provided_accommodations).map(a => a.toLowerCase());
             const meetsAllNeeds = appAccommodations.every(need => jobAccommodations.includes(need));
             if (!meetsAllNeeds) continue; 
 
+            // Rule 3: Disability Support (Dealbreaker)
             const jobAcceptedDisabilities = safeParse(job.accepted_disabilities).map(d => d.toLowerCase());
-            const isDisabilitySupported = appDisabilities.some(disability => 
-                jobAcceptedDisabilities.includes(disability)
-            );
+            const isDisabilitySupported = appDisabilities.some(disability => jobAcceptedDisabilities.includes(disability));
             if (jobAcceptedDisabilities.length > 0 && !isDisabilitySupported) continue;
 
-            const jobSkills = safeParse(job.required_skills).map(s => s.toLowerCase());
-            let matchingSkillsCount = 0;
-            
-            appSkills.forEach(skill => {
-                if (jobSkills.includes(skill)) matchingSkillsCount++;
-            });
-
-            const skillScore = jobSkills.length > 0 ? (matchingSkillsCount / jobSkills.length) * 60 : 60; 
-            const overallMatchPercentage = Math.round(skillScore + distanceScore);
-
-            if (overallMatchPercentage < 50) continue;
-            
-            matchedJobs.push({
+            ruleFilteredJobs.push({
                 ...job,
-                distance_km: distance ? distance.toFixed(1) : null,
-                matching_skills_count: matchingSkillsCount,
-                match_percentage: overallMatchPercentage,
-                total_required_skills: jobSkills.length
+                // FIX: If distance is exactly 0, explicitly pass "0.0" so the frontend doesn't crash on null
+                distance_km: distance === 0 ? "0.0" : distance.toFixed(1),
+                distance_score: distanceScore
             });
+
+            // Prepare context for Phase 2: SBERT
+            const jobSkillsArray = safeParse(job.required_skills);
+            const jobContext = `${job.job_title}. Required skills: ${jobSkillsArray.join(", ")}`;
+            jobDescriptionsToCompare.push(jobContext);
         }
 
-        matchedJobs.sort((a, b) => {
-            if (b.match_percentage !== a.match_percentage) return b.match_percentage - a.match_percentage; 
-            return a.distance_km - b.distance_km;
-        });
+        let matchedJobs = [];
+        let semanticScores = [];
 
+        // --- PHASE 2: SEMANTIC SIMILARITY ---
+        if (ruleFilteredJobs.length > 0 && appSkillsString.length > 0) {
+            semanticScores = await getSemanticSimilarity(appSkillsString, jobDescriptionsToCompare);
+        }
+
+        // --- PHASE 3: HYBRID SCORE CALCULATION (40% WEIGHT) ---
+        // FIX: This loop now ALWAYS runs to guarantee rule-matched jobs are returned, even if AI falls back
+        for (let i = 0; i < ruleFilteredJobs.length; i++) {
+            const job = ruleFilteredJobs[i];
+            
+            const semanticRaw = semanticScores[i] || 0;
+            const semanticScore = semanticRaw * 40; 
+
+            // Hybrid Formula: Proximity (60%) + Contextual Skills (40%)
+            const overallMatchPercentage = Math.round(job.distance_score + semanticScore);
+
+            if (overallMatchPercentage >= 50) {
+                matchedJobs.push({
+                    ...job,
+                    match_percentage: overallMatchPercentage,
+                    semantic_similarity_raw: semanticRaw.toFixed(2)
+                });
+            }
+        }
+
+        matchedJobs.sort((a, b) => b.match_percentage - a.match_percentage);
         res.status(200).json(matchedJobs);
 
     } catch (error) {
