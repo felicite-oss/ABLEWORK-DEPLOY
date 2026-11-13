@@ -6,24 +6,15 @@ const multer = require('multer');
 const path = require('path'); 
 const fs = require('fs');
 const helmet = require('helmet');
+const { Resend } = require('resend');
 require('dotenv').config();
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const isValidPassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     return passwordRegex.test(password);
 };
-
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.resend.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'resend',
-    pass: process.env.RESEND_API_KEY
-  }
-});
 
 const generateEmailTemplate = (title, message) => {
   return `
@@ -98,12 +89,13 @@ async function sendNotification(userId, title, message, type) {
     
     if (users.length > 0 && users[0].email) {
       try {
-        await transporter.sendMail({
-          from: '"AbleWork Notifications" <no-reply@ableworksystem.online>',
+        const { error } = await resend.emails.send({
+          from: 'AbleWork Notifications <no-reply@ableworksystem.online>',
           to: users[0].email,
           subject: title,
           html: generateEmailTemplate(title, inAppMessage)
         });
+        if (error) console.error("Resend Notification Email Error:", error);
       } catch (mailError) {
         console.error("Resend Email Dispatch Error:", mailError.message);
       }
@@ -368,15 +360,18 @@ app.post('/api/auth/login', async (req, res) => {
             [otpCode, expires, user.id]
         );
 
-        // Send OTP via Resend
-        transporter.sendMail({
-            from: '"AbleWork Security" <no-reply@ableworksystem.online>',
+        // Send OTP via Resend API
+        const { error } = await resend.emails.send({
+            from: 'AbleWork Security <no-reply@ableworksystem.online>',
             to: email,
             subject: "AbleWork Login Verification Code",
             html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
-        }).catch(err => console.error("Background Email Dispatch Error:", err.message));
+        });
 
-        // Immediately return response to the frontend
+        if (error) {
+            console.error("Resend API Error:", error);
+        }
+
         res.status(200).json({ 
             message: "Credentials verified. OTP sent to email.", 
             requiresOtp: true,
@@ -1947,18 +1942,15 @@ app.post('/api/users/:id/request-otp', async (req, res) => {
         const subjectLine = type === 'email' ? 'Verify your new Email Address' : 'Verify your Password Change';
         const messageBody = `<p>Hello!</p><p>Your 6-digit AbleWork verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`;
 
-        // Send security OTP via Resend
-        // 4. Email the OTP to the user via Resend
-        try {
-            await transporter.sendMail({
-                from: '"AbleWork Security" <no-reply@ableworksystem.online>',
-                to: email,
-                subject: "AbleWork Login Verification Code",
-                html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
-            });
-            console.log("Resend OTP Email Dispatched Successfully to:", email);
-        } catch (mailErr) {
-            console.error("Resend SMTP Dispatch Failed:", mailErr.message);
+        const { error } = await resend.emails.send({
+            from: 'AbleWork Security <no-reply@ableworksystem.online>',
+            to: email,
+            subject: subjectLine,
+            html: messageBody
+        });
+
+        if (error) {
+            console.error("Resend API Error:", error);
         }
 
         res.status(200).json({ message: "Verification code sent successfully." });
@@ -1979,13 +1971,11 @@ app.put('/api/users/:id/toggle-status', async (req, res) => {
     try {
         const newStatus = action === 'deactivate' ? 'Deactivated' : 'Active';
 
-        // 1. Update the user's account status
         await db.execute(
             "UPDATE users SET account_status = ? WHERE id = ?",
             [newStatus, userId]
         );
 
-        // 2. Perform automated cleanup based on the new status
         const [users] = await db.execute('SELECT role FROM users WHERE id = ?', [userId]);
             
         if (users.length > 0) {
@@ -2037,13 +2027,16 @@ app.post('/api/auth/forgot-password', async (req, res) => {
             [otpCode, expires, userId]
         );
 
-        // Send Forgot Password Code via Resend
-        await transporter.sendMail({
-            from: '"AbleWork Security" <no-reply@ableworksystem.online>',
+        const { error } = await resend.emails.send({
+            from: 'AbleWork Security <no-reply@ableworksystem.online>',
             to: email,
             subject: 'AbleWork Password Reset Code',
             html: `<p>Hello,</p><p>We received a request to reset your AbleWork password.</p><p>Your 6-digit recovery code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`
         });
+
+        if (error) {
+            console.error("Resend API Error:", error);
+        }
 
         res.status(200).json({ message: "Recovery code sent to your email!" });
     } catch (error) {
@@ -2099,21 +2092,18 @@ app.post('/api/users/:id/verify-password', async (req, res) => {
     }
 
     try {
-        // Fetch the user's hashed password from the database
         const [users] = await db.execute('SELECT password_hash FROM users WHERE id = ?', [userId]);
         
         if (users.length === 0) {
             return res.status(404).json({ message: "User not found." });
         }
 
-        // Compare the submitted password with the stored hash
         const isMatch = await bcrypt.compare(password, users[0].password_hash);
         
         if (!isMatch) {
             return res.status(401).json({ message: "Incorrect password." });
         }
 
-        // If it matches, send a success response    
         res.status(200).json({ message: "Password verified successfully." });
         
     } catch (error) {
@@ -2128,7 +2118,6 @@ app.post('/api/users/:id/verify-password', async (req, res) => {
 app.put('/api/applications/:id/withdraw', async (req, res) => {
     const applicationId = req.params.id;
     try {
-        // Only allow withdrawal if the application hasn't been finalized (Hired/Rejected)
         const [updateResult] = await db.execute(
             `UPDATE applications 
              SET status = 'Withdrawn', employer_message = 'You have withdrawn this application.' 
