@@ -7,10 +7,9 @@ const path = require('path');
 const fs = require('fs');
 const helmet = require('helmet');
 const { Resend } = require('resend');
-const axios = require('axios');
-require('dotenv').config();
-
 const resend = new Resend(process.env.RESEND_API_KEY);
+const { pipeline } = require('@huggingface/transformers');
+require('dotenv').config();
 
 const isValidPassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
@@ -143,6 +142,14 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 }
 });
+
+let extractorPromise = null;
+async function getExtractor() {
+    if (!extractorPromise) {
+        extractorPromise = pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+    }
+    return extractorPromise;
+}
 
 
 
@@ -671,44 +678,47 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 }
 
 // ---------------------------------------------------------
-// HELPER: Semantic Similarity using SBERT (Bulletproof Axios Version)
+// HELPER: Semantic Similarity using Local Transformers.js
 // ---------------------------------------------------------
 async function getSemanticSimilarity(sourceText, targetTexts) {
-    if (!process.env.HUGGINGFACE_API_KEY) {
-        console.warn("Missing HUGGINGFACE_API_KEY. Falling back to 0 semantic score.");
+    if (!sourceText || targetTexts.length === 0) {
         return targetTexts.map(() => 0);
     }
-    
+
     try {
-        const response = await axios.post(
-            "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
-            {
-                inputs: {
-                    source_sentence: sourceText,
-                    sentences: targetTexts
-                }
-            },
-            {
-                headers: {
-                    "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-                    "Content-Type": "application/json",
-                    "User-Agent": "AbleWork-Capstone/1.0"
-                },
-                timeout: 20000 // 20-second timeout to easily survive AI Cold Starts
+        const extractor = await getExtractor();
+
+        // Generate embedding for the source text (applicant skills)
+        const sourceOutput = await extractor(sourceText, { pooling: 'mean', normalize: true });
+        const sourceVector = sourceOutput.data;
+
+        const scores = [];
+
+        for (const target of targetTexts) {
+            // Generate embedding for each target text (job description / skills)
+            const targetOutput = await extractor(target, { pooling: 'mean', normalize: true });
+            const targetVector = targetOutput.data;
+
+            // Calculate Cosine Similarity between source vector and target vector
+            let dotProduct = 0;
+            let normA = 0;
+            let normB = 0;
+
+            for (let i = 0; i < sourceVector.length; i++) {
+                dotProduct += sourceVector[i] * targetVector[i];
+                normA += sourceVector[i] * sourceVector[i];
+                normB += targetVector[i] * targetVector[i];
             }
-        );
-        
-        if (Array.isArray(response.data)) return response.data;
-        return targetTexts.map(() => 0);
-    } catch (error) {
-        console.error("--- SBERT API ERROR DETAILS ---");
-        if (error.response) {
-            console.error("Status:", error.response.status);
-            console.error("Data:", error.response.data);
-        } else {
-            console.error("Axios Network Error:", error.message);
+
+            const similarity = (normA === 0 || normB === 0) ? 0 : dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+            
+            // Ensure score stays between 0 and 1
+            scores.push(Math.max(0, Math.min(1, similarity)));
         }
-        console.error("-------------------------------");
+
+        return scores;
+    } catch (error) {
+        console.error("--- LOCAL TRANSFORMERS.JS ERROR ---", error.message);
         return targetTexts.map(() => 0);
     }
 }
