@@ -413,7 +413,7 @@ export default function ApplicantAccountSettings({ profile }) {
                     <div className="w-7 h-7 rounded-lg bg-[#2C7FFF]/15 flex items-center justify-center shrink-0">
                       <svg className="w-4 h-4 text-[#2C7FFF]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
-<p tabIndex={0} role="text" aria-label="Current Standing" className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Current Standing</p>
+                      <p tabIndex={0} role="text" aria-label="Current Standing" className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Current Standing</p>
                   </div>
                   {profile?.verification_status === 'Approved' && (
                     <span role="status" aria-label="Verification status: Approved" tabIndex="0" className="inline-flex items-center gap-1.5 px-3 py-1 bg-white text-[#03045E] font-extrabold text-xs rounded-lg border border-[#03045E]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
@@ -433,46 +433,57 @@ export default function ApplicantAccountSettings({ profile }) {
                       Action Required
                     </span>
                   )}
-<p
-  tabIndex={0}
-  role="text"
-  aria-label={
-    profile?.verification_status === 'Approved'
-      ? 'Your account is fully verified.'
-      : profile?.verification_status === 'Pending'
-      ? 'Awaiting admin review of your submission.'
-      : isRejected
-      ? 'Please re-upload a valid document.'
-      : ''
-  }
-  className="text-[10px] font-semibold text-[#03045E]/50 mt-2.5 leading-relaxed"
->
-  {profile?.verification_status === 'Approved' && 'Your account is fully verified.'}
-  {profile?.verification_status === 'Pending' && 'Awaiting admin review of your submission.'}
-  {isRejected && 'Please re-upload a valid document.'}
-</p>
+                    <p
+                      tabIndex={0}
+                      role="text"
+                      aria-label={
+                        profile?.verification_status === 'Approved'
+                          ? 'Your account is fully verified.'
+                          : profile?.verification_status === 'Pending'
+                          ? 'Awaiting admin review of your submission.'
+                          : isRejected
+                          ? 'Please re-upload a valid document.'
+                          : ''
+                      }
+                      className="text-[10px] font-semibold text-[#03045E]/50 mt-2.5 leading-relaxed"
+                    >
+                      {profile?.verification_status === 'Approved' && 'Your account is fully verified.'}
+                      {profile?.verification_status === 'Pending' && 'Awaiting admin review of your submission.'}
+                      {isRejected && 'Please re-upload a valid document.'}
+                    </p>
                 </div>
 
                 <div className="p-3.5 rounded-lg border border-[#03045E]/10 bg-[#f4f4f4]">
                   <div className="flex items-center gap-2 mb-2.5">
                     <div className="w-7 h-7 rounded-lg bg-[#2C7FFF]/15 flex items-center justify-center shrink-0">
-                      <svg className="w-4 h-4 text-[#2C7FFF]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                      <svg className="w-4 h-4 text-[#2C7FFF]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
                     </div>
-<p tabIndex={0} role="text" aria-label="Uploaded Document" className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Uploaded Document</p>
+                    <p tabIndex={0} role="text" aria-label="Uploaded Document" className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Uploaded Document</p>
                   </div>
+                  
                   {(() => {
-                    const rawPath = String(doc).trim();
+                    // 1. Get the raw path from the database
+                    const rawPath = String(profile?.pwd_document_path || '').trim();
+                    
+                    // 2. Check if it's already a full Cloudinary URL
                     const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
                       ? rawPath
                       : `${API_BASE_URL}/uploads/${rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^uploads[\\/]/, '')}`;
+                    
+                    // 3. Render the link with the corrected URL
                     return (
                       <a href={fileUrl} target="_blank" rel="noopener noreferrer" aria-label="View Document on File, opens in new tab" tabIndex="0" className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2C7FFF] hover:underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
                         View Document on File
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
                       </a>
                     );
                   })()}
-<p tabIndex={0} role="text" aria-label="Your submitted PWD ID on file." className="text-[10px] font-semibold text-[#03045E]/50 mt-2.5 leading-relaxed">Your submitted PWD ID on file.</p>
+                  
+                  <p tabIndex={0} role="text" aria-label="Your submitted PWD ID on file." className="text-[10px] font-semibold text-[#03045E]/50 mt-2.5 leading-relaxed">Your submitted PWD ID on file.</p>
                 </div>
 
                 {isRejected && (
