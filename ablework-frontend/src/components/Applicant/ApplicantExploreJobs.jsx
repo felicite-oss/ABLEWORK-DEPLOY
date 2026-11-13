@@ -929,8 +929,8 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                       <p tabIndex="0" aria-label={`Job Description: ${selectedJob.job_description}`} className="text-xs sm:text-base text-[#03045E] font-bold whitespace-pre-wrap leading-relaxed break-words focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded p-1 -m-1">{selectedJob.job_description}</p>
                     </div>
                     
-                    {/* --- 1. SKILL COMPARISON (WITH AI SBERT SUPPORT) --- */}
-                    <div role="region" aria-label="Skill requirements and AI Match">
+                    {/* --- 1. SKILL COMPARISON (UNIFIED CHECKMARK WITH FULL TALKBACK SUPPORT) --- */}
+                    <div role="region" aria-label="Required Skills and AI Comparison">
                       <h3 tabIndex="0" aria-label="Required Skills" className="text-[10px] sm:text-xs font-black text-[#03045E]/70 uppercase tracking-widest mb-2 sm:mb-3 focus:outline-none rounded w-fit">
                         Required Skills
                       </h3>
@@ -940,11 +940,18 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                           const hasExactMatch = applicantSkills.includes(skill.toLowerCase());
                           const isSemanticMatch = !hasExactMatch && selectedJob.semantic_similarity_raw >= 0.5;
                           
-                          // Explicit TalkBack Screen Reader strings
+                          // Both exact match and SBERT semantic match result in a valid match
+                          const isMatched = hasExactMatch || isSemanticMatch;
+                          
+                          // Detailed screen reader aria-label for accessibility compliance
                           let ariaLabelText = `Required skill: ${skill}. `;
-                          if (hasExactMatch) ariaLabelText += "You have exactly matched this skill.";
-                          else if (isSemanticMatch) ariaLabelText += "AI Smart Match: Your experience is conceptually related to this skill.";
-                          else ariaLabelText += "You are missing this skill.";
+                          if (hasExactMatch) {
+                            ariaLabelText += "Your profile has an exact keyword match for this skill.";
+                          } else if (isSemanticMatch) {
+                            ariaLabelText += "Your profile successfully matches this requirement through smart AI semantic analysis.";
+                          } else {
+                            ariaLabelText += "You do not currently have this skill listed in your profile.";
+                          }
 
                           return (
                             <span 
@@ -953,25 +960,19 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                               tabIndex="0" 
                               aria-label={ariaLabelText}
                               className={`px-2.5 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-sm font-black rounded-lg sm:rounded-xl border-2 flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 transition-all ${
-                                hasExactMatch 
+                                isMatched 
                                   ? `bg-[#2C7FFF]/15 border-[#2C7FFF] ${isDarkScreen ? 'text-black' : 'text-[#03045E]'}` 
-                                  : isSemanticMatch
-                                    ? `bg-gradient-to-r from-[#2C7FFF]/10 to-[#10B981]/10 border-[#2C7FFF]/40 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`
-                                    : 'bg-[#f4f4f4] text-[#03045E]/60 border-[#03045E]/15'
+                                  : 'bg-[#f4f4f4] text-[#03045E]/60 border-[#03045E]/15'
                               }`}>
                               
-                              {/* Exact Match Icon */}
-                              {hasExactMatch && <svg aria-hidden="true" className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isDarkScreen ? 'text-black' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>}
-                              
-                              {/* AI Semantic Match SVG (Replaces Emoji) */}
-                              {isSemanticMatch && (
-                                <svg aria-hidden="true" className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-inherit" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+                              {/* Unified Checkmark Icon for BOTH Exact and SBERT Matches (Hidden from Screen Reader since aria-label handles it) */}
+                              {isMatched && (
+                                <svg aria-hidden="true" className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isDarkScreen ? 'text-black' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path>
                                 </svg>
                               )}
                               
-                              {/* Missing Skill Dot (Neutral, much better UX than an X) */}
-                              {!hasExactMatch && !isSemanticMatch && <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-[#03045E]/30"></span>}
+                              {!isMatched && <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-[#03045E]/30"></span>}
                               
                               <span aria-hidden="true">{skill}</span>
                             </span>
@@ -979,10 +980,10 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                         })}
                       </div>
 
-                      {/* Context Container for Applicant Skills */}
+                      {/* Context Container showing Profile Skills directly below with TalkBack support */}
                       <div 
                         tabIndex="0"
-                        aria-label={`Your Profile Skills: ${profile.skills ? safeParse(profile.skills).join(', ') : 'No skills listed'}`}
+                        aria-label={`Your Profile Skills: ${profile.skills ? safeParse(profile.skills).join(', ') : 'No skills listed'}. These skills are automatically compared against job requirements using our semantic matching engine.`}
                         className={`mt-3 p-3 rounded-xl border-2 border-dashed flex flex-col gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${isDarkScreen ? 'border-white/20 bg-white/5' : 'border-[#03045E]/20 bg-white'}`}
                       >
                          <span aria-hidden="true" className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Your Profile Skills</span>
@@ -990,30 +991,6 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                             {profile.skills ? safeParse(profile.skills).join(' • ') : 'No skills listed'}
                          </p>
                       </div>
-
-                      {/* AI Semantic Insight Banner (Replaces Emoji with SVGs) */}
-                      {selectedJob.semantic_similarity_raw >= 0.5 && (
-                        <div 
-                          tabIndex="0"
-                          aria-label={`Smart Match Active. Our AI understands that your skills are highly relevant to the required skills. Context Score: ${Math.round(selectedJob.semantic_similarity_raw * 100)} out of 100.`}
-                          className={`mt-3 p-3 rounded-xl border-2 flex items-start gap-2.5 animate-fadeIn focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${isDarkScreen ? 'bg-[#2C7FFF]/20 border-[#2C7FFF]/50' : 'bg-[#2C7FFF]/10 border-[#2C7FFF]/30'}`}
-                        >
-                          {/* Sparkles SVG replacing the Brain */}
-                          <svg aria-hidden="true" className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 mt-0.5 ${isDarkScreen ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
-                          </svg>
-                          <div aria-hidden="true" className="flex flex-col gap-1">
-                            <p className={`text-[10px] sm:text-[11px] font-black tracking-widest uppercase ${isDarkScreen ? 'text-white' : 'text-[#2C7FFF]'}`}>
-                              Smart Match Active
-                            </p>
-                            <p className={`text-[11px] sm:text-xs font-bold leading-relaxed ${isDarkScreen ? 'text-white/90' : 'text-[#03045E]/80'}`}>
-                              Our AI understands that your skills (like <span className="italic">"{safeParse(profile.skills)[0] || 'your experience'}"</span>) are highly relevant to the required skills marked with 
-                              <svg aria-hidden="true" className="inline-block w-3.5 h-3.5 text-inherit -mt-0.5 mx-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" /></svg>. 
-                              (Context Score: {Math.round(selectedJob.semantic_similarity_raw * 100)}/100).
-                            </p>
-                          </div>
-                        </div>
-                      )}
                     </div>
                     
                     {/* --- 2. ACCOMMODATIONS COMPARISON (NO 'X' MARK) --- */}
