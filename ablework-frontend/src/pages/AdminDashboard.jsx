@@ -1467,7 +1467,7 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                             ? rawPath
                             : `${API_BASE_URL}/uploads/${rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^uploads[\\/]/, '')}`;
                           
-                          const isImage = /\.(jpeg|jpg|png|gif)$/i.test(rawPath) || rawPath.startsWith('http');
+                         const isImage = /\.(jpeg|jpg|png|gif)$/i.test(rawPath);
 
                           return isImage ? (
                             <img
@@ -1594,7 +1594,7 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                           ? rawPath
                           : `${API_BASE_URL}/uploads/${cleanPath}`;
                           
-                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(cleanPath) || rawPath.startsWith('http');
+                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(rawPath);
 
                         return (
                           <div key={index} className="flex-1 w-full h-full min-h-[250px] flex flex-col rounded-lg overflow-hidden border border-[#03045E]/10 bg-white/50">

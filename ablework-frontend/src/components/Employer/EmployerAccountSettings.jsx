@@ -444,7 +444,7 @@ export default function EmployerAccountSettings({ profile }) {
                     <p className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Uploaded Documents</p>
                   </div>
 
-                  {(() => {
+                 {(() => {
                     let docs = [];
                     if (profile?.verification_document) {
                       try {
@@ -463,14 +463,17 @@ export default function EmployerAccountSettings({ profile }) {
                     return (
                       <div className="flex flex-col gap-2">
                         {docs.map((doc, idx) => {
-                          let cleanPath = String(doc).replace(/\\/g, '/').replace(/^\/+/, '');
-                          if (!cleanPath.startsWith('uploads/')) {
-                            cleanPath = `uploads/${cleanPath}`;
-                          }
+                          const rawPath = String(doc).trim();
+                          
+                          // If it's a Cloudinary link, use it directly. Otherwise, format as a local upload path.
+                          const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
+                            ? rawPath
+                            : `${API_BASE_URL}/uploads/${rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^uploads[\\/]/, '')}`;
+
                           return (
                             <a
                               key={idx}
-                              href={`${API_BASE_URL}/${cleanPath}`}
+                              href={fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label={`View Business Document ${docs.length > 1 ? idx + 1 : ''} on File, opens in new tab`}
