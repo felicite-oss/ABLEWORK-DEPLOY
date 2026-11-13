@@ -138,32 +138,27 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'ablework_uploads',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
+        resource_type: 'auto' 
     }
 });
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-    fileFilter: (req, file, cb) => {
-        if (file.fieldname === 'pwdDocument') {
-            const ext = path.extname(file.originalname).toLowerCase();
-            if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
-                return cb(new Error('Only .jpeg, .jpg, and .png files are allowed for PWD ID uploads.'), false);
-            }
-        }
-        cb(null, true);
-    }
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 app.use('/uploads', express.static(uploadDir));
@@ -553,10 +548,10 @@ app.post('/api/auth/register/applicant', upload.fields([
 
     let pwdDocumentPath = null;
     if (req.files && req.files['pwdDocument']) {
-        const pwdFiles = req.files['pwdDocument'].map(f => `/uploads/${f.filename}`);
+        const pwdFiles = req.files['pwdDocument'].map(f => f.path);
         pwdDocumentPath = pwdFiles.length === 1 ? pwdFiles[0] : JSON.stringify(pwdFiles);
     }
-    const resumePath = (req.files && req.files['resume']) ? `/uploads/${req.files['resume'][0].filename}` : null;
+    const resumePath = (req.files && req.files['resume']) ? req.files['resume'][0].path : null;
 
     try {
         const [existingUser] = await db.execute('SELECT id FROM users WHERE email = ?', [email]);
@@ -645,7 +640,7 @@ app.post('/api/auth/register/employer', upload.array('verificationDocuments', 2)
     // Process the array of files instead of a single file
     let documentPaths = null;
     if (req.files && req.files.length > 0) {
-        const pathsArray = req.files.map(file => `/uploads/${file.filename}`);
+        const pathsArray = req.files.map(file => file.path);
         documentPaths = JSON.stringify(pathsArray); // Store as stringified array in DB
     }
 
@@ -856,11 +851,11 @@ app.post('/api/applications/apply', upload.fields([
             resumePath = profileRows[0].resume_path;
         }
     } else if (req.files && req.files['resume']) {
-        resumePath = `/uploads/${req.files['resume'][0].filename}`;
+        resumePath = req.files['resume'][0].path;
     }
 
     if (req.files && req.files['certificate']) {
-        certificatePath = `/uploads/${req.files['certificate'][0].filename}`;
+        certificatePath = req.files['certificate'][0].path;
     }
 
     if (!applicant_id || !job_id) {
@@ -1457,7 +1452,7 @@ app.put('/api/applications/:id/status', async (req, res) => {
 app.put('/api/employer/:id/settings', upload.single('company_logo'), async (req, res) => {
     const userId = req.params.id;
     const { company_name, company_description, industry, email, latitude, longitude } = req.body;
-    const company_logo = req.file ? `/uploads/${req.file.filename}` : null;
+    const company_logo = req.file ? req.file.path : null;
 
     try {
         await db.execute(`UPDATE users SET email = ? WHERE id = ?`, [email, userId]);
@@ -1495,7 +1490,7 @@ app.put('/api/applicant/:id/profile', upload.single('profile_picture'), async (r
         workplace_independence, accommodations_needed, skills, disability_type 
     } = req.body;
 
-    const profile_picture = req.file ? `/uploads/${req.file.filename}` : null;
+    const profile_picture = req.file ? req.file.path : null;
 
     try {
         if (profile_picture) {
@@ -1812,14 +1807,14 @@ app.post('/api/users/:id/resubmit', upload.array('document', 2), async (req, res
         }
 
         if (user.role === 'applicant') {
-            const filePath = `/uploads/${req.files[0].filename}`;
+            const filePath = req.files[0].path;
             await db.execute(`
                 UPDATE applicant_profiles 
                 SET pwd_document_path = ? 
                 WHERE user_id = ?
             `, [filePath, userId]);
         } else {
-            const pathsArray = req.files.map(file => `/uploads/${file.filename}`);
+            const pathsArray = req.files.map(file => file.path);
             const documentPaths = JSON.stringify(pathsArray);
             await db.execute(`
                 UPDATE employer_profiles 

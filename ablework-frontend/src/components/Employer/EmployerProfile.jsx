@@ -51,7 +51,7 @@ export default function EmployerSettings({ profile, refreshData }) {
     company_logo: profile?.company_logo || ''
   });
   
-  const [logoPreview, setLogoPreview] = useState(profile?.company_logo ? `${API_BASE_URL}${profile.company_logo}` : null);
+  const [logoPreview, setLogoPreview] = useState(profile?.company_logo ? (profile.company_logo.startsWith('http') ? profile.company_logo : `${API_BASE_URL}${profile.company_logo}`) : null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);

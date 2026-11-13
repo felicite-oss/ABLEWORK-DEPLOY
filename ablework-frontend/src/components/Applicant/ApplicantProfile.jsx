@@ -1031,13 +1031,11 @@ export default function ApplicantProfile({ profile, refreshData, setProfile }) {
                 } catch (e) {}
                 
                 let cleanPath = String(doc).replace(/\\/g, '/').replace(/^\/+/, '');
-                if (!cleanPath.startsWith('uploads/')) {
-                  cleanPath = `uploads/${cleanPath}`;
-                }
+                const fileUrl = cleanPath.startsWith('http') ? cleanPath : `${API_BASE_URL}/${cleanPath.startsWith('uploads/') ? cleanPath : 'uploads/' + cleanPath}`;
 
                 return (
                   <a 
-                    href={`${API_BASE_URL}/${cleanPath}`}
+                    href={fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="View Current Resume, opens in new tab"
