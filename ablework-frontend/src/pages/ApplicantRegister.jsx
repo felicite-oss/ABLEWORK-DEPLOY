@@ -108,7 +108,7 @@ export default function ApplicantRegister() {
 
 const availableDisabilities = [
     // Sensory: Vision
-    'Blindness', 'Low Vision', 'Color Blindness',
+    'Total Blindness','Partially Blind', 'Low Vision', 'Color Blindness',
     // Sensory: Hearing & Speech
     'Deafness', 'Hard of Hearing', 'Muteness', 'Speech Impairment', 
     // Sensory: Combinations

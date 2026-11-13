@@ -387,97 +387,76 @@ export default function EmployerApplications({ profile, refreshStats }) {
               
               <div className="flex flex-col gap-4 sm:gap-6">
                 <div>
-                  <h4 className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-2 ${subtle}`}>Contact Information</h4>
-                  <p className={`text-xs sm:text-base font-semibold flex items-center gap-2 ${pageText}`}>
-                    <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <span className="break-all">{selectedApp.email}</span>
-                  </p>
-                  <p className={`text-xs sm:text-base font-semibold flex items-center gap-2 mt-1.5 ${pageText}`}>
-                    <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <span>{selectedApp.phone || 'Not provided'}</span>
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-2 ${subtle}`}>Disability Profile</h4>
-                  <p className={`text-xs sm:text-base font-semibold p-2.5 sm:p-3.5 rounded-lg sm:rounded-xl border-2 ${softPanel} ${pageText}`}>
-                    {selectedApp.disability_type || 'Not specified'}
-                  </p>
-                </div>
-
-                <div>
+                  
                   <h4 className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-3 sm:mb-4 ${subtle}`}>Application Documents</h4>
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    {selectedApp.resume_path ? (
-                      (() => {
-                        let cleanPath = String(selectedApp.resume_path).replace(/\\/g, '/').replace(/^\/+/, '');
-                        if (!cleanPath.startsWith('uploads/')) cleanPath = `uploads/${cleanPath}`;
-                        
-                        return (
-                          <a 
-                            href={`${API_BASE_URL}/${cleanPath}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl border-2 shadow-sm transition-all hover:shadow-md ${
-                              isDark 
-                                ? 'bg-white text-black border-white' 
-                                : 'bg-[#03045E] text-white border-[#03045E]'
-                            }`}
-                          >
-                            <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>View Attached Resume</span>
-                          </a>
-                        );
-                      })()
-                    ) : (
-                      <p className={`flex-1 text-xs sm:text-sm font-semibold p-2.5 sm:p-3 rounded-lg sm:rounded-xl border-2 text-center flex items-center justify-center ${
-                        isDark 
-                          ? 'text-white bg-black border-white' 
-                          : 'text-[#03045E] bg-white border-gray-200'
-                      }`}>
-                        No resume attached.
-                      </p>
-                    )}
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                      {selectedApp.resume_path ? (
+                        (() => {
+                          const rawPath = String(selectedApp.resume_path).trim();
+                          // If it starts with http/https, use it directly. Otherwise, prefix with /uploads/ for legacy local files.
+                          const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
+                            ? rawPath
+                            : `${API_BASE_URL}/uploads/${rawPath.replace(/^uploads[\\/]/, '')}`;
+                          
+                          return (
+                            <a 
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl border-2 shadow-sm transition-all hover:shadow-md ${
+                                isDark 
+                                  ? 'bg-white text-black border-white' 
+                                  : 'bg-[#03045E] text-white border-[#03045E]'
+                              }`}
+                            >
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span>View Attached Resume</span>
+                            </a>
+                          );
+                        })()
+                      ) : (
+                        <p className={`flex-1 text-xs sm:text-sm font-semibold p-2.5 sm:p-3 rounded-lg sm:rounded-xl border-2 text-center flex items-center justify-center ${
+                          isDark ? 'text-white bg-black border-white' : 'text-[#03045E] bg-white border-gray-200'
+                        }`}>
+                          No resume attached.
+                        </p>
+                      )}
 
-                    {selectedApp.certificate_path ? (
-                      (() => {
-                        let cleanCertPath = String(selectedApp.certificate_path).replace(/\\/g, '/').replace(/^\/+/, '');
-                        if (!cleanCertPath.startsWith('uploads/')) cleanCertPath = `uploads/${cleanCertPath}`;
+                      {selectedApp.certificate_path ? (
+                        (() => {
+                          const rawCertPath = String(selectedApp.certificate_path).trim();
+                          const certUrl = rawCertPath.startsWith('http://') || rawCertPath.startsWith('https://')
+                            ? rawCertPath
+                            : `${API_BASE_URL}/uploads/${rawCertPath.replace(/^uploads[\\/]/, '')}`;
 
-                        return (
-                          <a 
-                            href={`${API_BASE_URL}/${cleanCertPath}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl border-2 shadow-sm transition-all hover:shadow-md ${
-                              isDark 
-                                ? 'bg-white text-black border-white' 
-                                : 'bg-[#03045E] text-white border-[#03045E]'
-                            }`}
-                          >
-                            <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                            </svg>
-                            <span>View Certificate</span>
-                          </a>
-                        );
-                      })()
-                    ) : (
-                      <p className={`flex-1 text-xs sm:text-sm font-semibold p-2.5 sm:p-3 rounded-lg sm:rounded-xl border-2 text-center flex items-center justify-center opacity-60 ${
-                        isDark 
-                          ? 'text-white bg-black border-white' 
-                          : 'text-[#03045E] bg-white border-gray-200'
-                      }`}>
-                        No certificate attached.
-                      </p>
-                    )}
-                  </div>
+                          return (
+                            <a 
+                              href={certUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl border-2 shadow-sm transition-all hover:shadow-md ${
+                                isDark 
+                                  ? 'bg-white text-black border-white' 
+                                  : 'bg-[#03045E] text-white border-[#03045E]'
+                              }`}
+                            >
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                              </svg>
+                              <span>View Certificate</span>
+                            </a>
+                          );
+                        })()
+                      ) : (
+                        <p className={`flex-1 text-xs sm:text-sm font-semibold p-2.5 sm:p-3 rounded-lg sm:rounded-xl border-2 text-center flex items-center justify-center opacity-60 ${
+                          isDark ? 'text-white bg-black border-white' : 'text-[#03045E] bg-white border-gray-200'
+                        }`}>
+                          No certificate attached.
+                        </p>
+                      )}
+                    </div>
                 </div>
               </div>
 
