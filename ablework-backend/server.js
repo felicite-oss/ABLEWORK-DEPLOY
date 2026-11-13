@@ -1948,12 +1948,18 @@ app.post('/api/users/:id/request-otp', async (req, res) => {
         const messageBody = `<p>Hello!</p><p>Your 6-digit AbleWork verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`;
 
         // Send security OTP via Resend
-        await transporter.sendMail({
-            from: '"AbleWork Security" <no-reply@ableworksystem.online>',
-            to: email,
-            subject: subjectLine,
-            html: messageBody
-        });
+        // 4. Email the OTP to the user via Resend
+        try {
+            await transporter.sendMail({
+                from: '"AbleWork Security" <no-reply@ableworksystem.online>',
+                to: email,
+                subject: "AbleWork Login Verification Code",
+                html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
+            });
+            console.log("Resend OTP Email Dispatched Successfully to:", email);
+        } catch (mailErr) {
+            console.error("Resend SMTP Dispatch Failed:", mailErr.message);
+        }
 
         res.status(200).json({ message: "Verification code sent successfully." });
 
