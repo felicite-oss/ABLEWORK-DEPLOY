@@ -106,7 +106,7 @@ async function sendNotification(userId, title, message, type) {
             'content-type': 'application/json'
           },
           body: JSON.stringify({
-            sender: { name: "AbleWork Notifications", email: "ableworksys5i@gmail.com" },
+            sender: { name: "AbleWork Notifications", email: "no-reply@ableworksystem.online" },
             to: [{ email: users[0].email }],
             subject: title,
             htmlContent: generateEmailTemplate(title, inAppMessage)
@@ -396,7 +396,7 @@ app.post('/api/auth/login', async (req, res) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                sender: { name: "AbleWork Security", email: "no-reply@ableworksystem.online" },
                 to: [{ email: email }],
                 subject: "AbleWork Login Verification Code",
                 htmlContent: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
@@ -2009,7 +2009,7 @@ app.post('/api/users/:id/request-otp', async (req, res) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                sender: { name: "AbleWork Security", email: "no-reply@ableworksystem.online" },
                 to: [{ email: email }],
                 subject: subjectLine,
                 htmlContent: messageBody
