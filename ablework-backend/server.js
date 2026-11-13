@@ -395,7 +395,7 @@ app.post('/api/auth/login', async (req, res) => {
                     sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
                     to: [{ email: email }],
                     subject: "AbleWork Login Verification Code",
-                    textContent: `Hello,\n\nYour 6-digit login verification code is: ${otpCode}\n\nThis code will expire in 10 minutes. Do not share this code with anyone.`
+                    htmlContent: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 10 minutes. Do not share this code with anyone.</p>`
                 })
             });
 
