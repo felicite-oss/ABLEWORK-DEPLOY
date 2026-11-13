@@ -16,12 +16,12 @@ const isValidPassword = (password) => {
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
+  host: 'smtp.resend.com',
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_KEY
+    user: 'resend',
+    pass: process.env.RESEND_API_KEY
   }
 });
 
