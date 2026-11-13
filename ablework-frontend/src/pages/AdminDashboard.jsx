@@ -1461,15 +1461,19 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
 
                     <div className={`min-h-[200px] sm:min-h-[350px] lg:flex-1 ${surfaceBg} rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} overflow-hidden flex items-center justify-center relative shadow-inner p-2`}>
                       {pwdModal.user.pwd_document_path ? (
-                        pwdModal.user.pwd_document_path.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                        pwdModal.user.pwd_document_path.match(/\.(jpeg|jpg|png|gif)$/i) || pwdModal.user.pwd_document_path.startsWith('http') ? (
                           <img
-                            src={`${API_BASE_URL}/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
+                            src={pwdModal.user.pwd_document_path.startsWith('http') 
+                              ? pwdModal.user.pwd_document_path 
+                              : `${API_BASE_URL}/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
                             alt="Applicant PWD ID"
                             className="max-h-full max-w-full object-contain rounded-lg shadow-md"
                           />
                         ) : (
                           <iframe
-                            src={`${API_BASE_URL}/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
+                            src={pwdModal.user.pwd_document_path.startsWith('http') 
+                              ? pwdModal.user.pwd_document_path 
+                              : `${API_BASE_URL}/uploads/${pwdModal.user.pwd_document_path.replace(/^uploads[\\/]/, '')}`}
                             title="PWD ID Document PDF"
                             className="w-full h-full rounded-lg"
                           ></iframe>
@@ -1584,8 +1588,11 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                         if (cleanPath.startsWith('/uploads/')) cleanPath = cleanPath.replace('/uploads/', '');
                         else if (cleanPath.startsWith('uploads/')) cleanPath = cleanPath.replace('uploads/', '');
                         
-                        const fileUrl = `${API_BASE_URL}/uploads/${cleanPath}`;
-                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(cleanPath);
+                        const fileUrl = doc.startsWith('http') 
+                          ? doc 
+                          : `${API_BASE_URL}/uploads/${cleanPath}`;
+                          
+                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(cleanPath) || doc.startsWith('http');
 
                         return (
                           <div key={index} className="flex-1 w-full h-full min-h-[250px] flex flex-col rounded-lg overflow-hidden border border-[#03045E]/10 bg-white/50">
