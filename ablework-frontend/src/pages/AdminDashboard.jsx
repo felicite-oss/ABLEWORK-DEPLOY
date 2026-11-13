@@ -6,7 +6,7 @@ import headerLogoDark from '../assets/DARK MODE.png';
 import ProfileMenu from '../components/Admin/ProfileMenu';
 import SettingsModal from '../components/Admin/SettingsModal';
 import DarkModeToggle from '../components/Admin/DarkModeToggle';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../config';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -115,8 +115,8 @@ export default function AdminDashboard() {
       const statsRes = await fetch(`${API_BASE_URL}/api/admin/stats`);
       const chartRes = await fetch(`${API_BASE_URL}/api/admin/analytics/annual`);
       const empRes = await fetch(`${API_BASE_URL}/api/admin/employers/all`);
-      const appRes = await fetch(`${API_BASE_URL}/api/admin/applicants/all`);
-
+      const appRes = await fetch(`${API_BASE_URL}/api/admin/applicants/all`); 
+      
       if (statsRes.ok) setStats(await statsRes.json());
       if (chartRes.ok) setChartData(await chartRes.json());
       if (empRes.ok) setEmployers(await empRes.json());

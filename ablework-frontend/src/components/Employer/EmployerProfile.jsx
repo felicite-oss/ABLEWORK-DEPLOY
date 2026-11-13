@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../../config';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -378,6 +378,7 @@ export default function EmployerSettings({ profile, refreshData }) {
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" /></svg>
                     Office Base
                   </span>
+                  
                   <span className="w-2 h-2 rounded-full bg-[#03045E] animate-pulse"></span>
                 </div>
                 <h4 className="font-black text-[15px] text-[#03045E] leading-tight m-0 mb-1">Company Location</h4>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../../config';
 
 const safeParse = (data) => {
   if (!data) return [];

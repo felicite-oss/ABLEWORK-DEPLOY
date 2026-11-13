@@ -2,7 +2,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../../config';
 
 export default function ApplicantAccountSettings({ profile }) {
   const navigate = useNavigate();
@@ -115,7 +115,7 @@ export default function ApplicantAccountSettings({ profile }) {
     setEmailStatus({ type: '', msg: '' });
     
     try {
-      const response = await fetch(`/api/users/${profile.user_id}/request-otp`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, type: 'email' }) 

@@ -5,7 +5,7 @@ import { useColorPalette } from '../context/ColorPaletteContext';
 import lightLogo from '../assets/LIGHT MODE.png';
 import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../config';
 
 export default function ForgotPassword({ onClose }) {
   const { mode } = useContext(AccessibilityContext);
@@ -85,7 +85,7 @@ export default function ForgotPassword({ onClose }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+      const res = await fetch('${API_BASE_URL}/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail })
@@ -123,7 +123,7 @@ export default function ForgotPassword({ onClose }) {
     setMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+      const res = await fetch('${API_BASE_URL}/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim().toLowerCase(), otpCode: otpCode.trim(), newPassword })

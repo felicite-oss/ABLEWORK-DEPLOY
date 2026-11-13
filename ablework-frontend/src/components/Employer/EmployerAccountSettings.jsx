@@ -2,7 +2,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../../config';
 
 export default function EmployerAccountSettings({ profile }) {
   const navigate = useNavigate();

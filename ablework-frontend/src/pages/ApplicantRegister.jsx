@@ -10,7 +10,7 @@ import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../config';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,

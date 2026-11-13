@@ -11,7 +11,7 @@ import EmployerAccountSettings from '../components/Employer/EmployerAccountSetti
 import { EmployerPolicy, EmployerTerms, EmployerContact, EmployerFooter } from '../components/Employer/EmployerFooterPages';
 import headerLogo from '../assets/LIGHT MODE.png';
 import darkHeaderLogo from '../assets/DARK MODE.png';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../config';
 
 export default function EmployerDashboard() {
   const navigate = useNavigate();

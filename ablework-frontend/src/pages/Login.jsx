@@ -5,7 +5,7 @@ import { useColorPalette } from '../context/ColorPaletteContext';
 import lightLogo from '../assets/LIGHT MODE.png';
 import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
-import API_BASE_URL from '../api/api';
+import  API_BASE_URL  from '../../config';
 
 export default function Login() {
   const { mode } = useContext(AccessibilityContext);

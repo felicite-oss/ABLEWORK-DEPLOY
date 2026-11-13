@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
-import API_BASE_URL from '../api/api';
+import API_BASE_URL from '../../../config';
 
 export default function EmployerPostJob({ profile, refreshData, setActiveTab }) {
   const { mode } = useContext(AccessibilityContext);

@@ -5,7 +5,6 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../context/AccessibilityContext';
 import { useColorPalette } from '../context/ColorPaletteContext';
 import { AccessibilityWelcome } from '../components/AccessibilityWelcome';
-import API_BASE_URL from '../api/api';
 import lightLogo from '../assets/LIGHT MODE.png';
 import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
@@ -22,10 +21,9 @@ import gifVideo from '../assets/GIF.mp4';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import API_BASE_URL from '../../config';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import API_BASE_URL from '../api/api';
-
 let DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
