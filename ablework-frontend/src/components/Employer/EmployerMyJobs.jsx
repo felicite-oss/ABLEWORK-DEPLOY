@@ -84,7 +84,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
     : 'inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-full shadow-sm bg-white text-[#03045E] border-2 border-gray-200';
 
   const disabilityCategories = {
-    "Vision Impairments": ['Total Blindness', 'Low Vision / Partially Blind', 'Color Blindness'],
+    "Vision Impairments": ['Total Blindness', ' Partially Blind', 'Low Vision', 'Color Blindness'],
     "Hearing & Speech": ['Deafness', 'Hard of Hearing', 'Muteness', 'Speech Impairment'],
     "Combinations": ['Deafblindness'],
     "Amputation": [

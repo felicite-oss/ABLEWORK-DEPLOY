@@ -460,10 +460,18 @@ export default function ApplicantAccountSettings({ profile }) {
                     </div>
 <p tabIndex={0} role="text" aria-label="Uploaded Document" className="text-[10px] font-black uppercase tracking-widest text-[#03045E]/60">Uploaded Document</p>
                   </div>
-                  <a href={`${API_BASE_URL}/${profile?.pwd_document_path?.replace(/\\/g, '/')}`} target="_blank" rel="noopener noreferrer" aria-label="View Document on File, opens in new tab" tabIndex="0" className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2C7FFF] hover:underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
-                    View Document on File
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                  </a>
+                  {(() => {
+                    const rawPath = String(doc).trim();
+                    const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
+                      ? rawPath
+                      : `${API_BASE_URL}/uploads/${rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^uploads[\\/]/, '')}`;
+                    return (
+                      <a href={fileUrl} target="_blank" rel="noopener noreferrer" aria-label="View Document on File, opens in new tab" tabIndex="0" className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2C7FFF] hover:underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2">
+                        View Document on File
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                      </a>
+                    );
+                  })()}
 <p tabIndex={0} role="text" aria-label="Your submitted PWD ID on file." className="text-[10px] font-semibold text-[#03045E]/50 mt-2.5 leading-relaxed">Your submitted PWD ID on file.</p>
                 </div>
 
