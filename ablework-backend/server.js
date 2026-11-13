@@ -98,14 +98,24 @@ async function sendNotification(userId, title, message, type) {
     
     if (users.length > 0 && users[0].email) {
       try {
-        await transporter.sendMail({
-          from: '"AbleWork Notifications" <ableworksys5i@gmail.com>',
-          to: users[0].email,
-          subject: title,
-          html: generateEmailTemplate(title, inAppMessage)
+        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_SMTP_KEY,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            sender: { name: "AbleWork Notifications", email: "ableworksys5i@gmail.com" },
+            to: [{ email: users[0].email }],
+            subject: title,
+            htmlContent: generateEmailTemplate(title, inAppMessage)
+          })
         });
+        const brevoData = await brevoRes.json();
+        console.log("Notification Email Brevo Response Status:", brevoRes.status, brevoData);
       } catch (mailError) {
-        console.error("Nodemailer Email Dispatch Error:", mailError.message);
+        console.error("Brevo Email Dispatch Error:", mailError.message);
       }
     }
   } catch (error) {
@@ -1981,9 +1991,6 @@ app.put('/api/notifications/:id/read', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// ROUTE: REQUEST SECURITY OTP
-// ---------------------------------------------------------
 app.post('/api/users/:id/request-otp', async (req, res) => {
     const userId = req.params.id;
     const { email, type } = req.body;
@@ -1998,14 +2005,24 @@ app.post('/api/users/:id/request-otp', async (req, res) => {
         );
 
         const subjectLine = type === 'email' ? 'Verify your new Email Address' : 'Verify your Password Change';
-        const messageBody = `Hello!\n\nYour 6-digit AbleWork verification code is: ${otpCode}\n\nThis code will expire in 15 minutes. If you did not request this change, please ignore this email.`;
+        const messageBody = `<p>Hello!</p><p>Your 6-digit AbleWork verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`;
 
-        await transporter.sendMail({
-            from: '"AbleWork Security" <ableworksys5i@gmail.com>',
-            to: email, 
-            subject: subjectLine,
-            text: messageBody
+        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_SMTP_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                to: [{ email: email }],
+                subject: subjectLine,
+                htmlContent: messageBody
+            })
         });
+        const brevoData = await brevoRes.json();
+        console.log("Security OTP Brevo Response Status:", brevoRes.status, brevoData);
 
         res.status(200).json({ message: "Verification code sent successfully." });
 
@@ -2072,9 +2089,6 @@ app.put('/api/users/:id/toggle-status', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// ROUTE: FORGOT PASSWORD (Send OTP to Email)
-// ---------------------------------------------------------
 app.post('/api/auth/forgot-password', async (req, res) => {
     const { email } = req.body;
     try {
@@ -2082,20 +2096,30 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         if (users.length === 0) return res.status(404).json({ message: "No account found with that email address." });
         
         const userId = users[0].id;
-        const otpCode = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6 digit code
-        const expires = new Date(Date.now() + 15 * 60000); // Expires in 15 mins
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expires = new Date(Date.now() + 15 * 60000);
 
         await db.execute(
             "UPDATE users SET otp_code = ?, otp_expires = ? WHERE id = ?",
             [otpCode, expires, userId]
         );
 
-        await transporter.sendMail({
-            from: '"AbleWork Security" <ableworksys5i@gmail.com>',
-            to: email,
-            subject: 'AbleWork Password Reset Code',
-            text: `Hello,\n\nWe received a request to reset your AbleWork password.\n\nYour 6-digit recovery code is: ${otpCode}\n\nThis code will expire in 15 minutes. If you did not request this change, please ignore this email.`
+        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_SMTP_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "AbleWork Security", email: "ableworksys5i@gmail.com" },
+                to: [{ email: email }],
+                subject: 'AbleWork Password Reset Code',
+                htmlContent: `<p>Hello,</p><p>We received a request to reset your AbleWork password.</p><p>Your 6-digit recovery code is: <strong>${otpCode}</strong></p><p>This code will expire in 15 minutes. If you did not request this change, please ignore this email.</p>`
+            })
         });
+        const brevoData = await brevoRes.json();
+        console.log("Forgot Password Brevo Response Status:", brevoRes.status, brevoData);
 
         res.status(200).json({ message: "Recovery code sent to your email!" });
     } catch (error) {
