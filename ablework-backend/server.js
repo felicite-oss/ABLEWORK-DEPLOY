@@ -161,9 +161,6 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-app.use('/uploads', express.static(uploadDir));
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
-
 async function getUserLiveContext(userId, role) {
     let contextSummary = { role };
 
