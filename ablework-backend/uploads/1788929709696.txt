@@ -1,0 +1,320 @@
+import pygame
+from pygame.locals import *
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+def drawFront():
+    glColor3f(0.4, 0.2, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.65, 0.0)
+    glVertex2f(0.65, 0.0)
+    glVertex2f(0.65, -2.5)
+    glVertex2f(-0.65, -2.5)
+    glEnd()
+
+    glColor3f(0.5, 0.25, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.8, 0.0)
+    glVertex2f(0.8, 0.0)
+    glVertex2f(0.8, -0.6)
+    glVertex2f(-0.8, -0.6)
+    glEnd()
+
+    glColor3f(0.9, 0.7, 0.5)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.15, -0.1)
+    glVertex2f(0.15, -0.1)
+    glVertex2f(0.15, -0.5)
+    glVertex2f(-0.15, -0.5)
+    glEnd()
+
+    glColor3f(0.9, 0.7, 0.5)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.5, 1.5)
+    glVertex2f(0.5, 1.5)
+    glVertex2f(0.5, 0.0)
+    glVertex2f(-0.5, 0.0)
+    glEnd()
+
+    glColor3f(0.2, 0.1, 0.05)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.4, 0.9)
+    glVertex2f(0.4, 0.9)
+    glVertex2f(0.4, 0.7)
+    glVertex2f(-0.4, 0.7)
+    glEnd()
+
+    glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.4, 0.7)
+    glVertex2f(-0.1, 0.7)
+    glVertex2f(-0.1, 0.5)
+    glVertex2f(-0.4, 0.5)
+    glEnd()
+
+    glColor3f(0.3, 0.6, 0.3)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.25, 0.7)
+    glVertex2f(-0.1, 0.7)
+    glVertex2f(-0.1, 0.5)
+    glVertex2f(-0.25, 0.5)
+    glEnd()
+
+    glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_POLYGON)
+    glVertex2f(0.1, 0.7)
+    glVertex2f(0.4, 0.7)
+    glVertex2f(0.4, 0.5)
+    glVertex2f(0.1, 0.5)
+    glEnd()
+
+    glColor3f(0.3, 0.6, 0.3) 
+    glBegin(GL_POLYGON)
+    glVertex2f(0.1, 0.7)
+    glVertex2f(0.25, 0.7)
+    glVertex2f(0.25, 0.5)
+    glVertex2f(0.1, 0.5)
+    glEnd()
+
+    glColor3f(0.85, 0.65, 0.45)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.15, 0.5)
+    glVertex2f(0.15, 0.5)
+    glVertex2f(0.15, -0.1)
+    glVertex2f(-0.15, -0.1)
+    glEnd()
+
+    glColor3f(0.25, 0.15, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.55, -2.5)
+    glVertex2f(-0.055, -2.5)
+    glVertex2f(-0.055, -2.9)
+    glVertex2f(-0.55, -2.9)
+    glEnd()
+
+    glColor3f(0.25, 0.15, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(0.055, -2.5)
+    glVertex2f(0.55, -2.5)
+    glVertex2f(0.55, -2.9)
+    glVertex2f(0.055, -2.9)
+    glEnd()
+
+def drawRight():
+    glColor3f(0.4, 0.2, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.5, 0.0)
+    glVertex2f(0.3, 0.0)
+    glVertex2f(0.3, -2.5)
+    glVertex2f(-0.5, -2.5)
+    glEnd()
+
+    glColor3f(0.5, 0.25, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.2, 0.0)
+    glVertex2f(0.6, 0.0)
+    glVertex2f(0.6, -0.6)
+    glVertex2f(-0.2, -0.6)
+    glEnd()
+
+    glColor3f(0.9, 0.7, 0.5)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.5, 1.5)
+    glVertex2f(0.5, 1.5)
+    glVertex2f(0.5, 0.0)
+    glVertex2f(-0.5, 0.0)
+    glEnd()
+
+    glColor3f(0.2, 0.1, 0.05)
+    glBegin(GL_POLYGON)
+    glVertex2f(0.0, 0.9)
+    glVertex2f(0.51, 0.9)
+    glVertex2f(0.51, 0.7)
+    glVertex2f(0.0, 0.7)
+    glEnd()
+
+    glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_POLYGON)
+    glVertex2f(0.2, 0.7)
+    glVertex2f(0.51, 0.7)
+    glVertex2f(0.51, 0.5)
+    glVertex2f(0.2, 0.5)
+    glEnd()
+
+    glColor3f(0.3, 0.6, 0.3) 
+    glBegin(GL_POLYGON)
+    glVertex2f(0.35, 0.7)
+    glVertex2f(0.51, 0.7)
+    glVertex2f(0.51, 0.5)
+    glVertex2f(0.35, 0.5)
+    glEnd()
+    
+    glColor3f(0.85, 0.65, 0.45)
+    glBegin(GL_POLYGON)
+    glVertex2f(0.5, 0.5)
+    glVertex2f(0.7, 0.5)
+    glVertex2f(0.7, -0.1)
+    glVertex2f(0.5, -0.1)
+    glEnd()
+ 
+    glColor3f(0.25, 0.15, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.3, -2.5)
+    glVertex2f(0.3, -2.5)
+    glVertex2f(0.3, -2.9)
+    glVertex2f(-0.3, -2.9)
+    glEnd()
+
+def drawLeft():
+    glColor3f(0.4, 0.2, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.3, 0.0)
+    glVertex2f(0.5, 0.0)
+    glVertex2f(0.5, -2.5)
+    glVertex2f(-0.3, -2.5)
+    glEnd()
+
+    glColor3f(0.5, 0.25, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.6, 0.0)
+    glVertex2f(0.2, 0.0)
+    glVertex2f(0.2, -0.6)
+    glVertex2f(-0.6, -0.6)
+    glEnd()
+
+    glColor3f(0.9, 0.7, 0.5)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.5, 1.5)
+    glVertex2f(0.5, 1.5)
+    glVertex2f(0.5, 0.0)
+    glVertex2f(-0.5, 0.0)
+    glEnd()
+
+    glColor3f(0.2, 0.1, 0.05)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.51, 0.9)
+    glVertex2f(0.0, 0.9)
+    glVertex2f(0.0, 0.7)
+    glVertex2f(-0.51, 0.7)
+    glEnd()
+
+    glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.51, 0.7)
+    glVertex2f(-0.2, 0.7)
+    glVertex2f(-0.2, 0.5)
+    glVertex2f(-0.51, 0.5)
+    glEnd()
+
+    glColor3f(0.3, 0.6, 0.3) 
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.51, 0.7)
+    glVertex2f(-0.35, 0.7)
+    glVertex2f(-0.35, 0.5)
+    glVertex2f(-0.51, 0.5)
+    glEnd()
+    
+    glColor3f(0.85, 0.65, 0.45)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.7, 0.5)
+    glVertex2f(-0.5, 0.5)
+    glVertex2f(-0.5, -0.1)
+    glVertex2f(-0.7, -0.1)
+    glEnd()
+
+    glColor3f(0.25, 0.15, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.3, -2.5)
+    glVertex2f(0.3, -2.5)
+    glVertex2f(0.3, -2.9)
+    glVertex2f(-0.3, -2.9)
+    glEnd()
+
+
+def drawBack():
+    glColor3f(0.4, 0.2, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.65, 0.0)
+    glVertex2f(0.65, 0.0)
+    glVertex2f(0.65, -2.5)
+    glVertex2f(-0.65, -2.5)
+    glEnd()
+ 
+    glColor3f(0.4, 0.2, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.8, 0.0)
+    glVertex2f(0.8, 0.0)
+    glVertex2f(0.8, -0.6)
+    glVertex2f(-0.8, -0.6)
+    glEnd()
+
+    glColor3f(0.9, 0.7, 0.5)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.5, 1.5)
+    glVertex2f(0.5, 1.5)
+    glVertex2f(0.5, 0.0)
+    glVertex2f(-0.5, 0.0)
+    glEnd()
+
+    glColor3f(0.25, 0.15, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(-0.55, -2.5)
+    glVertex2f(-0.055, -2.5)
+    glVertex2f(-0.055, -2.9)
+    glVertex2f(-0.55, -2.9)
+    glEnd()
+
+    glColor3f(0.25, 0.15, 0.1)
+    glBegin(GL_POLYGON)
+    glVertex2f(0.055, -2.5)
+    glVertex2f(0.55, -2.5)
+    glVertex2f(0.55, -2.9)
+    glVertex2f(0.055, -2.9)
+    glEnd()   
+
+
+
+
+def main():
+    pygame.init()
+    display = (800,600)
+    pygame.display.set_mode(display, DOUBLEBUF|OPENGL|RESIZABLE)
+    glMatrixMode(GL_PROJECTION)
+    gluPerspective(80, (display[0]/display[1]), 1, 10)
+    glMatrixMode(GL_MODELVIEW)
+    glTranslatef(0, 0, -6.0)
+
+    side = 'front'
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    side = 'front'
+                if event.key == pygame.K_RIGHT:
+                    side = 'right'
+                if event.key == pygame.K_LEFT:
+                    side = 'left'
+                if event.key == pygame.K_UP:
+                    side = 'back'
+
+
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+
+        if side == 'front':
+            drawFront()
+        elif side == 'right':
+            drawRight()
+        elif side == 'left':
+            drawLeft()
+        elif side == 'back':
+            drawBack()
+       
+        pygame.display.flip()
+
+main()
