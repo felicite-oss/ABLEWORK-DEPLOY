@@ -44,7 +44,7 @@ const generateEmailTemplate = (title, message) => {
           
           <!-- ACTION BUTTON -->
           <div style="text-align: center;">
-            <a href="https://ablework-gama.vercel.app" style="background-color: #2C7FFF; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 14px; font-weight: bold; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">Log In to Dashboard</a>
+            <a href="https://ablework-gamma.vercel.app/" style="background-color: #2C7FFF; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 14px; font-weight: bold; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">Log In to Dashboard</a>
             </div>
         </td>
       </tr>
@@ -133,8 +133,8 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'ablework_uploads',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
-        resource_type: 'auto' 
+        resource_type: 'auto', // Allows Cloudinary to automatically detect if it's an image, raw file, or pdf
+        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf']
     }
 });
 
