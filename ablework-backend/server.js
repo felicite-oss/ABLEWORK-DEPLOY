@@ -2200,6 +2200,25 @@ app.put('/api/applications/:id/withdraw', async (req, res) => {
         res.status(500).json({ message: "Failed to withdraw application." });
     }
 });
+// ---------------------------------------------------------
+// ROUTE: LIGHTWEIGHT STATUS CHECK (FOR REAL-TIME POLLING)
+// ---------------------------------------------------------
+app.get('/api/users/:id/status', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const [rows] = await db.execute(
+            'SELECT verification_status, account_status, rejection_reason, otp_code FROM users WHERE id = ?', 
+            [userId]
+        );
+        
+        if (rows.length === 0) return res.status(404).json({ error: "User not found." });
+        
+        res.status(200).json(rows[0]);
+    } catch (error) {
+        console.error("Status Check Error:", error.message);
+        res.status(500).json({ error: "Server error checking status." });
+    }
+});
 
 // =========================================================
 // Global error handler — MUST be registered after all routes,
