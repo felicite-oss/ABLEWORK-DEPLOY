@@ -10,7 +10,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import API_BASE_URL from '../../config';
+import API_BASE_URL, { MAX_UPLOAD_MB, MAX_UPLOAD_BYTES, MAX_EMPLOYER_DOCS } from '../../config';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -209,6 +209,24 @@ const handleAddressType = (e) => {
     if (password !== confirmPassword) {
       setStatusMessage({ type: 'error', text: "Passwords do not match. Please check and try again." });
       return;
+    }
+
+        if (!verificationDocs || verificationDocs.length === 0) {
+      setStatusMessage({ type: 'error', text: "Please upload at least one company registration document." });
+      return;
+    }
+    if (verificationDocs.length > MAX_EMPLOYER_DOCS) {
+      setStatusMessage({ type: 'error', text: `You can only upload a maximum of ${MAX_EMPLOYER_DOCS} documents.` });
+      return;
+    }
+    for (const file of verificationDocs) {
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setStatusMessage({
+          type: 'error',
+          text: `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum size is ${MAX_UPLOAD_MB} MB per file.`
+        });
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -832,19 +850,36 @@ const handleAddressType = (e) => {
                   accept=".pdf,.jpg,.jpeg,.png"
                   multiple
                   tabIndex="0"
-                  title="Please upload 1 to 2 clear copies of your DTI, SEC, Business Permit, or Mayor's Permit. Max size 5 Megabytes."
-                  aria-label="Company registration document upload. Please upload 1 to 2 clear copies of your DTI, SEC, Business Permit, or Mayor's Permit. Max size 5 Megabytes."
+                  title={`Please upload 1 to ${MAX_EMPLOYER_DOCS} clear copies of your DTI, SEC, Business Permit, or Mayor's Permit. Maximum size ${MAX_UPLOAD_MB} Megabytes per file.`}
+                  aria-label={`Company registration document upload. Please upload 1 to ${MAX_EMPLOYER_DOCS} clear copies of your DTI, SEC, Business Permit, or Mayor's Permit. Maximum size ${MAX_UPLOAD_MB} Megabytes per file.`}
                   onChange={(e) => {
                     const files = Array.from(e.target.files);
-                    if (files.length > 2) {
-                      alert("You can only upload a maximum of 2 documents.");
-                      e.target.value = null; // Resets the input
+
+                    if (files.length > MAX_EMPLOYER_DOCS) {
+                      setStatusMessage({
+                        type: 'error',
+                        text: `You can only upload a maximum of ${MAX_EMPLOYER_DOCS} documents.`
+                      });
+                      e.target.value = null;
                       setVerificationDocs([]);
-                    } else {
-                      setVerificationDocs(files);
+                      return;
                     }
+
+                    const oversized = files.find(f => f.size > MAX_UPLOAD_BYTES);
+                    if (oversized) {
+                      setStatusMessage({
+                        type: 'error',
+                        text: `"${oversized.name}" is ${(oversized.size / (1024 * 1024)).toFixed(1)} MB. Maximum size is ${MAX_UPLOAD_MB} MB per file.`
+                      });
+                      e.target.value = null;
+                      setVerificationDocs([]);
+                      return;
+                    }
+
+                    setStatusMessage({ type: '', text: '' });
+                    setVerificationDocs(files);
                   }}
-                                    className={`w-full text-[10px] sm:text-sm text-[var(--color-text)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:font-semibold cursor-pointer [&::file-selector-button]:!text-[var(--color-text)] [&::-webkit-file-upload-button]:!text-[var(--color-text)] [&::file-selector-button]:!border-[var(--color-border)] [&::-webkit-file-upload-button]:!border-[var(--color-border)] ${isAccessibilityDarkMode ? '[&::file-selector-button]:!text-black' : isDefaultDarkMode ? '[&::file-selector-button]:!text-black' : ''}`}
+            className={`w-full text-[10px] sm:text-sm text-[var(--color-text)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:font-semibold cursor-pointer [&::file-selector-button]:!text-[var(--color-text)] [&::-webkit-file-upload-button]:!text-[var(--color-text)] [&::file-selector-button]:!border-[var(--color-border)] [&::-webkit-file-upload-button]:!border-[var(--color-border)] ${isAccessibilityDarkMode ? '[&::file-selector-button]:!text-black' : isDefaultDarkMode ? '[&::file-selector-button]:!text-black' : ''}`}
                   required
                 />
                 {verificationDocs && verificationDocs.length > 0 && (
@@ -861,7 +896,7 @@ const handleAddressType = (e) => {
                   </div>
                 )}
                 <p className="text-[10px] sm:text-xs text-[#03045E]/70 mt-2 font-semibold rounded">
-                  Supported formats: .pdf, .jpg, .jpeg, .png (Max size: 5MB)
+                  Supported formats: .pdf, .jpg, .jpeg, .png (Max size: {MAX_UPLOAD_MB}MB per file, up to {MAX_EMPLOYER_DOCS} files)
                 </p>
               </div>
 

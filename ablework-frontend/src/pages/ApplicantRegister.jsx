@@ -10,7 +10,7 @@ import darkLogo from '../assets/DARK MODE.png';
 import backgroundImg from '../assets/BG.png';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import API_BASE_URL from '../../config';
+import API_BASE_URL, { MAX_UPLOAD_MB, MAX_UPLOAD_BYTES } from '../../config';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -370,9 +370,15 @@ const handleAddressType = (e) => {
       return;
     }
 
-    if (pwdFile.size > 5 * 1024 * 1024) {
-      setStatusMessage({ type: 'error', text: "File size exceeds the 5MB limit. Please upload a smaller file." });
-      return;
+    // Validate BOTH files against the shared limit (backend allows 10 MB per file).
+    for (const [label, file] of [["PWD ID", pwdFile], ["Resume", resumeFile]]) {
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setStatusMessage({
+          type: 'error',
+          text: `${label} is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum size is ${MAX_UPLOAD_MB} MB per file.`
+        });
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -1344,7 +1350,20 @@ const handleAddressType = (e) => {
                     id="pwdId"
                     type="file"
                     accept=".jpg,.jpeg,.png"
-                    onChange={(e) => setPwdFile(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files[0] || null;
+                      if (file && file.size > MAX_UPLOAD_BYTES) {
+                        setStatusMessage({
+                          type: 'error',
+                          text: `PWD ID is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is ${MAX_UPLOAD_MB} MB.`
+                        });
+                        e.target.value = null;
+                        setPwdFile(null);
+                        return;
+                      }
+                      setStatusMessage({ type: '', text: '' });
+                      setPwdFile(file);
+                    }}
                     className={`w-full text-xs sm:text-sm ${isAccessibilityMode || isContrast || isDarkMode ? 'text-black' : 'text-[#03045E]'} file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold cursor-pointer`}
                     style={{ color: primaryColor }}
                     required
@@ -1352,7 +1371,7 @@ const handleAddressType = (e) => {
                     aria-label="PWD ID document upload."
                   />
                   <p tabIndex="0" className="text-[10px] text-[#03045E]/70 mt-2 font-semibold focus:outline-none">
-                    Supported: .jpg, .jpeg, .png (Max: 5MB)
+                    Supported: .jpg, .jpeg, .png (Max: {MAX_UPLOAD_MB}MB)
                   </p>
                 </div>
 
@@ -1362,7 +1381,20 @@ const handleAddressType = (e) => {
                     id="resumeFile"
                     type="file"
                     accept=".pdf,.doc,.docx"
-                    onChange={(e) => setResumeFile(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files[0] || null;
+                      if (file && file.size > MAX_UPLOAD_BYTES) {
+                        setStatusMessage({
+                          type: 'error',
+                          text: `Resume is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is ${MAX_UPLOAD_MB} MB.`
+                        });
+                        e.target.value = null;
+                        setResumeFile(null);
+                        return;
+                      }
+                      setStatusMessage({ type: '', text: '' });
+                      setResumeFile(file);
+                    }}
                     className={`w-full text-xs sm:text-sm ${isAccessibilityMode || isContrast || isDarkMode ? 'text-black' : 'text-[#03045E]'} file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold cursor-pointer`}
                     style={{ color: primaryColor }}
                     required
@@ -1370,7 +1402,7 @@ const handleAddressType = (e) => {
                     aria-label="Resume document upload."
                   />
                   <p tabIndex="0" className="text-[10px] text-[#03045E]/70 mt-2 font-semibold focus:outline-none">
-                    Supported: .pdf, .docx
+                    Supported: .pdf, .docx (Max: {MAX_UPLOAD_MB}MB)
                   </p>
                 </div>
               </div>
