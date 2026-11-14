@@ -115,7 +115,7 @@ const handleLogin = async (e) => {
 
         const data = await response.json();
 
-        if (response.ok) {
+      if (response.ok) {
           localStorage.setItem('user', JSON.stringify(data.user));
 
           if (data.user.role === 'admin') setLoginRole('Admin');
@@ -151,17 +151,15 @@ const handleLogin = async (e) => {
           setOtpMode(true);
           setErrorMessage('');
           setIsLoading(false);
-         } else if (data.user) {
-          // Success! Bypass OTP and login directly.
+        } else if (data.user) {
+          // Success for Admin! Bypass OTP and login directly.
           localStorage.setItem('user', JSON.stringify(data.user));
           
-          // Set the role for the loading screen text
           if (data.user.role === 'admin') setLoginRole('Admin');
           else if (data.user.role === 'employer') setLoginRole('Employer');
           else setLoginRole('Applicant');
           
           setTimeout(() => {
-            // Route based on the user's actual role
             if (data.user.role === 'admin') navigate('/admin/dashboard');
             else if (data.user.role === 'employer') navigate('/employer-dashboard');
             else navigate('/applicant-dashboard');

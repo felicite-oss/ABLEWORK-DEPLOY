@@ -131,11 +131,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     const userStr = localStorage.getItem('user');
     if (!userStr) { navigate('/login'); return; }
+    
     const user = JSON.parse(userStr);
+    
     if (user.role !== 'admin') {
-      alert("Unauthorized Access. Admin privileges required.");
-      navigate('/'); return;
+      console.error("Unauthorized Access. Admin privileges required.");
+      navigate('/login'); // Send them straight back to login instead of freezing
+      return;
     }
+    
     setAdminUser(user);
     fetchAdminData();
   }, [navigate]);
