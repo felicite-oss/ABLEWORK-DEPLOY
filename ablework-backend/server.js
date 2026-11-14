@@ -1503,10 +1503,30 @@ app.put('/api/applications/:id/status', async (req, res) => {
         );
 
         if (status === 'Hired') {
-            const [appRows] = await db.execute('SELECT job_id FROM applications WHERE id = ?', [applicationId]);
+            const [appRows] = await db.execute('SELECT job_id, applicant_id FROM applications WHERE id = ?', [applicationId]);
             if (appRows.length > 0) {
                 const jobId = appRows[0].job_id;
+                const applicantId = appRows[0].applicant_id;
 
+                // --- NEW: Block double-hiring for the same employer ---
+                const [existingHire] = await db.execute(`
+                    SELECT a.id 
+                    FROM applications a
+                    JOIN job_postings j ON a.job_id = j.id
+                    JOIN job_postings current_job ON current_job.id = ?
+                    WHERE a.applicant_id = ? 
+                      AND j.employer_id = current_job.employer_id
+                      AND a.status = 'Hired'
+                      AND a.id != ?
+                `, [jobId, applicantId, applicationId]);
+
+                if (existingHire.length > 0) {
+                    return res.status(400).json({ 
+                        message: "This applicant is already hired for another role at your company. You cannot hire them for a second role." 
+                    });
+                }
+
+                // If they pass the check, continue with normal hiring logic:
                 await db.execute("UPDATE job_postings SET status = 'Archived' WHERE id = ?", [jobId]);
 
                 await db.execute(

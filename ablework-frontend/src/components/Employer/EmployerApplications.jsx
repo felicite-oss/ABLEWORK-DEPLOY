@@ -134,9 +134,29 @@ export default function EmployerApplications({ profile, refreshStats }) {
         } else if (selectedApp && selectedApp.application_id === applicationId) {
           setSelectedApp(prev => ({ ...prev, application_status: newStatus }));
         }
+      } else {
+        // --- NEW: Handle Backend Rejection (e.g., Double Hiring) ---
+        const errorData = await res.json();
+        
+        setStatusAlert({
+          title: 'Cannot Complete Action',
+          subtitle: errorData.message || 'Failed to update status.',
+          tone: 'rejected'
+        });
+        setShowStatusAlert(true);
+        
+        setNextSteps({ isOpen: false, status: '' });
+        setIsSubmitting(false);
       }
     } catch (err) {
-      alert("Failed to update status.");
+      console.error("Failed to update status:", err);
+      setStatusAlert({
+        title: 'Network Error',
+        subtitle: 'Could not connect to the server. Please try again.',
+        tone: 'rejected'
+      });
+      setShowStatusAlert(true);
+      setIsSubmitting(false);
     }
   };
 
