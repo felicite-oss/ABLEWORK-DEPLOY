@@ -151,13 +151,20 @@ const handleLogin = async (e) => {
           setOtpMode(true);
           setErrorMessage('');
           setIsLoading(false);
-        } else if (data.user) {
-          // Success for Admin! Bypass OTP and login directly.
+         } else if (data.user) {
+          // Success! Bypass OTP and login directly.
           localStorage.setItem('user', JSON.stringify(data.user));
-          setLoginRole('Admin');
+          
+          // Set the role for the loading screen text
+          if (data.user.role === 'admin') setLoginRole('Admin');
+          else if (data.user.role === 'employer') setLoginRole('Employer');
+          else setLoginRole('Applicant');
           
           setTimeout(() => {
-            navigate('/admin/dashboard');
+            // Route based on the user's actual role
+            if (data.user.role === 'admin') navigate('/admin/dashboard');
+            else if (data.user.role === 'employer') navigate('/employer-dashboard');
+            else navigate('/applicant-dashboard');
           }, 2000);
         }
       } else {
