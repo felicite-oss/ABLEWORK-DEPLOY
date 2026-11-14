@@ -283,11 +283,10 @@ export default function ApplicantDashboard() {
         const matchesRes = await fetch(`${API_BASE_URL}/api/applicant/${storedUser.id}/matches`);
         if (matchesRes.ok) {
           const latestMatches = await matchesRes.json();
+          
           setMatches(prevMatches => {
-            const hasNewJob = latestMatches.some(
-              newJob => !prevMatches.find(oldJob => oldJob.id === newJob.id)
-            );
-            if (hasNewJob || latestMatches.length !== prevMatches.length) {
+            // Compare as JSON strings to guarantee we catch the new job
+            if (JSON.stringify(prevMatches) !== JSON.stringify(latestMatches)) {
               return latestMatches; 
             }
             return prevMatches;
