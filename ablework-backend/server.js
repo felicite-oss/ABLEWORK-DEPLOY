@@ -350,6 +350,44 @@ app.post('/api/auth/login', async (req, res) => {
             });
         }
 
+        const normalizeIp = (ip) => {
+            if (!ip) return '';
+            const s = String(ip).trim();
+            // "::ffff:203.0.113.10" → "203.0.113.10"
+            if (s.startsWith('::ffff:')) return s.slice(7);
+            return s;
+        };
+
+        const forwarded = req.headers['x-forwarded-for'];
+        const rawRequestIp = forwarded
+            ? forwarded.split(',')[0].trim()
+            : (req.socket?.remoteAddress || req.ip || '');
+        const requestIp = normalizeIp(rawRequestIp);
+
+        const trustedIps = (user.last_login_ip || '')
+            .split(',')
+            .map(entry => normalizeIp(entry))
+            .filter(Boolean);
+
+        const isTrustedIp = Boolean(requestIp) && trustedIps.includes(requestIp);
+
+        console.log(`[LOGIN] Email: ${email}, IP: ${requestIp}, Trusted: ${isTrustedIp}`);
+
+        if (isTrustedIp) {
+            return res.status(200).json({
+                message: "Login successful (trusted device).",
+                requiresOtp: false,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    ui_preference: user.ui_preference,
+                    verification_status: user.verification_status,
+                    role: user.role
+                }
+            });
+        }
+
+        // Untrusted or first-time IP — issue OTP challenge.
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         const expires = new Date(Date.now() + 10 * 60000);
 
@@ -362,7 +400,7 @@ app.post('/api/auth/login', async (req, res) => {
             from: 'AbleWork Security <no-reply@ableworksystem.online>',
             to: email,
             subject: "AbleWork Login Verification Code",
-            html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p>`
+            html: `<p>Hello,</p><p>Your 6-digit login verification code is: <strong>${otpCode}</strong></p><p>We detected a login from a new location. If this wasn't you, please ignore this email and consider changing your password.</p>`
         });
 
         if (error) {
@@ -397,9 +435,38 @@ app.post('/api/auth/verify-login-otp', async (req, res) => {
             return res.status(401).json({ error: "Verification code has expired. Please log in again." });
         }
 
+        // ---------------------------------------------------------
+        // ADAPTIVE AUTH: on a successful OTP challenge, add this IP
+        // to the user's trusted list (max 3, most-recent-first).
+        // ---------------------------------------------------------
+        const normalizeIp = (ip) => {
+            if (!ip) return '';
+            const s = String(ip).trim();
+            if (s.startsWith('::ffff:')) return s.slice(7);
+            return s;
+        };
+
+        const forwarded = req.headers['x-forwarded-for'];
+        const rawRequestIp = forwarded
+            ? forwarded.split(',')[0].trim()
+            : (req.socket?.remoteAddress || req.ip || '');
+        const requestIp = normalizeIp(rawRequestIp);
+
+        const existingIps = (user.last_login_ip || '')
+            .split(',')
+            .map(entry => normalizeIp(entry))
+            .filter(Boolean);
+
+        // Dedupe, prepend this IP, keep newest 3.
+        const nextTrustedIps = requestIp
+            ? [requestIp, ...existingIps.filter(ip => ip !== requestIp)].slice(0, 3)
+            : existingIps.slice(0, 3);
+
+        const ipListForDb = nextTrustedIps.length > 0 ? nextTrustedIps.join(',') : null;
+
         await db.execute(
-            "UPDATE users SET otp_code = NULL, otp_expires = NULL WHERE id = ?",
-            [user.id]
+            "UPDATE users SET otp_code = NULL, otp_expires = NULL, last_login_ip = ? WHERE id = ?",
+            [ipListForDb, user.id]
         );
 
         res.status(200).json({
