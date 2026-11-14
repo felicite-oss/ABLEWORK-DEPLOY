@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import API_BASE_URL from '../../../config';
@@ -151,6 +151,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
         case 'Hired': return 'bg-white text-emerald-400 border-emerald-500';
         case 'Withdrawn': return 'bg-black text-white border-white';
         case 'Rejected': return 'bg-white text-red-600 border-red-500';
+        case 'Multiple': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
         default: return 'bg-white text-black border-white';
       }
     }
@@ -175,15 +176,34 @@ export default function EmployerApplications({ profile, refreshStats }) {
       default: return 'bg-white text-[#03045E] border-gray-200';
     }
   };
-  const filteredApplications = applications.filter(app => {
-    if (activeTab === 'All') return true;
-    return app.application_status === activeTab;
-  });
+
+  // --- GROUP APPLICATIONS BY APPLICANT ---
+  const groupedApplicants = useMemo(() => {
+    const groups = {};
+    
+    const filtered = applications.filter(app => {
+      if (activeTab === 'All') return true;
+      return app.application_status === activeTab;
+    });
+
+    filtered.forEach(app => {
+      if (!groups[app.applicant_id]) {
+        groups[app.applicant_id] = {
+          ...app,
+          applicationsList: [app]
+        };
+      } else {
+        groups[app.applicant_id].applicationsList.push(app);
+      }
+    });
+
+    return Object.values(groups);
+  }, [applications, activeTab]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentApps = filteredApplications.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+  const currentApplicants = groupedApplicants.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(groupedApplicants.length / itemsPerPage);
 
   const tabs = ['All', 'Received', 'Under Review', 'Shortlisted', 'Hired', 'Rejected', 'Withdrawn'];
   const pageText = isDark ? 'text-white' : 'text-[#03045E]';
@@ -283,7 +303,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
         })}
       </div>
       
-      {filteredApplications.length > 0 ? (
+        {groupedApplicants.length > 0 ? (
                <div className="flex flex-col gap-6 w-full">
           <div className={`w-full overflow-hidden rounded-2xl border-2 ${panelBg}`}>
             <div className="w-full overflow-x-auto">
@@ -297,43 +317,35 @@ export default function EmployerApplications({ profile, refreshStats }) {
                 </tr>
               </thead>
               <tbody>
-                {currentApps.map(app => (
-                  <tr key={app.application_id} className={`border-b-2 last:border-b-0 transition-colors ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
+                {currentApplicants.map(applicant => {
+                  const appCount = applicant.applicationsList.length;
+                  
+                  return (
+                  <tr key={applicant.applicant_id} className={`border-b-2 last:border-b-0 transition-colors ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
                     <td className="p-4 align-top">
-                      <h3 className={`text-sm sm:text-base font-bold leading-tight ${pageText}`}>{app.firstname} {app.lastname}</h3>
-                      <p className={`text-[10px] sm:text-xs mt-1 ${subtle}`}>Applied on {new Date(app.applied_at).toLocaleDateString()}</p>
+                      <h3 className={`text-sm sm:text-base font-bold leading-tight ${pageText}`}>{applicant.firstname} {applicant.lastname}</h3>
+                      <p className={`text-[10px] sm:text-xs mt-1 ${subtle}`}>Total Applications: {appCount}</p>
                     </td>
                     <td className="p-4 align-top">
-                      <p className={`text-xs sm:text-sm font-semibold ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`}>{app.job_title}</p>
+                      {appCount > 1 ? (
+                        <p className={`text-xs sm:text-sm font-semibold ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`}>
+                          {appCount} Roles Applied
+                        </p>
+                      ) : (
+                        <p className={`text-xs sm:text-sm font-semibold ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`}>{applicant.job_title}</p>
+                      )}
                     </td>
-                   <td className="p-4 align-top text-center">
-  <span className={`inline-flex items-center justify-center w-28 sm:w-32 px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider border-1 ${getStatusColor(app.application_status)}`}>
-    {app.application_status}
-  </span>
-</td>
+                    <td className="p-4 align-top text-center">
+                      <span className={`inline-flex items-center justify-center w-28 sm:w-32 px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider border-1 ${getStatusColor(appCount > 1 ? 'Multiple' : applicant.application_status)}`}>
+                        {appCount > 1 ? 'Multiple' : applicant.application_status}
+                      </span>
+                    </td>
                     <td className="p-4 align-top text-center">
                       <button 
                         onClick={async () => {
                           setNextSteps({ isOpen: false, status: '' });
                           setMessageText('');
-
-                          if (app.application_status === 'Received') {
-                              // 1. Instantly update UI so the modal shows 'Under Review' immediately
-                              setSelectedApp({ ...app, application_status: 'Under Review' });
-                              
-                              // 2. Call your dedicated backend 'view' route to safely send notifications!
-                              try {
-                                  await fetch(`${API_BASE_URL}/api/applications/${app.application_id}/view`, { 
-                                      method: 'PUT' 
-                                  });
-                                  fetchApplications();
-                                  if (refreshStats) refreshStats();
-                              } catch (err) {
-                                  console.error("Failed to mark as viewed:", err);
-                              }
-                          } else {
-                              setSelectedApp(app);
-                          }
+                          setSelectedApp(applicant); 
                         }} 
                         className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-black rounded-lg border-2 transition cursor-pointer ${
                           isDark
@@ -341,12 +353,12 @@ export default function EmployerApplications({ profile, refreshStats }) {
                             : 'bg-white text-[#03045E] border-gray-200 hover:bg-gray-100'
                         }`}
                       >
-                        View Details
+                        View Applications
                       </button>
                     </td>
                   </tr>
-                ))}
-                      </tbody>
+                )})}
+              </tbody>
             </table>
             </div>
           </div>
@@ -408,12 +420,43 @@ export default function EmployerApplications({ profile, refreshStats }) {
             <div className={`flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 ${dividerColor}`}>
               <div>
                 <h2 className={`text-xl sm:text-3xl font-extrabold ${pageText}`}>{selectedApp.firstname} {selectedApp.lastname}</h2>
-                <p className={`text-xs sm:text-base font-semibold mt-1 ${muted}`}>Applying for: <span className={isDark ? 'text-white' : 'text-[#2C7FFF]'}>{selectedApp.job_title}</span></p>
+                <p className={`text-xs sm:text-base font-semibold mt-1 ${muted}`}>
+                  {selectedApp.applicationsList.length > 1 
+                    ? `Applied for ${selectedApp.applicationsList.length} different roles.` 
+                    : `Applying for: ${selectedApp.job_title}`}
+                </p>
               </div>
-                         <span className={`inline-flex items-center justify-center min-w-[120px] sm:min-w-[150px] px-3 sm:px-4 py-1 sm:py-2 rounded-full text-[10px] sm:text-sm font-bold border-2 ${getStatusColor(selectedApp.application_status)}`}>
-                {selectedApp.application_status}
-              </span>
             </div>
+
+            {/* DROPDOWN TO SELECT WHICH JOB TO REVIEW */}
+            {selectedApp.applicationsList.length > 1 && (
+               <div className="mb-6 flex flex-col gap-2">
+                  <label className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider ${subtle}`}>Select Application to Review</label>
+                  <select 
+                    className={`w-full p-3 border-2 rounded-xl font-bold text-sm outline-none transition ${isDark ? 'bg-black border-white/30 text-white' : 'bg-[#f4f4f4] border-[#03045E]/20 text-[#03045E]'}`}
+                    onChange={(e) => {
+                        const chosenApp = selectedApp.applicationsList.find(a => String(a.application_id) === e.target.value);
+                        if (chosenApp) {
+                           setSelectedApp(prev => ({ 
+                              ...prev, 
+                              job_title: chosenApp.job_title,
+                              application_id: chosenApp.application_id,
+                              application_status: chosenApp.application_status,
+                              resume_path: chosenApp.resume_path,
+                              cover_letter: chosenApp.cover_letter
+                           }));
+                        }
+                    }}
+                    value={selectedApp.application_id}
+                  >
+                     {selectedApp.applicationsList.map(app => (
+                        <option key={app.application_id} value={app.application_id}>
+                           {app.job_title} — (Status: {app.application_status})
+                        </option>
+                     ))}
+                  </select>
+               </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-6">
               
