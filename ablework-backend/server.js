@@ -921,7 +921,8 @@ app.get('/api/applicant/:id/matches', async (req, res) => {
             SELECT jp.id, jp.employer_id, jp.job_title, jp.company_name, jp.job_description,
                    jp.required_skills, jp.provided_accommodations, jp.accepted_disabilities,
                    jp.salary_range, jp.benefits, jp.latitude, jp.longitude, jp.max_applications,
-                   u.email AS contact_email, u.phone AS contact_number, e.workplace_address, e.industry
+                   u.email AS contact_email, u.phone AS contact_number, e.workplace_address, e.industry, 
+                   e.company_logo, e.company_description
             FROM job_postings jp
             LEFT JOIN users u ON jp.employer_id = u.id
             LEFT JOIN employer_profiles e ON jp.employer_id = e.user_id

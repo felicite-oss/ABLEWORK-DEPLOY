@@ -48,6 +48,38 @@ const getMatchColor = (percentage) => {
   return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
 };
 
+const CompanyLogo = ({ logoUrl, companyName, size = 'md' }) => {
+  const [errored, setErrored] = useState(false);
+
+  const dims =
+    size === 'lg' ? 'w-14 h-14 sm:w-16 sm:h-16 text-lg sm:text-xl' :
+    size === 'sm' ? 'w-8 h-8 text-xs' :
+                   'w-10 h-10 sm:w-12 sm:h-12 text-sm sm:text-base';
+
+  const initial = (companyName || '?').trim().charAt(0).toUpperCase() || '?';
+
+  if (!logoUrl || errored) {
+    return (
+      <div
+        aria-hidden="true"
+        className={`${dims} shrink-0 rounded-xl bg-[#03045E] text-white font-black flex items-center justify-center shadow-sm border-2 border-[#03045E]/20`}
+      >
+        {initial}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={logoUrl}
+      alt={`${companyName} logo`}
+      onError={() => setErrored(true)}
+      className={`${dims} shrink-0 rounded-xl object-cover bg-white border-2 border-[#03045E]/20 shadow-sm`}
+      loading="lazy"
+    />
+  );
+};
+
 // 👇 PASTE THE NEW COMPONENT HERE 👇
 const JobCardDescription = ({ description, isExpanded, onToggle }) => {
   const textRef = useRef(null);
@@ -710,8 +742,17 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                         </span>
                       )}
                     </div>
-                    <h2 className="text-base sm:text-2xl font-black text-[#03045E] leading-tight break-words w-full">{job.job_title}</h2>
-                    <p className="text-xs sm:text-base font-black text-[#2C7FFF] mt-0.5 sm:mt-1 mb-2 sm:mb-3 break-words">{job.company_name}</p>
+                    <div className="flex items-start gap-2.5 sm:gap-3 mb-2 sm:mb-3">
+                      <CompanyLogo
+                        logoUrl={job.company_logo}
+                        companyName={job.company_name}
+                        size="sm"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <h2 className="text-base sm:text-2xl font-black text-[#03045E] leading-tight break-words">{job.job_title}</h2>
+                        <p className="text-xs sm:text-sm font-black text-[#2C7FFF] mt-0.5 break-words">{job.company_name}</p>
+                      </div>
+                    </div>
                                      <JobCardDescription 
                       description={job.job_description} 
                       isExpanded={expandedJobs.includes(job.id)} 
@@ -847,10 +888,17 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                   <div 
                     tabIndex="0" 
                     aria-label={`Job title: ${selectedJob.job_title} at ${selectedJob.company_name}`}
-                    className="flex flex-col items-start gap-2 w-fit group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1"
+                    className="flex items-start gap-3 sm:gap-4 w-fit group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1"
                   >
-                    <h2 id="job-modal-title" className="text-lg sm:text-3xl font-black text-[#03045E] break-words transition-all group-hover:text-[#03045e]">{selectedJob.job_title}</h2>
-                    <p className="text-sm sm:text-xl font-black text-[#2C7FFF] mt-0.5 sm:mt-1 break-words transition-all group-hover:text-[#2C7FFF]">{selectedJob.company_name}</p>
+                    <CompanyLogo
+                      logoUrl={selectedJob.company_logo}
+                      companyName={selectedJob.company_name}
+                      size="lg"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <h2 id="job-modal-title" className="text-lg sm:text-3xl font-black text-[#03045E] break-words transition-all group-hover:text-[#03045e]">{selectedJob.job_title}</h2>
+                      <p className="text-sm sm:text-xl font-black text-[#2C7FFF] mt-0.5 sm:mt-1 break-words transition-all group-hover:text-[#2C7FFF]">{selectedJob.company_name}</p>
+                    </div>
                   </div>
                 </div>
 
@@ -928,6 +976,25 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                       <h3 tabIndex="0" aria-label="Job Description" className="text-[10px] sm:text-xs font-black text-[#03045E]/70 uppercase tracking-widest mb-2 sm:mb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded w-fit">Job Description</h3>
                       <p tabIndex="0" aria-label={`Job Description: ${selectedJob.job_description}`} className="text-xs sm:text-base text-[#03045E] font-bold whitespace-pre-wrap leading-relaxed break-words focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded p-1 -m-1">{selectedJob.job_description}</p>
                     </div>
+
+                  {selectedJob.company_description && selectedJob.company_description.trim() && (
+                      <div role="region" aria-label="About the Company">
+                        <h3
+                          tabIndex="0"
+                          aria-label="About the Company"
+                          className="text-[10px] sm:text-xs font-black text-[#03045E]/70 uppercase tracking-widest mb-2 sm:mb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded w-fit"
+                        >
+                          About the Company
+                        </h3>
+                        <p
+                          tabIndex="0"
+                          aria-label={`About the Company: ${selectedJob.company_description}`}
+                          className="text-xs sm:text-base text-[#03045E] font-bold whitespace-pre-wrap leading-relaxed break-words focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded p-1 -m-1"
+                        >
+                          {selectedJob.company_description}
+                        </p>
+                      </div>
+                    )}
                     
                     {/* --- 1. SKILL COMPARISON (UNIFIED CHECKMARK WITH FULL TALKBACK SUPPORT) --- */}
                     <div role="region" aria-label="Required Skills and AI Comparison">
