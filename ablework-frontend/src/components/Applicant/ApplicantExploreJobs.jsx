@@ -932,6 +932,39 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                             </span>
                           )}
                         </div>
+
+                          {/* --- SMART ENGINE ANALYSIS (TALKBACK OPTIMIZED) --- */}
+                          {selectedJob.semantic_similarity_raw && (
+                            <div 
+                              role="region" 
+                              aria-label={`Smart Engine Analysis. Your skills match ${Math.round(selectedJob.skills_similarity * 100)} percent of the structured requirements. Your skills match ${Math.round(selectedJob.description_similarity * 100)} percent of the free-text job description based on Semantic AI. And you have ${Math.round(selectedJob.keyword_coverage * 100)} percent keyword overlap.`}
+                              className="mb-4 p-3 sm:p-4 rounded-xl border-2 border-dashed border-[#2C7FFF]/40 bg-[#2C7FFF]/5"
+                            >
+                              <h4 
+                                aria-hidden="true" 
+                                className="text-[10px] font-black uppercase tracking-widest text-[#2C7FFF] mb-2 flex items-center gap-2"
+                              >
+                                <svg aria-hidden="true" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Smart Engine Analysis
+                              </h4>
+                              <div aria-hidden="true" className="grid grid-cols-3 gap-2 text-center">
+                                <div className="bg-white rounded-lg p-2 border border-[#03045E]/10 shadow-sm">
+                                  <p className="text-[8px] sm:text-[9px] font-bold text-[#03045E]/60 uppercase">Structured Skills</p>
+                                  <p className="text-xs sm:text-sm font-black text-[#03045E]">{Math.round(selectedJob.skills_similarity * 100)}%</p>
+                                </div>
+                                <div className="bg-white rounded-lg p-2 border border-[#03045E]/10 shadow-sm">
+                                  <p className="text-[8px] sm:text-[9px] font-bold text-[#03045E]/60 uppercase">Description Match</p>
+                                  <p className="text-xs sm:text-sm font-black text-[#2C7FFF]">{Math.round(selectedJob.description_similarity * 100)}%</p>
+                                </div>
+                                <div className="bg-white rounded-lg p-2 border border-[#03045E]/10 shadow-sm">
+                                  <p className="text-[8px] sm:text-[9px] font-bold text-[#03045E]/60 uppercase">Keyword Coverage</p>
+                                  <p className="text-xs sm:text-sm font-black text-[#03045E]">{Math.round(selectedJob.keyword_coverage * 100)}%</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         <h3 className="text-[10px] sm:text-xs font-black text-[#03045E]/70 uppercase tracking-widest mb-2 sm:mb-3">Job Location</h3>
                         
                         <div role="region" aria-label={`Map showing job location for ${selectedJob.job_title}`} className="w-full max-w-full min-w-0 h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#03045E]/20 shadow-sm relative z-0">
