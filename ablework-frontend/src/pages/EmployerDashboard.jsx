@@ -146,6 +146,39 @@ export default function EmployerDashboard() {
     fetchData();
   }, [navigate]);
 
+    // --- REAL-TIME EMPLOYER JOB FEED POLLING ---
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (!storedUser || !storedUser.id) return;
+
+    const fetchLatestJobs = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/employer/${storedUser.id}/jobs`);
+        if (res.ok) {
+          const latestJobs = await res.json();
+          
+          // Check if a new job was posted
+          setJobs(prevJobs => {
+            const hasNewJob = latestJobs.some(
+              newJob => !prevJobs.find(oldJob => oldJob.id === newJob.id)
+            );
+            
+            if (hasNewJob || latestJobs.length !== prevJobs.length) {
+              return latestJobs; // Update the UI
+            }
+            return prevJobs;
+          });
+        }
+      } catch (err) {
+        // ignore network errors
+      }
+    };
+
+    // Check every 10 seconds
+    const interval = setInterval(fetchLatestJobs, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
     // --- REAL-TIME EMPLOYER STATUS POLLING ---
   useEffect(() => {
     if (!profile || !profile.user_id) return;

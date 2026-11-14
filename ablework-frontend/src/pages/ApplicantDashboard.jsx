@@ -272,6 +272,57 @@ export default function ApplicantDashboard() {
     fetchData();
   }, [navigate]);
 
+    // --- REAL-TIME POLLING (Jobs & Applications) ---
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (!storedUser || !storedUser.id) return;
+
+    const pollUpdates = async () => {
+      try {
+        // 1. Poll for new Jobs
+        const matchesRes = await fetch(`${API_BASE_URL}/api/applicant/${storedUser.id}/matches`);
+        if (matchesRes.ok) {
+          const latestMatches = await matchesRes.json();
+          setMatches(prevMatches => {
+            const hasNewJob = latestMatches.some(
+              newJob => !prevMatches.find(oldJob => oldJob.id === newJob.id)
+            );
+            if (hasNewJob || latestMatches.length !== prevMatches.length) {
+              return latestMatches; 
+            }
+            return prevMatches;
+          });
+        }
+
+        // 2. Poll for Application Status Updates
+        const trackerRes = await fetch(`${API_BASE_URL}/api/applicant/${storedUser.id}/applications`);
+        if (trackerRes.ok) {
+          const latestApps = await trackerRes.json();
+          setApplications(prevApps => {
+            // Check if any status has changed (e.g., 'Received' -> 'Shortlisted')
+            const hasStatusChange = latestApps.some(
+              newApp => {
+                const oldApp = prevApps.find(a => a.application_id === newApp.application_id);
+                return oldApp && oldApp.status !== newApp.status;
+              }
+            );
+            
+            if (hasStatusChange || latestApps.length !== prevApps.length) {
+              return latestApps; // Update UI instantly
+            }
+            return prevApps;
+          });
+        }
+      } catch (err) {
+        // ignore network errors
+      }
+    };
+
+    // Run every 10 seconds
+    const interval = setInterval(pollUpdates, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  
   const refreshData = async () => {
     if(!profile) return;
     try {

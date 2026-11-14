@@ -47,6 +47,38 @@ export default function EmployerApplications({ profile, refreshStats }) {
     fetchApplications();
   }, [profile.user_id]);
 
+    // --- REAL-TIME APPLICANT POLLING ---
+  useEffect(() => {
+    if (!profile || !profile.user_id) return;
+
+    const pollApps = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/employer/${profile.user_id}/applications`);
+        if (res.ok) {
+          const latestApps = await res.json();
+          setApplications(prevApps => {
+            // Check if the number of apps changed (new applicant applied)
+            // OR if any application status changed (applicant withdrew)
+            const hasUpdate = latestApps.length !== prevApps.length || 
+              latestApps.some(newApp => {
+                const oldApp = prevApps.find(a => a.application_id === newApp.application_id);
+                return oldApp && oldApp.application_status !== newApp.application_status;
+              });
+            
+            if (hasUpdate) return latestApps;
+            return prevApps;
+          });
+        }
+      } catch (err) {
+        // Silently ignore network errors
+      }
+    };
+
+    // Check every 10 seconds
+    const interval = setInterval(pollApps, 10000);
+    return () => clearInterval(interval);
+  }, [profile]);
+
   const updateStatus = async (applicationId, newStatus, employerMessage = null, closeModal = true, showAlert = false) => {
     const applicantName = selectedApp?.firstname || 'The applicant';
     const jobTitle = selectedApp?.job_title || 'the position';
