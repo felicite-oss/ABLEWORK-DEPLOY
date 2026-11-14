@@ -10,20 +10,18 @@ export default function EmployerApplications({ profile, refreshStats }) {
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isDark = isContrast || isDarkMode;
   const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
-
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null); 
   const [isLoading, setIsLoading] = useState(true);
-  
   const [activeTab, setActiveTab] = useState('All');
-
-    const [nextSteps, setNextSteps] = useState({ isOpen: false, status: '' });
+  const [nextSteps, setNextSteps] = useState({ isOpen: false, status: '' });
   const [messageText, setMessageText] = useState('');
   const [showStatusAlert, setShowStatusAlert] = useState(false);
   const [statusAlert, setStatusAlert] = useState({ title: '', subtitle: '', tone: 'default' });
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false); 
 
   useEffect(() => {
     setCurrentPage(1);
@@ -428,33 +426,89 @@ export default function EmployerApplications({ profile, refreshStats }) {
               </div>
             </div>
 
-            {/* DROPDOWN TO SELECT WHICH JOB TO REVIEW */}
+          {/* CUSTOM DROPDOWN TO SELECT WHICH JOB TO REVIEW */}
             {selectedApp.applicationsList.length > 1 && (
-               <div className="mb-6 flex flex-col gap-2">
+               <div className="mb-6 flex flex-col gap-2 relative">
                   <label className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider ${subtle}`}>Select Application to Review</label>
-                  <select 
-                    className={`w-full p-3 border-2 rounded-xl font-bold text-sm outline-none transition ${isDark ? 'bg-black border-white/30 text-white' : 'bg-[#f4f4f4] border-[#03045E]/20 text-[#03045E]'}`}
-                    onChange={(e) => {
-                        const chosenApp = selectedApp.applicationsList.find(a => String(a.application_id) === e.target.value);
-                        if (chosenApp) {
-                           setSelectedApp(prev => ({ 
-                              ...prev, 
-                              job_title: chosenApp.job_title,
-                              application_id: chosenApp.application_id,
-                              application_status: chosenApp.application_status,
-                              resume_path: chosenApp.resume_path,
-                              cover_letter: chosenApp.cover_letter
-                           }));
-                        }
-                    }}
-                    value={selectedApp.application_id}
+                  
+                  <button
+                    type="button"
+                    onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)}
+                    className={`w-full flex items-center justify-between p-3 border-2 rounded-xl font-bold text-sm outline-none transition cursor-pointer ${
+                      isDark 
+                        ? 'bg-black border-white/30 text-white hover:border-white' 
+                        : 'bg-[#f4f4f4] border-[#03045E]/20 text-[#03045E] hover:border-[#2C7FFF]'
+                    }`}
                   >
-                     {selectedApp.applicationsList.map(app => (
-                        <option key={app.application_id} value={app.application_id}>
-                           {app.job_title} — (Status: {app.application_status})
-                        </option>
-                     ))}
-                  </select>
+                    <span className="truncate pr-2">
+                      {selectedApp.job_title} — <span className="opacity-70">(Status: {selectedApp.application_status})</span>
+                    </span>
+                    <svg 
+                      className={`w-4 h-4 shrink-0 transition-transform duration-200 ${isAppDropdownOpen ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2.5" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {isAppDropdownOpen && (
+                    <>
+                      {/* Invisible backdrop to close the dropdown when clicking outside */}
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setIsAppDropdownOpen(false)}
+                      ></div>
+                      
+                      <div className={`absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border-2 shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ${
+                        isDark ? 'bg-black border-white/30' : 'bg-white border-[#03045E]/20'
+                      }`}>
+                        {selectedApp.applicationsList.map(app => {
+                          const isSelected = String(selectedApp.application_id) === String(app.application_id);
+                          return (
+                            <button
+                              key={app.application_id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedApp(prev => ({ 
+                                  ...prev, 
+                                  job_title: app.job_title,
+                                  application_id: app.application_id,
+                                  application_status: app.application_status,
+                                  resume_path: app.resume_path,
+                                  cover_letter: app.cover_letter
+                                }));
+                                setIsAppDropdownOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm font-bold transition-colors flex items-center justify-between gap-3 border-b-2 last:border-b-0 ${
+                                isDark ? 'border-white/10' : 'border-gray-100'
+                              } ${
+                                isSelected
+                                  ? (isDark ? 'bg-white/10 text-white' : 'bg-[#2C7FFF]/10 text-[#2C7FFF]')
+                                  : (isDark ? 'text-white/80 hover:bg-white/5' : 'text-[#03045E]/80 hover:bg-gray-50')
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 truncate">
+                                {isSelected && (
+                                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                                <span className="truncate">{app.job_title}</span>
+                              </div>
+                              <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border-2 shrink-0 ${
+                                getStatusColor(app.application_status)
+                              }`}>
+                                {app.application_status}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                </div>
             )}
 
@@ -641,7 +695,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
               ) : (
                 <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-3 sm:gap-0">
                   <button 
-                    onClick={() => setSelectedApp(null)} 
+                    onClick={() => { setSelectedApp(null); setIsAppDropdownOpen(false); }} 
                     className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg cursor-pointer border-2 ${
                       isDark 
                         ? 'bg-black text-white border-white' 
