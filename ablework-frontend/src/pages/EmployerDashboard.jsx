@@ -146,6 +146,55 @@ export default function EmployerDashboard() {
     fetchData();
   }, [navigate]);
 
+    // --- REAL-TIME EMPLOYER STATUS POLLING ---
+  useEffect(() => {
+    if (!profile || !profile.user_id) return;
+
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${profile.user_id}/status`);
+        if (res.ok) {
+          const data = await res.json();
+          
+          // If the Admin approved/rejected the account while it was open
+          if (data.verification_status !== profile.verification_status || data.account_status !== profile.account_status) {
+            
+            // Update the React state (this removes the lock screen instantly)
+            setProfile(prev => ({
+              ...prev,
+              verification_status: data.verification_status,
+              account_status: data.account_status,
+              rejection_reason: data.rejection_reason
+            }));
+
+            // Sync localStorage
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            if (storedUser) {
+              localStorage.setItem('user', JSON.stringify({
+                ...storedUser,
+                verification_status: data.verification_status,
+                account_status: data.account_status
+              }));
+            }
+
+            // If disabled, kick them out
+            if (data.account_status === 'Disabled' || data.account_status === 'Deactivated') {
+               alert("Your account has been disabled by an administrator.");
+               localStorage.removeItem('user');
+               navigate('/login');
+            }
+          }
+        }
+      } catch (err) {
+        // ignore network errors
+      }
+    };
+
+    // Check every 5 seconds
+    const interval = setInterval(checkStatus, 5000);
+    return () => clearInterval(interval);
+  }, [profile, navigate]);
+
 
   const refreshJobsAndStats = async () => {
     if(!profile) return;
@@ -551,7 +600,7 @@ export default function EmployerDashboard() {
                         {profile?.company_name || 'Employer'}
                       </p>
                       <p className={`text-[11px] font-semibold truncate mt-0.5 ${isContrast ? 'text-white/60' : 'text-[#03045E]/60'}`}>
-                        {profile?.email || 'employer@ablework.ph'}
+                        {profile?.email || 'Loading...'}
                       </p>
                     </div>
                   </div>

@@ -136,12 +136,19 @@ export default function AdminDashboard() {
     
     if (user.role !== 'admin') {
       console.error("Unauthorized Access. Admin privileges required.");
-      navigate('/login'); // Send them straight back to login instead of freezing
+      navigate('/login'); 
       return;
     }
     
     setAdminUser(user);
-    fetchAdminData();
+    fetchAdminData(); // 1. Initial load
+
+    // 2. REAL-TIME POLLING: Fetch new data every 5 seconds silently
+    const syncInterval = setInterval(() => {
+      fetchAdminData(true); 
+    }, 5000);
+
+    return () => clearInterval(syncInterval);
   }, [navigate]);
 
    useEffect(() => {

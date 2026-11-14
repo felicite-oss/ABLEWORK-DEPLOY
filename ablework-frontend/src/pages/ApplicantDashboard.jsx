@@ -175,6 +175,57 @@ export default function ApplicantDashboard() {
     return () => window.removeEventListener('storage', handleStorageSync);
   }, []);
 
+    // --- REAL-TIME STATUS POLLING ---
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (!storedUser || !storedUser.id) return;
+
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${storedUser.id}/status`);
+        if (res.ok) {
+          const data = await res.json();
+          
+          // If the status changed from what we currently have in state
+          if (profile && (
+              data.verification_status !== profile.verification_status || 
+              data.account_status !== profile.account_status
+          )) {
+            
+            // 1. Update the React state instantly 
+            setProfile(prev => ({
+              ...prev,
+              verification_status: data.verification_status,
+              account_status: data.account_status,
+              rejection_reason: data.rejection_reason
+            }));
+
+            // 2. Update LocalStorage so it persists
+            const updatedUser = { 
+              ...storedUser, 
+              verification_status: data.verification_status,
+              account_status: data.account_status
+            };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
+            // 3. If Admin disabled the account, kick them out
+            if (data.account_status === 'Disabled' || data.account_status === 'Deactivated') {
+               alert("Your account has been disabled by an administrator.");
+               localStorage.removeItem('user');
+               window.location.href = '/login';
+            }
+          }
+        }
+      } catch (err) {
+        // Silently fail on network errors so we don't spam the console
+      }
+    };
+
+    // Run every 10 seconds
+    const interval = setInterval(checkStatus, 10000);
+    return () => clearInterval(interval);
+  }, [profile]); // Depend on profile so it has the latest state to compare against
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (!storedUser || !storedUser.id) {
