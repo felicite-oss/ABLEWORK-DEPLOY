@@ -1458,13 +1458,12 @@ const handleAddressType = (e) => {
                     aria-label="Resume document upload."
                   />
 
-                  {/* Custom Button that triggers the hidden input */}
                   <label
-                    htmlFor="resumeFile"
-                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 border-[var(--color-border)] bg-white text-xs font-bold cursor-pointer transition-colors hover:bg-gray-50 ${isDarkMode || isContrast ? '!text-black' : 'text-[#03045E]'}`}
-                  >
-                    Choose File
-                  </label>
+  htmlFor="resumeFile"
+  className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 border-[var(--color-border)] bg-white text-xs font-bold cursor-pointer transition-colors hover:bg-gray-50 ${isDarkMode || isContrast ? '!text-white' : 'text-[#03045E]'}`}
+>
+  Choose File
+</label>
 
                   {/* Display selected file name (or "No file chosen") */}
                   <span className={`ml-2 text-xs sm:text-sm font-semibold ${(isDarkMode || isContrast) ? '!text-white' : 'text-[#03045E]'}`}>
