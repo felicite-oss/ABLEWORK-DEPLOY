@@ -2311,6 +2311,84 @@ app.put('/api/admin/support/tickets/:id/status', async (req, res) => {
     }
 });
 
+// ---------------------------------------------------------
+// AUTOMATED GHOSTING PREVENTION (Runs every 24 hours)
+// ---------------------------------------------------------
+const autoRejectStaleApplications = async () => {
+    console.log("Running automated check for stale applications...");
+    try {
+        // 1. Find applications stuck in 'Received' or 'Under Review' for more than 14 days
+        const [staleApps] = await db.execute(`
+            SELECT a.id, a.applicant_id, j.job_title, j.company_name, j.employer_id,
+                   DATEDIFF(NOW(), a.applied_at) as days_waiting
+            FROM applications a
+            JOIN job_postings j ON a.job_id = j.id
+            WHERE a.status IN ('Received', 'Under Review')
+            AND a.applied_at <= DATE_SUB(NOW(), INTERVAL 14 DAY)
+        `);
+
+        // 2. Find applications that are exactly at Day 10 or Day 13 to warn the employer
+        const [warningApps] = await db.execute(`
+            SELECT a.id, a.applicant_id, j.job_title, j.company_name, j.employer_id,
+                   ap.firstname, ap.lastname, DATEDIFF(NOW(), a.applied_at) as days_waiting
+            FROM applications a
+            JOIN job_postings j ON a.job_id = j.id
+            JOIN applicant_profiles ap ON a.applicant_id = ap.user_id
+            WHERE a.status IN ('Received', 'Under Review')
+            AND DATEDIFF(NOW(), a.applied_at) IN (10, 13)
+        `);
+
+        // --- PROCESS WARNINGS FOR EMPLOYERS ---
+        for (const app of warningApps) {
+            const daysLeft = 14 - app.days_waiting;
+            const alertTitle = `Action Required: Application closing soon for ${app.job_title}`;
+            const alertMessage = `You have an application from ${app.firstname} ${app.lastname} for the ${app.job_title} role that has been waiting for ${app.days_waiting} days. If you do not review or update their status within ${daysLeft} day(s), the system will automatically reject them to prevent ghosting.`;
+
+            // Send notification specifically to the Employer
+            await sendNotification(app.employer_id, alertTitle, alertMessage, 'system');
+        }
+
+        if (warningApps.length > 0) {
+            console.log(`Sent warning emails to employers for ${warningApps.length} applications.`);
+        }
+
+        // --- PROCESS AUTO-REJECTIONS ---
+        if (staleApps.length === 0) {
+            console.log("No stale applications found to auto-reject.");
+            return;
+        }
+
+        for (const app of staleApps) {
+            await db.execute(
+                `UPDATE applications 
+                 SET status = 'Rejected', employer_message = 'Auto-rejected by system: The employer did not review this application within the 14-day window.' 
+                 WHERE id = ?`,
+                [app.id]
+            );
+
+            // Notify the applicant
+            const alertTitle = `Application Update: ${app.job_title}`;
+            const alertMessage = `Your application for ${app.job_title} at ${app.company_name} has been automatically closed because the employer did not review it within 14 days. Please don't be discouraged—keep exploring other opportunities on AbleWork!`;
+
+            await sendNotification(app.applicant_id, alertTitle, alertMessage, 'update');
+
+            // Notify the employer that the system just rejected someone for them
+            const empAlertTitle = `System Update: Application Auto-Rejected`;
+            const empAlertMessage = `The application from a candidate for your ${app.job_title} role has been automatically rejected by the system because it was not reviewed within 14 days.`;
+            
+            await sendNotification(app.employer_id, empAlertTitle, empAlertMessage, 'system');
+        }
+
+        console.log(`Successfully auto-rejected ${staleApps.length} stale applications.`);
+    } catch (error) {
+        console.error("Error auto-rejecting stale applications:", error.message);
+    }
+};
+
+// Run immediately on server start, then every 24 hours
+autoRejectStaleApplications();
+setInterval(autoRejectStaleApplications, 24 * 60 * 60 * 1000);
+
 // =========================================================
 // Global error handler — MUST be registered after all routes,
 // before app.listen, and MUST have exactly 4 arguments.

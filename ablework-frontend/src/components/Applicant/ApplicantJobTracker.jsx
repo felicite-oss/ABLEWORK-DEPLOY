@@ -421,6 +421,40 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
           </div>
         )}
       </div>
+      
+              {/* PRO-TIP BANNER FOR APPLICANTS (TalkBack / Screen Reader Compatible) */}
+      <div 
+        role="region" 
+        aria-label="Important information about application wait times and auto-rejection"
+        className={`p-4 rounded-xl border-2 flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm ${
+          isDark ? 'bg-[#111111] border-[#2C7FFF]/50 text-white' : 'bg-blue-50 border-[#2C7FFF]/30 text-[#03045E]'
+        }`}
+      >
+        <div 
+          aria-hidden="true" 
+          className={`p-2 rounded-lg shrink-0 ${isDark ? 'bg-[#2C7FFF]/20' : 'bg-[#2C7FFF]/10'}`}
+        >
+          <svg className={`w-5 h-5 ${isDark ? 'text-[#2C7FFF]' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        
+        <div className="flex-1">
+          <p 
+            tabIndex="0" 
+            aria-live="polite"
+            className={`text-sm font-bold leading-relaxed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 -m-1`}
+          >
+            <strong className={isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}>Haven't heard back?</strong> It is completely normal for employers to take a few days to review applications. To prevent ghosting, applications left without an update for <strong>14 days</strong> will be automatically closed by the system. 
+          </p>
+          <p 
+            tabIndex="0" 
+            className={`text-xs font-semibold mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 -m-1 ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}
+          >
+            Don't wait around—keep exploring other job matches on your dashboard!
+          </p>
+        </div>
+      </div>
 
       {/* Tabs */}
       <div 

@@ -331,14 +331,42 @@ export default function EmployerApplications({ profile, refreshStats }) {
                 </tr>
               </thead>
               <tbody>
-                {currentApplicants.map(applicant => {
+                                {currentApplicants.map(applicant => {
                   const appCount = applicant.applicationsList.length;
                   
+                  // --- NEW: CALCULATE DAYS WAITING ---
+                  const daysSinceApplied = Math.floor((new Date() - new Date(applicant.applied_at)) / (1000 * 60 * 60 * 24));
+                  const showWarning = ['Received', 'Under Review'].includes(applicant.application_status) && daysSinceApplied >= 10;
+                  const isUrgent = daysSinceApplied >= 13;
+                  // -----------------------------------
+
                   return (
                   <tr key={applicant.applicant_id} className={`border-b-2 last:border-b-0 transition-colors ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
                     <td className="p-4 align-top">
                       <h3 className={`text-sm sm:text-base font-bold leading-tight ${pageText}`}>{applicant.firstname} {applicant.lastname}</h3>
                       <p className={`text-[10px] sm:text-xs mt-1 ${subtle}`}>Total Applications: {appCount}</p>
+                      
+                      {/* --- NEW: TIME WARNING BADGE --- */}
+                      {showWarning && (
+                        <div 
+                          role="status"
+                          aria-label={isUrgent ? `Urgent: Auto-rejects in ${14 - daysSinceApplied} days` : `Waiting for ${daysSinceApplied} days`}
+                          className={`mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border-2 ${
+                            isUrgent 
+                              ? 'bg-red-50 text-red-700 border-red-300 animate-pulse' // Urgent (13+ days)
+                              : 'bg-amber-50 text-amber-700 border-amber-300'        // Warning (10-12 days)
+                          }`}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          {isUrgent 
+                            ? `Auto-rejects in ${14 - daysSinceApplied} day(s)!` 
+                            : `Waiting ${daysSinceApplied} days`}
+                        </div>
+                      )}
+                      {/* -------------------------------- */}
+                      
                     </td>
                     <td className="p-4 align-top">
                       {appCount > 1 ? (
