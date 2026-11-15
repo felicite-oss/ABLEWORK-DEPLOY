@@ -55,8 +55,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
         if (res.ok) {
           const latestApps = await res.json();
           setApplications(prevApps => {
-            // Check if the number of apps changed (new applicant applied)
-            // OR if any application status changed (applicant withdrew)
             const hasUpdate = latestApps.length !== prevApps.length || 
               latestApps.some(newApp => {
                 const oldApp = prevApps.find(a => a.application_id === newApp.application_id);
@@ -72,7 +70,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
       }
     };
 
-    // Check every 10 seconds
     const interval = setInterval(pollApps, 10000);
     return () => clearInterval(interval);
   }, [profile]);
@@ -135,7 +132,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
           setSelectedApp(prev => ({ ...prev, application_status: newStatus }));
         }
       } else {
-        // --- NEW: Handle Backend Rejection (e.g., Double Hiring) ---
         const errorData = await res.json();
         
         setStatusAlert({
@@ -359,11 +355,43 @@ export default function EmployerApplications({ profile, refreshStats }) {
                       </span>
                     </td>
                     <td className="p-4 align-top text-center">
+                      {/* --- FIXED: VIEW APPLICATIONS BUTTON --- */}
                       <button 
                         onClick={async () => {
                           setNextSteps({ isOpen: false, status: '' });
                           setMessageText('');
+                          
+                          // 1. Open the modal immediately
                           setSelectedApp(applicant); 
+
+                          // 2. If status is 'Received', silently update to 'Under Review'
+                          if (applicant.application_status === 'Received') {
+                            try {
+                              const res = await fetch(`${API_BASE_URL}/api/applications/${applicant.application_id}/view`, {
+                                method: 'PUT'
+                              });
+                              if (res.ok) {
+                                // Update local state
+                                setSelectedApp(prev => {
+                                  if (prev.applicationsList) {
+                                    const updatedList = prev.applicationsList.map(a => 
+                                      a.application_id === applicant.application_id 
+                                        ? { ...a, application_status: 'Under Review' } 
+                                        : a
+                                    );
+                                    return { ...prev, applicationsList: updatedList, application_status: 'Under Review' };
+                                  }
+                                  return { ...prev, application_status: 'Under Review' };
+                                });
+                                
+                                // Refresh main table
+                                fetchApplications();
+                                if (refreshStats) refreshStats();
+                              }
+                            } catch (err) {
+                              console.error("Failed to auto-update to Under Review:", err);
+                            }
+                          }
                         }} 
                         className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-black rounded-lg border-2 transition cursor-pointer ${
                           isDark
@@ -435,7 +463,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
             isDark ? 'bg-black border-white text-white' : 'bg-white border-gray-200 text-[#03045E]'
           }`}>
             
-            {/* --- UPDATED HEADER WITH X CLOSE BUTTON --- */}
             <div className={`flex justify-between items-start gap-2 sm:gap-0 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 ${dividerColor}`}>
               <div className="pr-4">
                 <h2 className={`text-xl sm:text-3xl font-extrabold ${pageText}`}>{selectedApp.firstname} {selectedApp.lastname}</h2>
@@ -460,7 +487,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
               </button>
             </div>
 
-          {/* CUSTOM DROPDOWN TO SELECT WHICH JOB TO REVIEW */}
             {selectedApp.applicationsList.length > 1 && (
                <div className="mb-6 flex flex-col gap-2 relative">
                   <label className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider ${subtle}`}>Select Application to Review</label>
@@ -490,7 +516,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
 
                   {isAppDropdownOpen && (
                     <>
-                      {/* Invisible backdrop to close the dropdown when clicking outside */}
                       <div 
                         className="fixed inset-0 z-40" 
                         onClick={() => setIsAppDropdownOpen(false)}
@@ -556,7 +581,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
                       {selectedApp.resume_path ? (
                         (() => {
                           const rawPath = String(selectedApp.resume_path).trim();
-                          // If it starts with http/https, use it directly. Otherwise, prefix with /uploads/ for legacy local files.
                           const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
                             ? rawPath
                             : `${API_BASE_URL}/uploads/${rawPath.replace(/^uploads[\\/]/, '')}`;
@@ -728,8 +752,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
                 </div>
               ) : (
                 <div className="flex flex-col sm:flex-row justify-end items-center w-full gap-3 sm:gap-0">
-                  {/* --- REMOVED CLOSE WINDOW BUTTON HERE --- */}
-                  
                   {selectedApp.application_status !== 'Hired' && selectedApp.application_status !== 'Rejected' && selectedApp.application_status !== 'Withdrawn' ? (
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                       <button 
@@ -739,7 +761,6 @@ export default function EmployerApplications({ profile, refreshStats }) {
                         Reject
                       </button>
                       
-                      {/* --- UPDATED SHORTLIST BUTTON STYLING --- */}
                       <button 
                         onClick={() => setNextSteps({ isOpen: true, status: 'Shortlisted' })} 
                         className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg cursor-pointer border-2 transition-colors ${
