@@ -680,6 +680,14 @@ export function ApplicantTerms({ onBack }) {
 
 
 export function ApplicantContact({ onBack, profile }) {
+  const { mode } = useContext(AccessibilityContext);
+  const { paletteKey } = useColorPalette();
+  
+  const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
+  const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
+  const isDark = isContrast || isDarkMode;
+  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
+
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -687,8 +695,6 @@ export function ApplicantContact({ onBack, profile }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // 1. Validate inputs
     if (!subject.trim() || !message.trim()) {
       setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
       return;
@@ -698,7 +704,6 @@ export function ApplicantContact({ onBack, profile }) {
     setAlert({ show: false, type: '', text: '' });
 
     try {
-      // 2. Send data to backend
       const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -714,7 +719,6 @@ export function ApplicantContact({ onBack, profile }) {
 
       const data = await res.json();
 
-      // 3. Handle response
       if (res.ok) {
         setAlert({ show: true, type: 'success', text: data.message || 'Ticket submitted successfully!' });
         setSubject('');
@@ -730,6 +734,12 @@ export function ApplicantContact({ onBack, profile }) {
     }
   };
 
+  // Adaptive colors for the form
+  const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-[#03045E]/10';
+  const textColor = isDark ? 'text-white' : 'text-[#03045E]';
+  const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+  const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
+
   return (
     <ApplicantPageLayout
       title="Help and Support"
@@ -740,50 +750,47 @@ export function ApplicantContact({ onBack, profile }) {
 
         {/* LEFT SIDE: INFO CARDS */}
         <div className="space-y-6">
-          <div role="region" aria-label="System Name: ABLEWORK" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">System Name</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">ABLEWORK</p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Project Team</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">5i</p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Email Support</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">ableworksys5i@gmail.com</p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Office Address</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Data Custody Team</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] leading-relaxed">
-              Paquio, Loueala Jean H.<br />
-              Pagado, Jesie Marie D.<br />
-              Astodillo, Felicite S.<br />
-              Gonzales, John Greg A.<br />
-              Gamboa, John Bryan T.
-            </p>
-          </div>
-          <div role="region" aria-label="Institution: STIWNU" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Institution</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">STIWNU</p>
-          </div>
+          {[
+            { label: 'System Name', value: 'ABLEWORK' },
+            { label: 'Project Team', value: '5i' },
+            { label: 'Email Support', value: 'ableworksys5i@gmail.com' },
+            { label: 'Office Address', value: 'Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines' },
+            { label: 'Data Custody Team', value: 'Paquio, Loueala Jean H.\nPagado, Jesie Marie D.\nAstodillo, Felicite S.\nGonzales, John Greg A.\nGamboa, John Bryan T.' },
+            { label: 'Institution', value: 'STIWNU' }
+          ].map((item, idx) => (
+            <div key={idx} role="region" aria-label={`${item.label}: ${item.value}`} className={`p-5 rounded-2xl border-2 ${cardBg}`}>
+              <h3 tabIndex="0" className={`font-bold mb-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${textColor}`}>
+                {item.label}
+              </h3>
+              <p tabIndex="0" className={`text-sm font-semibold whitespace-pre-line focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${mutedText}`}>
+                {item.value}
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* RIGHT SIDE: SUPPORT FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <h3 tabIndex="0" className="text-lg font-bold text-[#03045E]">Submit a Support Ticket</h3>
+          <h3 tabIndex="0" className={`text-lg font-bold focus:outline-none focus-visible:underline ${textColor}`}>
+            Submit a Support Ticket
+          </h3>
           
-          {/* Alert Banner */}
+          {/* ACCESSIBLE ALERT BANNER */}
           {alert.show && (
             <div 
               role="alert"
               className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 ${
                 alert.type === 'success' 
-                  ? 'bg-green-50 text-green-700 border-green-300' 
-                  : 'bg-red-50 text-red-700 border-red-300'
+                  ? (isHighContrastOrDarkComfort 
+                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' 
+                      : isDark 
+                        ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500' 
+                        : 'bg-emerald-50 text-emerald-800 border-emerald-300')
+                  : (isHighContrastOrDarkComfort 
+                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' // Blue for errors in high contrast
+                      : isDark 
+                        ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' // Blue for errors in dark mode
+                        : 'bg-[#2C7FFF] text-white border-[#2C7FFF]')  // Blue for errors in light mode
               }`}
             >
               {alert.text}
@@ -798,7 +805,7 @@ export function ApplicantContact({ onBack, profile }) {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Subject / Issue Summary"
-              className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
               disabled={isSubmitting}
             />
           </div>
@@ -811,7 +818,7 @@ export function ApplicantContact({ onBack, profile }) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe your issue, question, or report suspicious activity..."
-              className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
               disabled={isSubmitting}
             />
           </div>
@@ -819,13 +826,18 @@ export function ApplicantContact({ onBack, profile }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group w-full py-4 px-6 bg-[#03045E] text-[#f4f4f4] font-extrabold text-sm rounded-2xl border-2 border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50"
+            aria-label="Submit Request Ticket"
+            className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
+              isDark 
+                ? 'bg-white text-black border-white hover:bg-gray-200' 
+                : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+            }`}
           >
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#2C7FFF] group-hover:bg-[#f4f4f4] transition-colors" />
+              <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
               {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
             </span>
-            <span className="w-7 h-7 rounded-xl bg-[#2C7FFF]/20 group-hover:bg-[#f4f4f4]/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+            <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
               →
             </span>
           </button>

@@ -617,9 +617,12 @@ export function EmployerTerms({ onBack }) {
 
 export function EmployerContact({ onBack, profile }) {
   const { mode } = useContext(AccessibilityContext);
+  const { paletteKey } = useColorPalette();
+  
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDark = isDarkMode || isContrast;
+  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   // State for the form
   const [subject, setSubject] = useState('');
@@ -669,44 +672,64 @@ export function EmployerContact({ onBack, profile }) {
     }
   };
 
+  // Adaptive colors for the form
+  const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-[#03045E]/10';
+  const textColor = isDark ? 'text-white' : 'text-[#03045E]';
+  const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+  const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
+
   return (
     <main role="main" aria-label="Contact Us Screen" className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14 animate-in fade-in duration-300">
-      <h1 className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
+      <h1 tabIndex="0" className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 focus:outline-none ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
         Contact Us
       </h1>
 
       <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
         {/* LEFT SIDE: INFO */}
-        <div style={isDark ? { backgroundColor: 'transparent', borderColor: '#D1D5DB' } : {}} className="rounded-2xl sm:rounded-3xl shadow-xl border-2 backdrop-blur-sm bg-[var(--color-surface)]/50 text-[#03045E] border-white/40 p-5 sm:p-8">
-          <h2 className="text-lg sm:text-2xl font-black mb-4 sm:mb-6">Get in Touch</h2>
+        <div className={`rounded-2xl sm:rounded-3xl shadow-xl border-2 p-5 sm:p-8 ${cardBg}`}>
+          <h2 className={`text-lg sm:text-2xl font-black mb-4 sm:mb-6 ${textColor}`}>Get in Touch</h2>
           <div className="space-y-4 sm:space-y-6">
-            <div>
-              <h3 className="text-xs sm:text-base font-black">Email</h3>
-              {/* FIXED EMAIL HERE */}
-              <p className="text-xs sm:text-base font-semibold">ableworksys5i@gmail.com</p>
+            <div role="region" aria-label="Email Support: ableworksys5i@gmail.com">
+              <h3 tabIndex="0" className={`text-xs sm:text-base font-black ${textColor}`}>Email</h3>
+              <p tabIndex="0" className={`text-xs sm:text-base font-semibold ${mutedText}`}>ableworksys5i@gmail.com</p>
             </div>
-            <div>
-              <h3 className="text-xs sm:text-base font-black">Partner Helpline</h3>
-              <p className="text-xs sm:text-base font-semibold">+1 (800) 555-ABLE</p>
+            <div role="region" aria-label="Partner Helpline: +1 (800) 555-ABLE">
+              <h3 tabIndex="0" className={`text-xs sm:text-base font-black ${textColor}`}>Partner Helpline</h3>
+              <p tabIndex="0" className={`text-xs sm:text-base font-semibold ${mutedText}`}>+1 (800) 555-ABLE</p>
             </div>
-            <div>
-              <h3 className="text-xs sm:text-base font-black">Hours</h3>
-              <p className="text-xs sm:text-base font-semibold">Monday – Friday, 9:00 AM – 6:00 PM EST</p>
+            <div role="region" aria-label="Hours: Monday to Friday, 9 AM to 6 PM EST">
+              <h3 tabIndex="0" className={`text-xs sm:text-base font-black ${textColor}`}>Hours</h3>
+              <p tabIndex="0" className={`text-xs sm:text-base font-semibold ${mutedText}`}>Monday – Friday, 9:00 AM – 6:00 PM EST</p>
             </div>
-            <div>
-              <h3 className="text-xs sm:text-base font-black">Address</h3>
-              <p className="text-xs sm:text-base font-semibold">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
+            <div role="region" aria-label="Address: Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines">
+              <h3 tabIndex="0" className={`text-xs sm:text-base font-black ${textColor}`}>Address</h3>
+              <p tabIndex="0" className={`text-xs sm:text-base font-semibold ${mutedText}`}>Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
             </div>
           </div>
         </div>
 
         {/* RIGHT SIDE: FORM */}
-        <div style={isDark ? { backgroundColor: 'transparent', borderColor: '#D1D5DB' } : {}} className="rounded-2xl sm:rounded-3xl shadow-xl border-2 backdrop-blur-sm bg-[var(--color-surface)]/50 text-[#03045E] border-white/40 p-5 sm:p-8">
-          <h2 className="text-lg sm:text-2xl font-black mb-4 sm:mb-6">Send Us a Message</h2>
+        <div className={`rounded-2xl sm:rounded-3xl shadow-xl border-2 p-5 sm:p-8 ${cardBg}`}>
+          <h2 className={`text-lg sm:text-2xl font-black mb-4 sm:mb-6 ${textColor}`}>Send Us a Message</h2>
           
-          {/* Alert Banner */}
+          {/* ACCESSIBLE ALERT BANNER (Blue for errors) */}
           {alert.show && (
-            <div className={`p-3 rounded-xl border-2 text-sm font-bold mb-4 ${alert.type === 'success' ? 'bg-green-50 text-green-700 border-green-300' : 'bg-red-50 text-red-700 border-red-300'}`}>
+            <div 
+              role="alert"
+              className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 mb-4 ${
+                alert.type === 'success' 
+                  ? (isHighContrastOrDarkComfort 
+                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' 
+                      : isDark 
+                        ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500' 
+                        : 'bg-emerald-50 text-emerald-800 border-emerald-300')
+                  : (isHighContrastOrDarkComfort 
+                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
+                      : isDark 
+                        ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
+                        : 'bg-[#2C7FFF] text-white border-[#2C7FFF]')
+              }`}
+            >
               {alert.text}
             </div>
           )}
@@ -720,9 +743,7 @@ export function EmployerContact({ onBack, profile }) {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Subject / Issue Summary"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
+                className={`w-full p-2.5 sm:p-3 border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
                 disabled={isSubmitting}
               />
             </div>
@@ -734,20 +755,19 @@ export function EmployerContact({ onBack, profile }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Describe your issue or report suspicious activity..."
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
+                className={`w-full p-2.5 sm:p-3 border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
                 disabled={isSubmitting}
               />
             </div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full py-2.5 sm:py-3 rounded-full font-bold transition border-2 hover:brightness-125 text-xs sm:text-sm ${
-                isContrast
-                  ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-surface)] hover:text-[var(--color-background)] hover:border-[var(--color-accent)]'
-                  : 'bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:text-[#f4f4f4] hover:border-[#2C7FFF]'
-              } disabled:opacity-50`}
+              aria-label="Send Message"
+              className={`w-full py-2.5 sm:py-3 rounded-full font-bold transition border-2 text-xs sm:text-sm disabled:opacity-50 ${
+                isDark
+                  ? 'bg-white text-black border-white hover:bg-gray-200'
+                  : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+              }`}
             >
               {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>

@@ -30,6 +30,7 @@ export default function EmployerPostJob({ profile, refreshData, setActiveTab }) 
   const [expandedCategory, setExpandedCategory] = useState(null);
   const isDeactivated = profile?.account_status === 'Deactivated' || profile?.status === 'Deactivated';
   const isVerified = profile?.verification_status === 'Approved';
+  const [jobType, setJobType] = useState('Full-Time');
 
   useEffect(() => {
     if (salaryRange.trim() === '') {
@@ -210,6 +211,7 @@ const accommodationSuggestions = [
       employer_id: profile.user_id,
       company_name: profile.company_name,
       job_title: jobTitle,
+      job_type: jobType,
       job_description: jobDescription,
       required_skills: selectedSkills,
       provided_accommodations: selectedAccommodations, 
@@ -361,7 +363,9 @@ const accommodationSuggestions = [
       ) : (
       <form onSubmit={handleSubmit} className={`p-4 sm:p-8 rounded-2xl shadow-sm border-2 flex flex-col gap-6 sm:gap-8 ${cardBg}`}>
         
-        <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
+          
+          {/* JOB TITLE */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -374,39 +378,68 @@ const accommodationSuggestions = [
             />
           </div>
 
-                    <div className="flex flex-col gap-1.5 sm:gap-2">
+          {/* NEW: JOB TYPE */}
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Job Type
+            </label>
+            <select
+              value={jobType}
+              onChange={(e) => setJobType(e.target.value)}
+              className={inputCls}
+            >
+              <option value="Full-Time">Full-Time</option>
+              <option value="Part-Time">Part-Time</option>
+              <option value="Contractual">Contractual</option>
+              <option value="Freelance">Freelance</option>
+              <option value="Internship">Internship</option>
+              <option value="Shift-based">Shift-based</option>
+            </select>
+          </div>
+
+          {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
+          <div className="flex flex-col gap-1.5 sm:gap-2">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
               Full Job Description <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
-            <textarea 
-              value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} required rows="7"
-              placeholder="Describe the role responsibilities and expectations..."
-              className={`${inputCls} resize-y`}
-            ></textarea>
-            
-             {/* Quick Insert Labels */}
-            <div className="flex flex-wrap items-center gap-2 mt-2 mb-1">
-              <span className={`text-[10px] font-bold uppercase tracking-wider ${muted}`}>Quick Insert:</span>
-              {[
-                { label: 'Role Overview', prefix: '\n\nRole Overview:\n' },
-                { label: 'Key Responsibilities', prefix: '\n\nKey Responsibilities:\n- ' },
-                { label: 'Qualifications & Skills', prefix: '\n\nWhat You Will Need (Qualifications & Skills):\n- ' },
-                { label: 'Workplace Accommodations', prefix: '\n\nWorkplace Accommodations & Inclusivity:\n- ' }
-              ].map((template) => (
-                <button
-                  key={template.label}
-                  type="button"
-                  onClick={() => setJobDescription(prev => prev + template.prefix)}
-                  className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-md border-2 transition-all cursor-pointer ${
-                    isDark 
-                      ? 'bg-[#1A1A1A] text-white border-white/50 hover:bg-white hover:text-black' 
-                      : 'bg-[#E6F0FF] text-[#03045E] border-[#2C7FFF]/30 hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]'
-                  }`}
-                >
-                  + {template.label}
-                </button>
-              ))}
+
+            {/* Textarea Container */}
+            <div className={`w-full rounded-lg border-2 flex flex-col transition-all ${
+              isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'
+            } focus-within:border-[#2C7FFF]`}>
+              
+              {/* Formatting Toolbar (Inside the box) */}
+              <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
+                {descriptionTemplates.map((template) => (
+                  <button
+                    key={template.label}
+                    type="button"
+                    onClick={() => setJobDescription(prev => prev + template.prefix)}
+                    className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border ${
+                      isDark 
+                        ? 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-white hover:text-black' 
+                        : 'bg-white text-[#03045E] border-gray-300 hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]'
+                    }`}
+                  >
+                    + {template.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Actual Text Area */}
+              <textarea 
+                value={jobDescription} 
+                onChange={(e) => setJobDescription(e.target.value)} 
+                required 
+                rows="8"
+                placeholder="Describe the role responsibilities and expectations..."
+                className={`w-full p-3 sm:p-4 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold ${
+                  isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
+                }`}
+              ></textarea>
             </div>
           </div>
         </div>
