@@ -456,19 +456,17 @@ export function Home() {
       <div className="flex-1 overflow-y-auto flex flex-col pt-16">
 
         {/* --- NEW HERO SECTION (MATCHING IMAGE 1) --- */}
-        <div className="w-full bg-[#f4f4f4] py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+       <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
           
           {/* Main Card Container */}
-          <div className="w-full max-w-[1400px] bg-[#f4f4f4] rounded-[2rem] shadow-[0_20px_50px_rgba(3,4,94,0.1)] overflow-hidden flex flex-col lg:flex-row border border-[#03045e]/10 relative">
+<div className="w-full bg-[#f4f4f4] rounded-[2rem] shadow-[0_20px_50px_rgba(3,4,94,0.1)] overflow-hidden flex flex-col lg:flex-row border border-[#03045e]/10 relative">
             
             {/* Left Side: Content */}
             <div className="w-full lg:w-1/2 p-8 sm:p-12 md:p-16 lg:p-24 flex flex-col justify-center z-10">
               
-              <div className="mb-6">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] text-xs font-black uppercase tracking-widest">
-                  Welcome to AbleWork
-                </span>
-              </div>
+             <span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff] text-white text-xs font-black uppercase tracking-widest shadow-sm">
+  Welcome to AbleWork
+</span>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#03045e] leading-[1.1] mb-6">
                 Building an Inclusive Workforce for Everyone
@@ -539,7 +537,7 @@ export function Home() {
           </div>
 
           {/* --- Why Choose Section (Moved below for better layout) --- */}
-          <div className="w-full max-w-[1400px] mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+         <div className="w-full mt-6 lg:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
               <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
@@ -575,7 +573,7 @@ export function Home() {
 
         </div>
 
-<section className="w-full p-3 sm:p-6 md:p-10">
+<section className="w-full p-3 sm:p-4 md:px-8 md:py-6">
           <div className={`p-5 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border-2 shadow-xl backdrop-blur-sm ${isContrast ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-border)]' : 'bg-[var(--color-surface)]/50 text-[#03045E] border-[#03045E]/20'}`}>
             
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -848,7 +846,7 @@ export function Home() {
               </section>
 
                           {/* --- REDESIGNED DEVICES SHOWCASE SECTION --- */}
-<section className={`w-full relative py-12 sm:py-16 md:py-20 px-3 sm:px-6 md:px-10 overflow-hidden ${isContrast ? 'bg-[var(--color-background)]' : 'bg-gradient-to-b from-transparent via-[#f8f9fa] to-[#eef2ff]'}`}>
+<section className={`w-full relative py-12 sm:py-16 md:py-20 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)]' : 'bg-gradient-to-b from-transparent via-[#f8f9fa] to-[#eef2ff]'}`}>
                 
                 {/* --- ANIMATION KEYFRAMES --- */}
                 <style>{`
@@ -882,8 +880,7 @@ export function Home() {
                   <div className="absolute top-10 left-10 w-72 h-72 bg-[#2C7FFF]/20 rounded-full blur-[100px]" style={{ animation: 'pulseGlow 8s ease-in-out infinite' }}></div>
                   <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#03045E]/10 rounded-full blur-[120px]" style={{ animation: 'pulseGlow 10s ease-in-out infinite reverse' }}></div>
                 </div>
-
-<div className="w-full flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16 lg:gap-24 relative z-10">
+<div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-10 md:gap-16 relative z-10">
                   
                   {/* Left Side: Devices with 3D Tilt & Motion */}
                   <div 
@@ -952,12 +949,12 @@ export function Home() {
                       </span>
                     </h2>
                     
-                    <p tabIndex="0" role="text" aria-label="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere." title="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere." className={`text-sm sm:text-lg font-semibold leading-relaxed mb-8 text-center md:text-left max-w-lg ${isContrast ? 'text-[var(--color-textMuted)]' : 'text-[#03045E]/70'}`}>
+<p tabIndex="0" role="text" aria-label="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen..." className={`text-sm sm:text-lg font-semibold leading-relaxed mb-8 text-center md:text-left w-full ${isContrast ? 'text-[var(--color-textMuted)]' : 'text-[#03045E]/70'}`}>
                       Whether you are browsing on a mobile phone or managing your profile on a laptop, ABLEWORK adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere.
                     </p>
 
                                     {/* Expanded Feature Grid to fill space */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-2 w-full max-w-lg text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-2 w-full text-left">
                        
                        {/* Item 1: PWD Verification */}
                        <div 
@@ -1036,8 +1033,7 @@ export function Home() {
                 </div>
               </section>
 
-            <section className={`relative py-12 sm:py-20 px-3 sm:px-6 md:px-10 my-6 sm:my-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)] border-y border-[var(--color-border)]' : 'bg-[#f4f4f4] border-y border-[#d1d5db]'}`}>
-          
+<section className={`relative py-12 sm:py-20 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 my-6 sm:my-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)] border-y border-[var(--color-border)]' : 'bg-[#f4f4f4] border-y border-[#d1d5db]'}`}>
           {/* Subtle background glow to fill space */}
           <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-accent)]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
