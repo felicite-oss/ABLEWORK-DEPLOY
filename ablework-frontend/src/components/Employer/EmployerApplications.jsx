@@ -435,8 +435,9 @@ export default function EmployerApplications({ profile, refreshStats }) {
             isDark ? 'bg-black border-white text-white' : 'bg-white border-gray-200 text-[#03045E]'
           }`}>
             
-            <div className={`flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 ${dividerColor}`}>
-              <div>
+            {/* --- UPDATED HEADER WITH X CLOSE BUTTON --- */}
+            <div className={`flex justify-between items-start gap-2 sm:gap-0 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 ${dividerColor}`}>
+              <div className="pr-4">
                 <h2 className={`text-xl sm:text-3xl font-extrabold ${pageText}`}>{selectedApp.firstname} {selectedApp.lastname}</h2>
                 <p className={`text-xs sm:text-base font-semibold mt-1 ${muted}`}>
                   {selectedApp.applicationsList.length > 1 
@@ -444,6 +445,19 @@ export default function EmployerApplications({ profile, refreshStats }) {
                     : `Applying for: ${selectedApp.job_title}`}
                 </p>
               </div>
+              <button 
+                onClick={() => { setSelectedApp(null); setIsAppDropdownOpen(false); }}
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors border-2 cursor-pointer shrink-0 ${
+                  isDark 
+                    ? 'bg-black text-white border-white hover:bg-white hover:text-black' 
+                    : 'bg-white text-[#03045E] border-gray-200 hover:bg-gray-100'
+                }`}
+                aria-label="Close modal"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
           {/* CUSTOM DROPDOWN TO SELECT WHICH JOB TO REVIEW */}
@@ -713,17 +727,8 @@ export default function EmployerApplications({ profile, refreshStats }) {
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-3 sm:gap-0">
-                  <button 
-                    onClick={() => { setSelectedApp(null); setIsAppDropdownOpen(false); }} 
-                    className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg cursor-pointer border-2 ${
-                      isDark 
-                        ? 'bg-black text-white border-white' 
-                        : 'bg-white text-[#03045E] border-gray-200'
-                    }`}
-                  >
-                    Close Window
-                  </button>
+                <div className="flex flex-col sm:flex-row justify-end items-center w-full gap-3 sm:gap-0">
+                  {/* --- REMOVED CLOSE WINDOW BUTTON HERE --- */}
                   
                   {selectedApp.application_status !== 'Hired' && selectedApp.application_status !== 'Rejected' && selectedApp.application_status !== 'Withdrawn' ? (
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
@@ -734,12 +739,13 @@ export default function EmployerApplications({ profile, refreshStats }) {
                         Reject
                       </button>
                       
+                      {/* --- UPDATED SHORTLIST BUTTON STYLING --- */}
                       <button 
                         onClick={() => setNextSteps({ isOpen: true, status: 'Shortlisted' })} 
-                        className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg cursor-pointer border-2 ${
+                        className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg cursor-pointer border-2 transition-colors ${
                           isDark 
-                            ? 'bg-black text-white border-white' 
-                            : 'bg-white text-[#03045E] border-gray-200'
+                            ? 'bg-[#03045E]/40 text-white border-[#03045E] hover:bg-[#03045E]/60' 
+                            : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#020236]'
                         }`}
                       >
                         Shortlist

@@ -1146,7 +1146,8 @@ app.get('/api/applicant/:id/applications', async (req, res) => {
         const [applications] = await db.execute(`
             SELECT
                 a.id as application_id, a.status, a.applied_at, a.employer_message,
-                j.job_title, j.company_name
+                j.job_title, j.company_name, j.job_description, j.salary_range, 
+                j.benefits, j.provided_accommodations, j.required_skills
             FROM applications a
             JOIN job_postings j ON a.job_id = j.id
             WHERE a.applicant_id = ?
@@ -1496,20 +1497,19 @@ app.put('/api/applications/:id/status', async (req, res) => {
     const applicationId = req.params.id;
     const { status, employer_message, applicant_id, job_title, company_name } = req.body;
 
-    try {
-        await db.execute(
-            "UPDATE applications SET status = ?, employer_message = ? WHERE id = ?",
-            [status, employer_message || null, applicationId]
-        );
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
 
+    try {
         if (status === 'Hired') {
-            const [appRows] = await db.execute('SELECT job_id, applicant_id FROM applications WHERE id = ?', [applicationId]);
+            const [appRows] = await connection.execute('SELECT job_id, applicant_id FROM applications WHERE id = ?', [applicationId]);
+            
             if (appRows.length > 0) {
                 const jobId = appRows[0].job_id;
                 const applicantId = appRows[0].applicant_id;
 
-                // --- NEW: Block double-hiring for the same employer ---
-                const [existingHire] = await db.execute(`
+                // 1. Check for double-hiring FIRST before updating anything
+                const [existingHire] = await connection.execute(`
                     SELECT a.id 
                     FROM applications a
                     JOIN job_postings j ON a.job_id = j.id
@@ -1521,20 +1521,35 @@ app.put('/api/applications/:id/status', async (req, res) => {
                 `, [jobId, applicantId, applicationId]);
 
                 if (existingHire.length > 0) {
+                    await connection.rollback();
+                    connection.release();
                     return res.status(400).json({ 
                         message: "This applicant is already hired for another role at your company. You cannot hire them for a second role." 
                     });
                 }
 
-                // If they pass the check, continue with normal hiring logic:
-                await db.execute("UPDATE job_postings SET status = 'Archived' WHERE id = ?", [jobId]);
+                // 2. Only if they pass the check, update the status
+                await connection.execute(
+                    "UPDATE applications SET status = ?, employer_message = ? WHERE id = ?",
+                    [status, employer_message || null, applicationId]
+                );
 
-                await db.execute(
+                // 3. Archive the job and reject others
+                await connection.execute("UPDATE job_postings SET status = 'Archived' WHERE id = ?", [jobId]);
+                await connection.execute(
                     "UPDATE applications SET status = 'Rejected', employer_message = 'The position has been filled.' WHERE job_id = ? AND id != ?",
                     [jobId, applicationId]
                 );
             }
+        } else {
+            // Normal status update for Shortlisted, Rejected, etc.
+            await connection.execute(
+                "UPDATE applications SET status = ?, employer_message = ? WHERE id = ?",
+                [status, employer_message || null, applicationId]
+            );
         }
+
+        await connection.commit();
 
         const alertTitle = `Application Status Update: ${status}`;
         const alertMessage = `Hello! Your application for the ${job_title} role at ${company_name} has been marked as ${status}. Please log in to your AbleWork dashboard for more details.`;
@@ -1543,8 +1558,11 @@ app.put('/api/applications/:id/status', async (req, res) => {
 
         res.status(200).json({ message: "Status updated and applicant notified!" });
     } catch (error) {
+        await connection.rollback();
         console.error("Status Update Error:", error.message);
         res.status(500).json({ error: "Failed to update status." });
+    } finally {
+        connection.release();
     }
 });
 

@@ -8,12 +8,16 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
+  // New state to track which job details are expanded
+  const [expandedDetails, setExpandedDetails] = useState({});
+
   const [confirmWithdraw, setConfirmWithdraw] = useState({ isOpen: false, appId: null, loading: false });
   const [sweetAlert, setSweetAlert] = useState({ isOpen: false, title: '', text: '', type: 'notice' });
 
   useEffect(() => {
     setCurrentPage(1);
     setExpandedCompany(null); // Close all when filter changes
+    setExpandedDetails({}); // Reset details expansion
   }, [filter]);
 
   const executeWithdraw = async () => {
@@ -73,7 +77,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     });
   }, [applications, filter]);
 
-  // Group by company to prevent duplicate company cards
   const groupedCompanies = useMemo(() => {
     const groups = {};
     filteredApps.forEach(app => {
@@ -111,39 +114,45 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     }
   };
 
-  const renderCard = (companyGroup) => {
+  // Safe array parsing for JSON strings from the DB
+  const parseSafeArray = (data) => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    try { return JSON.parse(data); } catch (e) { 
+      return data.replace(/[\[\]"]/g, '').split(',').map(s => s.trim()).filter(Boolean); 
+    }
+  };
+
+    const renderCard = (companyGroup) => {
     const isOpen = expandedCompany === companyGroup.company_name;
     
-    // Determine which role to show (default to first if none selected)
+    // Determine which role to show
     const activeRole = selectedRolePerCompany[companyGroup.company_name] || companyGroup.applicationsList[0];
     const appCount = companyGroup.applicationsList.length;
     const canWithdraw = activeRole.status === 'Received' || activeRole.status === 'Under Review' || activeRole.status === 'Shortlisted';
+    
+    // Check if job details are expanded
+    const showDetails = expandedDetails[activeRole.application_id];
+
+    // Count how many roles they are hired for in THIS company (usually just 1)
+    const hiredCount = companyGroup.applicationsList.filter(a => a.status === 'Hired').length;
 
     return (
       <div key={companyGroup.company_name} role="listitem" className="w-full">
         <div className={`overflow-hidden rounded-lg sm:rounded-xl bg-white shadow-md border border-[#03045E]/20 transition-all duration-200 hover:shadow-lg ${activeRole.status === 'Rejected' ? 'opacity-80' : ''}`}>
           
-          {/* Header with fixed height for consistent sizing */}
           <button
             type="button"
             onClick={() => setExpandedCompany(isOpen ? null : companyGroup.company_name)}
-            aria-expanded={isOpen}
-            aria-controls={`panel-${companyGroup.company_name.replace(/\s+/g, '-')}`}
-            aria-label={`${companyGroup.company_name}. ${appCount} application${appCount > 1 ? 's' : ''}. Status: ${activeRole.status}. Click to ${isOpen ? 'hide' : 'show'} details.`}
             className="w-full text-left h-[140px] sm:h-[160px] p-3 sm:p-4 flex flex-col justify-between cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-inset"
           >
-            <span className="sr-only">
-              Company: {companyGroup.company_name}. You have {appCount} application{appCount > 1 ? 's' : ''} here. 
-              Currently viewing: {activeRole.job_title}. Status: {activeRole.status}.
-            </span>
-
             <div className="flex flex-row justify-between items-start gap-2 sm:gap-4 w-full min-w-0">
               <div className="flex-1 min-w-0 flex flex-col">
                 <h3 className="text-sm sm:text-2xl font-extrabold text-[#03045E] leading-tight break-words line-clamp-2 w-full">
                   {companyGroup.company_name}
                 </h3>
                 <p className="text-[10px] sm:text-sm font-extrabold text-[#2C7FFF] mt-0.5 sm:mt-1 break-words line-clamp-1">
-                  {activeRole.job_title} {appCount > 1 && `(1 of ${appCount})`}
+                  {activeRole.job_title} {appCount > 1 && `(Showing 1 of ${appCount} roles)`}
                 </p>
               </div>
 
@@ -151,12 +160,11 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                 <div
                   tabIndex="0"
                   role="text"
-                  aria-label={`Status: ${activeRole.status}`}
-                  title={`Status: ${activeRole.status}`}
                   className={`px-2 py-0.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-sm font-extrabold rounded-lg border whitespace-nowrap flex items-center gap-1.5 sm:gap-2 focus:outline-none ${getStatusStyle(activeRole.status)}`}
                   style={getRejectedStyle(activeRole.status)}
                 >
-                  {activeRole.status}
+                  {/* ADDED: Show hired count if they are hired for multiple roles here */}
+                  {activeRole.status} {hiredCount > 1 && `(${hiredCount})`}
                   <svg
                     className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                     fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"
@@ -174,7 +182,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
             </div>
           </button>
 
-          {/* Separated slide panel */}
           <div
             id={`panel-${companyGroup.company_name.replace(/\s+/g, '-')}`}
             role="region"
@@ -196,14 +203,18 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                           <button
                             key={app.application_id}
                             onClick={() => setSelectedRolePerCompany(prev => ({ ...prev, [companyGroup.company_name]: app }))}
-                            aria-pressed={isSelected}
-                            className={`px-3 py-2 text-xs sm:text-sm font-bold rounded-lg border-2 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${
+                            className={`px-3 py-2 text-xs sm:text-sm font-bold rounded-lg border-2 transition-all cursor-pointer flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${
                               isSelected
                                 ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
                                 : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF]'
                             }`}
                           >
                             {app.job_title}
+                            {app.status === 'Hired' && (
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase ${isSelected ? 'bg-white text-[#2C7FFF]' : 'bg-green-100 text-green-700'}`}>
+                                Hired
+                              </span>
+                            )}
                           </button>
                         );
                       })}
@@ -211,6 +222,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                   </div>
                 )}
 
+                {/* Status Message */}
                 <div className="flex flex-col gap-0.5 flex-1 min-w-0 border-t border-[#03045E]/10 pt-3">
                   <h4 className="text-[9px] sm:text-xs font-extrabold text-[#2C7FFF] uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 focus:outline-none">
                     <svg className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
@@ -223,6 +235,57 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                   </p>
                 </div>
 
+                {/* --- JOB DETAILS SECTION --- */}
+                <div className="pt-3 border-t border-[#03045E]/10">
+                  <button 
+                    onClick={() => setExpandedDetails(prev => ({ ...prev, [activeRole.application_id]: !showDetails }))}
+                    className="text-[11px] sm:text-sm font-bold text-[#2C7FFF] hover:text-[#03045E] flex items-center gap-1.5 transition-colors focus:outline-none"
+                  >
+                    {showDetails ? 'Hide Job Details' : 'View Job Details & Benefits'}
+                    <svg className={`w-3.5 h-3.5 transition-transform ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+
+                  {showDetails && (
+                    <div className="mt-3 bg-white p-3 rounded-lg border border-[#03045E]/10 flex flex-col gap-3 shadow-sm">
+                      {activeRole.salary_range && (
+                        <div>
+                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Salary</span>
+                          <p className="text-xs font-semibold text-[#03045E]">{activeRole.salary_range}</p>
+                        </div>
+                      )}
+                      
+                      {parseSafeArray(activeRole.benefits).length > 0 && (
+                        <div>
+                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Benefits</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {parseSafeArray(activeRole.benefits).map((benefit, i) => (
+                              <span key={i} className="px-2 py-0.5 bg-gray-100 text-[#03045E] text-[10px] rounded border border-gray-200">{benefit}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {parseSafeArray(activeRole.provided_accommodations).length > 0 && (
+                        <div>
+                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Accommodations</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {parseSafeArray(activeRole.provided_accommodations).map((acc, i) => (
+                              <span key={i} className="px-2 py-0.5 bg-blue-50 text-[#2C7FFF] text-[10px] rounded border border-blue-200">{acc}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {activeRole.job_description && (
+                        <div>
+                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Job Description</span>
+                          <p className="text-xs text-[#03045E]/80 mt-1 whitespace-pre-wrap line-clamp-4 hover:line-clamp-none transition-all">{activeRole.job_description}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {canWithdraw && (
                   <div className="pt-3 mt-1 border-t border-[#03045E]/10">
                     <button
@@ -230,8 +293,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                         e.stopPropagation(); 
                         setConfirmWithdraw({ isOpen: true, appId: activeRole.application_id, loading: false });
                       }}
-                      aria-label={`Withdraw application for ${activeRole.job_title} at ${companyGroup.company_name}`}
-                      className="w-full sm:w-auto px-4 py-3 text-xs font-bold rounded-lg border-2 transition-all cursor-pointer shadow-sm bg-white text-red-600 border-red-500 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                      className="w-full sm:w-auto px-5 py-3 text-sm font-black rounded-xl border-2 transition-all cursor-pointer shadow-sm !bg-white !text-red-600 !border-red-500 hover:!bg-red-50 hover:!text-red-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-500"
                     >
                       Withdraw Application
                     </button>
@@ -247,26 +309,28 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
 
   return (
     <div className="animate-fadeIn w-full space-y-4 sm:space-y-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] pb-4">
-
+      
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
         <div className="min-w-0 w-full">
-          <h2 tabIndex="0" className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#03045E] break-words focus:outline-none">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#03045E] break-words">
             My Job Tracker
           </h2>
-          <p tabIndex="0" className="text-[#03045e] mt-0.5 sm:mt-1.5 text-[11px] sm:text-sm md:text-base font-semibold focus:outline-none">
+          <p className="text-[#03045e] mt-0.5 sm:mt-1.5 text-[11px] sm:text-sm md:text-base font-semibold">
             Monitor the status of your applications in real-time.
           </p>
         </div>
         {applications.length > 0 && (
-          <div tabIndex="0" role="status" className="flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-[#f4f4f4] border border-[#03045E]/20 shrink-0 focus:outline-none">
-            <span aria-hidden="true" className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#2C7FFF]" />
-            <span aria-hidden="true" className="text-[9px] sm:text-xs font-extrabold uppercase tracking-widest text-[#03045E]">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-[#f4f4f4] border border-[#03045E]/20 shrink-0">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#2C7FFF]" />
+            <span className="text-[9px] sm:text-xs font-extrabold uppercase tracking-widest text-[#03045E]">
               {applications.length} application{applications.length !== 1 ? 's' : ''}
             </span>
           </div>
         )}
       </div>
 
+      {/* Tabs */}
       <div className="flex gap-1 p-1 sm:gap-2 sm:p-2 rounded-lg sm:rounded-xl bg-[#f4f4f4] border border-[#03045E]/15 w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         {trackingTabs.map(tab => {
           const count = getTabCount(tab);
@@ -293,14 +357,13 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         })}
       </div>
 
+      {/* Cards */}
       {groupedCompanies.length > 0 ? (
         <>
-          {/* Mobile view - single column */}
           <div role="list" className="md:hidden flex flex-col gap-3 w-full">
             {currentCompanies.map(company => renderCard(company))}
           </div>
 
-          {/* Desktop view - 2 column masonry (RESTORED) */}
           <div role="list" className="hidden md:flex flex-row gap-3 sm:gap-6 w-full items-start">
             <div className="flex-1 flex flex-col gap-3 sm:gap-6 w-full">
               {currentCompanies.filter((_, i) => i % 2 === 0).map(company => renderCard(company))}
@@ -311,7 +374,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
           </div>
         </>
       ) : (
-        <div role="status" className="p-5 sm:p-12 rounded-lg sm:rounded-xl border-2 border-dashed border-[#03045E]/30 bg-[#f4f4f4] flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[280px]">
+        <div className="p-5 sm:p-12 rounded-lg sm:rounded-xl border-2 border-dashed border-[#03045E]/30 bg-[#f4f4f4] flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[280px]">
           <div className="w-10 h-10 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 sm:mb-5 border border-[#03045E]/20 text-[#2C7FFF]">
             <svg className="w-5 h-5 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
@@ -328,12 +391,12 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         </div>
       )}
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-between items-center gap-3 w-full pt-4 mt-2">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            aria-label="Go to previous page"
             className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 bg-white text-[#03045E] border-[#03045E]/30 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2C7FFF]"
           >
             Previous
@@ -344,7 +407,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            aria-label="Go to next page"
             className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 bg-white text-[#03045E] border-[#03045E]/30 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2C7FFF]"
           >
             Next
@@ -352,9 +414,10 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         </div>
       )}
 
-      {/* MODALS */}
+      {/* Modals remain the same... */}
       {confirmWithdraw.isOpen && (
-        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title" tabIndex="-1">
+         // ... (keep your existing withdraw modal here)
+         <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title" tabIndex="-1">
           <div className="relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 bg-white border-2 border-[#03045E]/30">
             <div aria-hidden="true" className="h-1.5 sm:h-2 w-full bg-[#03045E]" />
             <div className="relative px-6 pt-6 pb-6 flex flex-col items-center text-center">
@@ -389,6 +452,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       )}
 
       {sweetAlert.isOpen && (
+        // ... (keep your existing sweetAlert modal here)
         <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }} role="alertdialog" aria-modal="true" aria-labelledby="sweetalert-title" tabIndex="-1">
           <div className="relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 bg-white border-2 border-[#03045E]/30">
             <div aria-hidden="true" className="h-1.5 sm:h-2 w-full bg-[#03045E]" />
