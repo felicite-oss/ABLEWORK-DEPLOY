@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../../config';
+import API_BASE_URL from '../../../config';
 
 export function AdminSupportTickets() {
   const [tickets, setTickets] = useState([]);
