@@ -197,6 +197,26 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
 
     return appliedLocally || appliedOnServer;
   };
+  
+  useEffect(() => {
+    if (applications && applications.length > 0) {
+      // Extract all applied job IDs directly from the server
+      const serverAppliedIds = applications.map(app => String(app.job_id || app.id || app.job?.id));
+      
+      setLocallyAppliedJobs(prev => {
+        // Keep only the local IDs that the server ALSO knows about. 
+        // (If it's not on the server yet, keep it so the UI doesn't flash).
+        const cleaned = prev.filter(id => serverAppliedIds.includes(String(id)));
+        
+        // If nothing changed, don't trigger a re-render
+        if (cleaned.length === prev.length) return prev;
+        
+        // Update local storage with the clean list
+        localStorage.setItem('applicantLocallyAppliedJobs', JSON.stringify(cleaned));
+        return cleaned;
+      });
+    }
+  }, [applications]);
 
   useEffect(() => {
     if (initialSelectedJob) {

@@ -50,6 +50,15 @@ export default function ApplicantDashboard() {
   const profilePanelRef = useRef(null);
   const logoutPanelRef = useRef(null);
 
+  // --- GLOBAL CACHE CLEANUP ON SESSION CHANGE ---
+  // Ensures that if a user logs out, the local storage cache is wiped before they log back in.
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      localStorage.removeItem('applicantLocallyAppliedJobs');
+    }
+  }, [navigate]);
+
   const handleTabChange = (tab, skipSecurity = false) => {
     // 1. GLOBAL SECURITY INTERCEPT: Force password check for Profile and Settings
     if ((tab === 'profile' || tab === 'settings') && !skipSecurity) {
@@ -212,6 +221,7 @@ export default function ApplicantDashboard() {
             if (data.account_status === 'Disabled' || data.account_status === 'Deactivated') {
                alert("Your account has been disabled by an administrator.");
                localStorage.removeItem('user');
+               localStorage.removeItem('applicantLocallyAppliedJobs'); // Clear cache on forced logout
                window.location.href = '/login';
             }
           }
@@ -351,6 +361,9 @@ export default function ApplicantDashboard() {
     setIsLoggingOut(true);
     setTimeout(() => {
       localStorage.removeItem('profile_picture');
+      // --- THIS IS THE NEW ADDITION ---
+      localStorage.removeItem('applicantLocallyAppliedJobs'); 
+      // --------------------------------
       navigate('/login');
     }, 3000);
   };

@@ -118,7 +118,7 @@ export function AdminSupportTickets() {
                   <td className="py-4 px-6 text-right">
                     <button
                       onClick={() => setSelectedTicket(ticket)}
-                      className="px-4 py-2 bg-white text-[#2C7FFF] border-2 border-[#2C7FFF] text-[10px] font-black uppercase tracking-wider rounded-lg hover:bg-[#2C7FFF] hover:text-white transition-colors cursor-pointer"
+                      className="px-4 py-2 bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] text-[10px] font-black uppercase tracking-wider rounded-lg hover:bg-[#03045E] hover:border-[#03045E] transition-colors cursor-pointer"
                     >
                       View Details
                     </button>
