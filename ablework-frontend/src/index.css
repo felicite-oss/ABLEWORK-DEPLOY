@@ -1120,7 +1120,3 @@ html.dark-mode .welcome-badge *,
   -webkit-text-fill-color: #000000 !important;
 }
 
-/* Force the browser's native install prompt to use light mode colors */
-:root {
-  color-scheme: light;
-}
