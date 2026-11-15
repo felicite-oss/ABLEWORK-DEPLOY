@@ -2258,6 +2258,59 @@ app.get('/api/users/:id/status', async (req, res) => {
     }
 });
 
+// ---------------------------------------------------------
+// ROUTE: SUBMIT SUPPORT TICKET
+// ---------------------------------------------------------
+app.post('/api/support/ticket', async (req, res) => {
+    const { userId, userName, userEmail, userRole, subject, message } = req.body;
+
+    if (!subject || !message) {
+        return res.status(400).json({ message: "Subject and message are required." });
+    }
+
+    try {
+        await db.execute(
+            `INSERT INTO support_tickets (user_id, user_name, user_email, user_role, subject, message) 
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [userId || null, userName || 'Guest', userEmail || 'N/A', userRole || 'Guest', subject, message]
+        );
+
+        res.status(201).json({ message: "Support ticket submitted successfully. Our team will review this shortly." });
+    } catch (error) {
+        console.error("Support Ticket Error:", error.message);
+        res.status(500).json({ message: "Server error submitting support ticket." });
+    }
+});
+
+// ---------------------------------------------------------
+// ROUTE: ADMIN - FETCH ALL SUPPORT TICKETS
+// ---------------------------------------------------------
+app.get('/api/admin/support/tickets', async (req, res) => {
+    try {
+        const [tickets] = await db.execute(`SELECT * FROM support_tickets ORDER BY created_at DESC`);
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error("Fetch Tickets Error:", error.message);
+        res.status(500).json({ message: "Server error fetching tickets." });
+    }
+});
+
+// ---------------------------------------------------------
+// ROUTE: ADMIN - UPDATE TICKET STATUS
+// ---------------------------------------------------------
+app.put('/api/admin/support/tickets/:id/status', async (req, res) => {
+    const ticketId = req.params.id;
+    const { status } = req.body; // 'Resolved' or 'Open'
+    
+    try {
+        await db.execute(`UPDATE support_tickets SET status = ? WHERE id = ?`, [status, ticketId]);
+        res.status(200).json({ message: `Ticket marked as ${status}.` });
+    } catch (error) {
+        console.error("Update Ticket Error:", error.message);
+        res.status(500).json({ message: "Server error updating ticket." });
+    }
+});
+
 // =========================================================
 // Global error handler — MUST be registered after all routes,
 // before app.listen, and MUST have exactly 4 arguments.

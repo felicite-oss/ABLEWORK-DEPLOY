@@ -3,6 +3,7 @@ import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
 import LightLogo from '../../assets/LIGHT MODE.png';
+import API_BASE_URL from '../../../config'; 
 
 export function ApplicantPageLayout({ title, subtitle, children, onBack }) {
   const { mode } = useContext(AccessibilityContext);
@@ -678,23 +679,66 @@ export function ApplicantTerms({ onBack }) {
 }
 
 
-export function ApplicantContact({ onBack }) {
+export function ApplicantContact({ onBack, profile }) {
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!subject.trim() || !message.trim()) {
+      setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setAlert({ show: false, type: '', text: '' });
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: profile?.user_id || profile?.id,
+          userName: profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
+          userEmail: profile?.email || 'N/A',
+          userRole: profile?.role || 'Applicant',
+          subject,
+          message
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setAlert({ show: true, type: 'success', text: data.message });
+        setSubject('');
+        setMessage('');
+      } else {
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit ticket.' });
+      }
+    } catch (err) {
+      console.error(err);
+      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <ApplicantPageLayout
       title="Help and Support"
-      subtitle="Get assistance with your dashboard, applications, or profile"
+      subtitle="Get assistance with your dashboard, applications, or report suspicious activity"
       onBack={onBack}
     >
       <div className="grid md:grid-cols-2 gap-8">
 
+        {/* LEFT SIDE: INFO CARDS */}
         <div className="space-y-6">
-          <div
-            role="region"
-            aria-label="System Name: ABLEWORK"
-            className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10"
-          >
+          <div role="region" aria-label="System Name: ABLEWORK" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">System Name</h3>
-            <p role="text" aria-label="ABLEWORK" tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">ABLEWORK</p>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">ABLEWORK</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
@@ -723,40 +767,67 @@ export function ApplicantContact({ onBack }) {
             </p>
           </div>
 
-          <div
-            role="region"
-            aria-label="Institution: STIWNU"
-            className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10"
-          >
-            <h3 role="text" aria-label="Institution" tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Institution</h3>
-            <p role="text" aria-label="STIWNU" tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">STIWNU</p>
+          <div role="region" aria-label="Institution: STIWNU" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Institution</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">STIWNU</p>
           </div>
         </div>
 
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        {/* RIGHT SIDE: SUPPORT FORM */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <h3 tabIndex="0" className="text-lg font-bold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Submit a Support Ticket</h3>
-          <input
-            type="text"
-            placeholder="Subject / Issue Summary"
-            aria-label="Subject or Issue Summary"
-            className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
-          />
-          <textarea
-            rows="4"
-            placeholder="Describe your issue or question..."
-            aria-label="Describe your issue or question"
-            className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
-          />
           
+          {/* Alert Banner */}
+          {alert.show && (
+            <div 
+              role="alert"
+              className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 ${
+                alert.type === 'success' 
+                  ? 'bg-green-50 text-green-700 border-green-300' 
+                  : 'bg-red-50 text-red-700 border-red-300'
+              }`}
+            >
+              {alert.text}
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
+            <input
+              id="ticket-subject"
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Subject / Issue Summary"
+              aria-label="Subject or Issue Summary"
+              className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
+            <textarea
+              id="ticket-message"
+              rows="4"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Describe your issue, question, or report suspicious activity..."
+              aria-label="Describe your issue or question"
+              className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
+              disabled={isSubmitting}
+            />
+          </div>
 
           <button
             type="submit"
+            disabled={isSubmitting}
             aria-label="Submit Request Ticket"
-            className="group w-full py-4 px-6 bg-[#03045E] text-[#f4f4f4] font-extrabold text-sm rounded-2xl border-2 border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:text-[#f4f4f4] transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between"
+            className="group w-full py-4 px-6 bg-[#03045E] text-[#f4f4f4] font-extrabold text-sm rounded-2xl border-2 border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:text-[#f4f4f4] transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#2C7FFF] group-hover:bg-[#f4f4f4] transition-colors" />
-              Submit Request Ticket
+              {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
             </span>
             <span className="w-7 h-7 rounded-xl bg-[#2C7FFF]/20 group-hover:bg-[#f4f4f4]/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
               →

@@ -1307,7 +1307,10 @@ export default function ApplicantDashboard() {
               )}
 
               {activeTab === 'applicant-contact' && (
-                <ApplicantContact onBack={() => handleTabChange('overview')} />
+                <ApplicantContact 
+                  onBack={() => handleTabChange('overview')} 
+                  profile={profile} 
+                />
               )}
             </div>
           </div>

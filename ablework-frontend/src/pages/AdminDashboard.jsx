@@ -7,6 +7,7 @@ import ProfileMenu from '../components/Admin/ProfileMenu';
 import SettingsModal from '../components/Admin/SettingsModal';
 import DarkModeToggle from '../components/Admin/DarkModeToggle';
 import API_BASE_URL from '../../config';
+import { AdminSupportTickets } from '../components/Admin/AdminSupportTickets';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -712,7 +713,7 @@ export default function AdminDashboard() {
         >
           <div className="w-full">
             <nav className={`flex flex-col px-2.5 pt-2.5 pb-2.5 gap-2 sm:px-3 sm:pt-3 sm:pb-3 sm:gap-2.5 ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
-              {[
+                            {[
                 { id: 'Overview', label: 'Overview', desc: 'Dashboard summary', icon: (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 )},
@@ -721,6 +722,10 @@ export default function AdminDashboard() {
                 )},
                 { id: 'Applicants', label: 'Applicants', desc: 'Manage job seekers', icon: (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                )},
+
+                { id: 'SupportTickets', label: 'Support Tickets', desc: 'User reports', icon: (
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 )}
               ].map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -832,7 +837,8 @@ export default function AdminDashboard() {
               {[
                 { id: 'Overview', label: 'Overview', desc: 'Dashboard summary' },
                 { id: 'Employers', label: 'Employers', desc: 'Manage companies' },
-                { id: 'Applicants', label: 'Applicants', desc: 'Manage job seekers' }
+                { id: 'Applicants', label: 'Applicants', desc: 'Manage job seekers' },
+                { id: 'SupportTickets', label: 'Support Tickets', desc: 'User reports & bans' }
               ].map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -987,6 +993,12 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
+
+           {activeTab === 'SupportTickets' && (
+            <div className="flex flex-col gap-3 sm:gap-6 animate-in fade-in duration-300 mt-6">
+              <AdminSupportTickets />
+            </div>
+          )}
 
           {activeTab === 'Overview' && stats && (
             <div className="flex flex-col gap-6 animate-in fade-in duration-300 mt-6">

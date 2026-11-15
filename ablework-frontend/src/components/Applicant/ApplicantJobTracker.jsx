@@ -101,7 +101,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       case 'Received': return 'bg-gray-100 text-gray-700 border-gray-300';
       case 'Under Review': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       case 'Shortlisted': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
-      case 'Hired': return 'bg-emerald-50 text-emerald-700 border-emerald-300';
+      case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
       case 'Withdrawn': return 'bg-gray-100 text-gray-600 border-gray-300';
       case 'Rejected': return 'bg-red-50 text-red-700 border-red-300';
       default: return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
@@ -322,19 +322,20 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                             }`}
                           >
                             <span>{app.job_title}</span>
-                            {/* FIX: Only show Hired badge if status is EXACTLY Hired */}
+                            
+                            {/* NO GREEN. We use the Primary Bright Blue for Hired. */}
                             {app.status === 'Hired' && (
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider ${
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider border ${
                                 isSelected 
-                                  ? (isDark ? 'bg-black text-emerald-400' : 'bg-white text-emerald-600') 
-                                  : (isDark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-700')
+                                  ? 'bg-white text-[#2C7FFF] border-white' 
+                                  : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
                               }`}>
                                 Hired
                               </span>
                             )}
                           </button>
                         );
-                      })}
+                      })} 
                     </div>
                   </div>
                 )}
