@@ -99,7 +99,13 @@ const JobCardDescription = ({ description, isExpanded, onToggle }) => {
     <div className="flex-1 flex flex-col min-h-[80px] sm:min-h-[100px]">
       <p 
         ref={textRef}
-        onClick={() => (isOverflowing || isExpanded) && onToggle()}
+        onClick={(e) => {
+          // Prevent toggling if clicking inside, wait for button
+          if ((isOverflowing || isExpanded)) {
+            e.stopPropagation();
+            onToggle();
+          }
+        }}
         className={`text-[#03045E] text-xs sm:text-sm font-semibold leading-relaxed ${(isOverflowing || isExpanded) ? 'cursor-pointer' : ''} ${isExpanded ? '' : 'line-clamp-2'}`}
       >
         {description}
@@ -150,15 +156,18 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
   const jobsPerPage = 12;
   const [expandedJobs, setExpandedJobs] = useState([]);
   const [activeTab, setActiveTab] = useState('available'); 
+  
+  // Cache applied jobs locally to bypass slow server refreshes
   const [locallyAppliedJobs, setLocallyAppliedJobs] = useState(() => {
     try {
       const saved = localStorage.getItem('applicantLocallyAppliedJobs');
       const parsed = saved ? JSON.parse(saved) : [];
-      return Array.isArray(parsed) ? parsed.map(String) : [];
+      return Array.isArray(parsed) ? parsed.map(String) : []; 
     } catch {
       return [];
     }
   });
+  
   const modalRef = useRef(null);
   const closeButtonRef = useRef(null);
 
@@ -172,19 +181,21 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     setCurrentPage(1);
   }, [searchQuery, selectedSalary, selectedIndustry, selectedSkills, selectedAccs, activeTab]);
 
-  // Robust check for applied jobs
+  // --- THE FIX: BULLETPROOF CHECK ---
   const checkHasApplied = (jobId) => {
-    const targetId = String(jobId);
+    const targetId = String(jobId).trim();
     
-    // 1. Check if it's in the server applications (Even if rejected/withdrawn, it counts as applied)
-    const appliedOnServer = applications.some(app => 
-      String(app.job_id) === targetId || String(app.id) === targetId
-    );
-    
-    // 2. Check local storage cache (in case of immediate UI update before server refresh)
-    const appliedLocally = locallyAppliedJobs.some(id => String(id) === targetId);
+    // 1. Check Local Cache
+    const appliedLocally = locallyAppliedJobs.some(id => String(id).trim() === targetId);
 
-    return appliedOnServer || appliedLocally;
+    // 2. Check Server Applications (Deep checking for nested objects)
+    const appliedOnServer = applications.some(app => {
+      // Sometimes API returns { job_id: 220 }, sometimes { id: 220 }, sometimes { job: { id: 220 } }
+      const appJobId = app.job_id || app.id || app.job?.id || app.jobId; 
+      return String(appJobId).trim() === targetId;
+    });
+
+    return appliedLocally || appliedOnServer;
   };
 
   useEffect(() => {
@@ -273,7 +284,6 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
   const toggleAcc = (acc) => setSelectedAccs(prev => prev.includes(acc) ? prev.filter(a => a !== acc) : [...prev, acc]);
   const toggleExpand = (jobId) => setExpandedJobs(prev => prev.includes(jobId) ? prev.filter(id => id !== jobId) : [...prev, jobId]);
 
-  // Calculate applied count dynamically
   const appliedCount = useMemo(() => {
     if (!jobs) return 0;
     return jobs.filter(job => checkHasApplied(job.id)).length;
@@ -312,8 +322,8 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
 
       const isApplied = checkHasApplied(job.id);
       
-      // If we are on the 'applied' tab, ONLY show applied jobs.
-      // If we are on the 'available' tab, ONLY show un-applied jobs.
+      // If we are on the 'applied' tab, only show applied jobs.
+      // If we are on the 'available' tab, only show un-applied jobs.
       if (activeTab === 'applied') {
         return isApplied;
       } else {
@@ -366,7 +376,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
       const data = await res.json();
       if (res.ok) {
         closeModal();
-        // Force save to local state immediately so it moves to the applied tab
+        // Force save to local state immediately
         setLocallyAppliedJobs(prev => {
           const updated = [...prev, String(selectedJob.id)];
           localStorage.setItem('applicantLocallyAppliedJobs', JSON.stringify(updated));
@@ -380,7 +390,6 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
           text: 'Your application was submitted successfully. The employer will review your profile soon. Good luck!'
         });
         
-        // Optional: Refresh data silently to sync backend, but UI is already updated
         if (refreshData) refreshData();
       } else {
         setSweetAlert({
