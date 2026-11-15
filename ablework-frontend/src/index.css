@@ -1140,3 +1140,11 @@ html.dark-mode .welcome-badge *,
 ::part(install-button) {
   color: #000000 !important;
 }
+/* Force PWA Install Prompt Button text to black */
+button[aria-label="Install app"], 
+button[aria-label="Install App"],
+button[aria-label="Install"],
+.pwa-install-button {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
