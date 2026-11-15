@@ -64,7 +64,7 @@ const containerMaxWidth = 'max-w-[94%] sm:max-w-md md:max-w-xl lg:max-w-2xl';
               <NavLink to="/policy" title="Policy" className={({ isActive }) => `transition-colors duration-200 hover:scale-105 transform ${isAccessibilityMode ? '!text-white' : ''} ${isActive ? (isAccessibilityMode ? '!text-white font-semibold border-b-2 border-white pb-0.5' : 'text-[#2C7FFF] font-semibold border-b-2 border-[#2C7FFF] pb-0.5') : ''}`}>Policy</NavLink>
             </nav>
           </div>
-                   <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center">
             <NavLink to="/login" aria-label="Log In" title="Log In" className={({ isActive }) => `px-5 py-2 rounded-full text-sm font-bold border-2 transform duration-200 transition whitespace-nowrap ${isActive ? 'bg-[#2C7FFF] text-white border-[#2C7FFF] underline font-semibold' : isDarkActive ? 'bg-white !text-black border-white hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]' : isAccessibilityMode ? 'bg-transparent !text-white border-white' : 'bg-transparent text-[#03045E] border-[#03045E] hover:bg-[#2C7FFF] hover:text-[#f4f4f4] hover:border-[#2C7FFF] hover:brightness-125'}`}>Log In</NavLink>
           </div>
           <button aria-label="Menu" title="Menu" aria-expanded={isOpen} aria-controls="mobile-menu" className={`md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg border-2 shadow-sm cursor-pointer transition-all duration-200 shrink-0 ${isAccessibilityMode ? 'bg-zinc-900 text-white border-white/30' : 'bg-white text-[#03045E] border-[#03045E]/20'}`} onClick={() => setIsOpen(!isOpen)}>
@@ -137,7 +137,7 @@ const containerMaxWidth = 'max-w-[94%] sm:max-w-md md:max-w-xl lg:max-w-2xl';
 
               <div aria-hidden="true" className={`h-px my-0.5 ${isAccessibilityMode ? 'bg-[#2C7FFF]/30' : 'bg-[#03045E]/15'}`}></div>
 
-              <NavLink to="/login" onClick={() => setIsOpen(false)} aria-label="Log In" title="Log In" className={({ isActive }) => `relative flex items-center gap-2.5 text-left pl-3 pr-2.5 py-2.5 rounded-xl font-extrabold transition-all duration-300 cursor-pointer border-2 group overflow-hidden ${isActive ? 'bg-white text-[#03045E] border-[#03045E] shadow-md' : isDarkActive ? 'bg-white !text-black border-white shadow-md' : 'bg-white text-[#03045E] border-[#03045E]/25'}`}>
+                           <NavLink to="/login" onClick={() => setIsOpen(false)} aria-label="Log In" title="Log In" className={({ isActive }) => `relative flex items-center gap-2.5 text-left pl-3 pr-2.5 py-2.5 rounded-xl font-extrabold transition-all duration-300 cursor-pointer border-2 group overflow-hidden ${isActive ? 'bg-white text-[#03045E] border-[#03045E] shadow-md' : isDarkActive ? 'bg-white !text-black border-white shadow-md' : 'bg-white text-[#03045E] border-[#03045E]/25'}`}>
                 {({ isActive }) => (
                   <>
                     {isActive && <span aria-hidden="true" className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#03045E]"></span>}

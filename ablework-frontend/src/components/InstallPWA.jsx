@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AccessibilityContext } from '../context/AccessibilityContext';
 
 export default function InstallPWA() {
+  const { mode } = useContext(AccessibilityContext);
+  const isDarkActive = mode && typeof mode === 'string' && mode.toLowerCase().includes('dark');
+  
   const [supportsPWA, setSupportsPWA] = useState(false);
   const [promptInstall, setPromptInstall] = useState(null);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -77,9 +81,9 @@ export default function InstallPWA() {
         >
           Not Now
         </button>
-        <button 
+             <button 
           onClick={onInstallClick}
-          className="flex-1 py-2.5 rounded-xl bg-[#2C7FFF] !text-black font-black text-xs uppercase tracking-wider hover:bg-[#03045E] transition-colors shadow-md cursor-pointer border-2 border-[#2C7FFF]"
+          className={`flex-1 py-2.5 rounded-xl bg-[#2C7FFF] font-black text-xs uppercase tracking-wider hover:bg-[#03045E] transition-colors shadow-md cursor-pointer border-2 border-[#2C7FFF] ${isDarkActive ? '!text-black' : 'text-white'}`}
         >
           Install App
         </button>
