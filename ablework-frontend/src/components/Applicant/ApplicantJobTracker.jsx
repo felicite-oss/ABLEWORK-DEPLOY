@@ -74,7 +74,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   };
 
   const getStatusStyle = (status) => {
-    // FIXED COLOR CODING: Blue for Hired, Blue for Rejected (as requested), Gray for others
     if (isHighContrastOrDarkComfort) {
       switch (status) {
         case 'Received': return 'bg-white text-black border-white';
@@ -82,7 +81,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         case 'Shortlisted': return 'bg-white text-black border-white';
         case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
         case 'Withdrawn': return 'bg-black text-white border-white';
-        case 'Rejected': return 'bg-black text-blue-400 border-blue-400'; // Changed to Blue
+        case 'Rejected': return 'bg-black text-blue-400 border-blue-400';
         default: return 'bg-white text-black border-white';
       }
     }
@@ -93,7 +92,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         case 'Shortlisted': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
         case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
         case 'Withdrawn': return 'bg-[#1A1A1A] text-gray-400 border-gray-600';
-        case 'Rejected': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50'; // Changed to Blue
+        case 'Rejected': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
         default: return 'bg-[#1A1A1A] text-white border-white/30';
       }
     }
@@ -103,7 +102,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       case 'Shortlisted': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
       case 'Withdrawn': return 'bg-gray-100 text-gray-600 border-gray-300';
-      case 'Rejected': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30'; // Changed to Blue
+      case 'Rejected': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       default: return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
     }
   };
@@ -249,7 +248,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     // Can withdraw only if not Hired, Rejected, or Withdrawn
     const canWithdraw = ['Received', 'Under Review', 'Shortlisted'].includes(activeRole.status);
 
-    // --- FIX: Calculate active index dynamically ---
     const activeIndex = companyGroup.applicationsList.findIndex(app => app.application_id === activeRole.application_id);
     const displayIndex = activeIndex >= 0 ? activeIndex + 1 : 1;
 
@@ -270,7 +268,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                 <h3 className={`text-sm sm:text-2xl font-extrabold leading-tight break-words line-clamp-2 w-full ${textColor}`}>
                   {companyGroup.company_name}
                 </h3>
-                {/* FIX: Dynamic showing X of Y roles */}
                 <p className={`text-[10px] sm:text-sm font-extrabold mt-0.5 sm:mt-1 break-words line-clamp-1 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
                   {activeRole.job_title} {appCount > 1 && `(Showing ${displayIndex} of ${appCount} roles)`}
                 </p>
@@ -328,7 +325,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                           >
                             <span>{app.job_title}</span>
                             
-                            {/* NO GREEN. We use the Primary Bright Blue for Hired. */}
                             {app.status === 'Hired' && (
                               <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider border ${
                                 isSelected 
@@ -370,7 +366,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                   </button>
                 </div>
 
-                {/* WITHDRAW BUTTON - Updated to follow 60-30-10 UI Rules */}
+                {/* WITHDRAW BUTTON */}
                 {canWithdraw && (
                   <div className={`pt-3 mt-1 border-t ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
                     <button
@@ -418,34 +414,34 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         )}
       </div>
       
-              {/* PRO-TIP BANNER FOR APPLICANTS (TalkBack / Screen Reader Compatible) */}
+      {/* --- UPDATED PRO-TIP BANNER (Mobile Responsive) --- */}
       <div 
         role="region" 
         aria-label="Important information about application wait times and auto-rejection"
-        className={`p-4 rounded-xl border-2 flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm ${
+        className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-start gap-3 shadow-sm ${
           isDark ? 'bg-[#111111] border-[#2C7FFF]/50 text-white' : 'bg-blue-50 border-[#2C7FFF]/30 text-[#03045E]'
         }`}
       >
         <div 
           aria-hidden="true" 
-          className={`p-2 rounded-lg shrink-0 ${isDark ? 'bg-[#2C7FFF]/20' : 'bg-[#2C7FFF]/10'}`}
+          className={`p-1.5 sm:p-2 rounded-lg shrink-0 mt-0.5 ${isDark ? 'bg-[#2C7FFF]/20' : 'bg-[#2C7FFF]/10'}`}
         >
-          <svg className={`w-5 h-5 ${isDark ? 'text-[#2C7FFF]' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isDark ? 'text-[#2C7FFF]' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <p 
             tabIndex="0" 
             aria-live="polite"
-            className={`text-sm font-bold leading-relaxed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 -m-1`}
+            className={`text-[11px] sm:text-sm font-bold leading-snug focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded`}
           >
-            <strong className={isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}>Haven't heard back?</strong> It is completely normal for employers to take a few days to review applications. To prevent ghosting, applications left without an update for <strong>14 days</strong> will be automatically closed by the system. 
+            <strong className={isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}>Haven't heard back?</strong> It's normal for employers to take a few days to review. To prevent ghosting, applications left without an update for <strong>14 days</strong> will be automatically closed by the system. 
           </p>
           <p 
             tabIndex="0" 
-            className={`text-xs font-semibold mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 -m-1 ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}
+            className={`hidden sm:block text-xs font-semibold mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}
           >
             Don't wait around—keep exploring other job matches on your dashboard!
           </p>

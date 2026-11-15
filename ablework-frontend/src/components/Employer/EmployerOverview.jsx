@@ -25,10 +25,18 @@ const mockDisabilityData = [
 
 const getLogoUrl = (logoPath) => {
   if (!logoPath) return '';
-  if (logoPath.startsWith('http://') || logoPath.startsWith('https://')) {
-    return logoPath;
+  
+  // 1. Trim any hidden whitespace
+  const cleanPath = String(logoPath).trim();
+
+  // 2. If it's a Cloudinary/external URL, return it as-is
+  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+    return cleanPath;
   }
-  return `${API_BASE_URL}${logoPath.startsWith('/') ? '' : '/'}${logoPath}`;
+  
+  // 3. Fallback for relative paths (if you ever store them locally)
+  const strippedPath = cleanPath.replace(/^\/+/, '').replace(/\\/g, '/');
+  return `${API_BASE_URL}/uploads/${strippedPath}`;
 };
 
 export default function EmployerOverview({ profile, stats, setActiveTab }) {

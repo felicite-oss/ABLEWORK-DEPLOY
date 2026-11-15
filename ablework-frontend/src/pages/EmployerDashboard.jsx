@@ -13,6 +13,22 @@ import headerLogo from '../assets/LIGHT MODE.png';
 import darkHeaderLogo from '../assets/DARK MODE.png';
 import API_BASE_URL from '../../config';
 
+const getLogoUrl = (logoPath) => {
+  if (!logoPath) return '';
+  
+  // 1. Trim any hidden whitespace
+  const cleanPath = String(logoPath).trim();
+
+  // 2. If it's a Cloudinary/external URL, return it as-is
+  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+    return cleanPath;
+  }
+  
+  // 3. Fallback for relative paths (if you ever store them locally)
+  const strippedPath = cleanPath.replace(/^\/+/, '').replace(/\\/g, '/');
+  return `${API_BASE_URL}/uploads/${strippedPath}`;
+};
+
 export default function EmployerDashboard() {
   const navigate = useNavigate();
   const { mode } = useContext(AccessibilityContext);
@@ -546,7 +562,7 @@ export default function EmployerDashboard() {
               title="Profile Menu"
             >
               {profile?.company_logo ? (
-                <img src={`${API_BASE_URL}${profile.company_logo}`} alt={`Company Logo of ${profile?.company_name || 'Employer'}`} className="w-full h-full object-cover" />
+                <img src={getLogoUrl(profile.company_logo)} alt={`Company Logo of ${profile?.company_name || 'Employer'}`} className="w-full h-full object-cover" />
               ) : (
                 <div aria-hidden="true" className={`w-full h-full flex items-center justify-center font-black text-sm ${isContrast ? 'bg-[#2C7FFF] text-white' : 'bg-[#03045E] text-white'}`}>
                   {profile?.company_name ? profile.company_name.charAt(0).toUpperCase() : 'E'}
@@ -618,7 +634,7 @@ export default function EmployerDashboard() {
                     <div className="relative shrink-0">
                       <div className={`w-14 h-14 rounded-lg sm:rounded-xl overflow-hidden border-2 border-[#2C7FFF] shadow-md`}>
                         {profile?.company_logo ? (
-                          <img src={`${API_BASE_URL}${profile.company_logo}`} alt={`Company Logo of ${profile?.company_name || 'Employer'}`} className="w-full h-full object-cover" />
+                          <img src={getLogoUrl(profile.company_logo)} alt={`Company Logo of ${profile?.company_name || 'Employer'}`} className="w-full h-full object-cover" />
                         ) : (
                           <div aria-hidden="true" className={`w-full h-full flex items-center justify-center font-black text-lg ${isContrast ? 'bg-[#2C7FFF] text-white' : 'bg-[#03045E] text-white'}`}>
                             {profile?.company_name ? profile.company_name.charAt(0).toUpperCase() : 'E'}
@@ -757,7 +773,7 @@ export default function EmployerDashboard() {
               id="mobile-menu"
               aria-hidden={!showMobileMenu}
               className={`fixed left-2 right-2 top-16 sm:absolute sm:right-0 sm:left-auto sm:top-auto sm:mt-3 sm:w-[22rem] max-w-[calc(100vw-1rem)] rounded-lg sm:rounded-xl shadow-2xl border-2 p-3 sm:p-4 z-50 flex flex-col gap-2.5 sm:gap-3 overflow-hidden transition-all duration-300 ease-in-out ${dark ? 'bg-black border-[#2C7FFF]' : 'bg-white border-[#03045E]/20'} ${showMobileMenu ? 'max-h-[calc(100vh-5rem)] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}
-            >
+              >
                 
   
                 <div 
@@ -773,7 +789,7 @@ export default function EmployerDashboard() {
                 >
                   <div aria-hidden="true" className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md sm:rounded-lg flex items-center justify-center font-bold overflow-hidden shadow-md flex-shrink-0 border-2 ${dark ? 'bg-[#2C7FFF] text-white border-white' : 'bg-[#03045E] text-white border-[#03045E]'}`}>
                     {profile?.company_logo ? (
-                      <img src={`${API_BASE_URL}${profile.company_logo}`} alt="" className="w-full h-full object-cover" />
+                      <img src={getLogoUrl(profile.company_logo)} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span>{profile?.company_name ? profile.company_name.charAt(0).toUpperCase() : 'E'}</span>
                     )}
