@@ -80,7 +80,6 @@ const CompanyLogo = ({ logoUrl, companyName, size = 'md' }) => {
   );
 };
 
-// 👇 PASTE THE NEW COMPONENT HERE 👇
 const JobCardDescription = ({ description, isExpanded, onToggle }) => {
   const textRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -121,9 +120,6 @@ const JobCardDescription = ({ description, isExpanded, onToggle }) => {
   );
 };
 
-// ... (Keep all your imports and top-level functions like safeParse, getDistanceBadgeStyles, getMatchColor, CompanyLogo, JobCardDescription exactly as they are) ...
-
-// ADD highlightId TO PROPS
 export default function ApplicantExploreJobs({ profile, jobs, applications = [], refreshData, initialSelectedJob, clearJobFromMap, highlightId }) {
   const {
     isContrast,
@@ -158,7 +154,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     try {
       const saved = localStorage.getItem('applicantLocallyAppliedJobs');
       const parsed = saved ? JSON.parse(saved) : [];
-      return Array.isArray(parsed) ? parsed.map(String) : []; // Ensure they are stored as strings
+      return Array.isArray(parsed) ? parsed.map(String) : [];
     } catch {
       return [];
     }
@@ -180,12 +176,12 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
   const checkHasApplied = (jobId) => {
     const targetId = String(jobId);
     
-    // Check server applications
+    // 1. Check if it's in the server applications (Even if rejected/withdrawn, it counts as applied)
     const appliedOnServer = applications.some(app => 
       String(app.job_id) === targetId || String(app.id) === targetId
     );
     
-    // Check local storage cache
+    // 2. Check local storage cache (in case of immediate UI update before server refresh)
     const appliedLocally = locallyAppliedJobs.some(id => String(id) === targetId);
 
     return appliedOnServer || appliedLocally;
@@ -316,8 +312,8 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
 
       const isApplied = checkHasApplied(job.id);
       
-      // If we are on the 'applied' tab, only show applied jobs.
-      // If we are on the 'available' tab, only show un-applied jobs.
+      // If we are on the 'applied' tab, ONLY show applied jobs.
+      // If we are on the 'available' tab, ONLY show un-applied jobs.
       if (activeTab === 'applied') {
         return isApplied;
       } else {

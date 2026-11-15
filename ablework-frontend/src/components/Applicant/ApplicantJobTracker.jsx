@@ -74,18 +74,15 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   };
 
   const getStatusStyle = (status) => {
-    // Strict color coding: Blue for Hired, Red for Rejected, Gray for others
+    // FIXED COLOR CODING: Blue for Hired, Blue for Rejected (as requested), Gray for others
     if (isHighContrastOrDarkComfort) {
       switch (status) {
         case 'Received': return 'bg-white text-black border-white';
         case 'Under Review': return 'bg-white text-black border-white';
         case 'Shortlisted': return 'bg-white text-black border-white';
-        
-        // CHANGED TO BLUE
         case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
-        
         case 'Withdrawn': return 'bg-black text-white border-white';
-        case 'Rejected': return 'bg-black text-red-500 border-red-500';
+        case 'Rejected': return 'bg-black text-blue-400 border-blue-400'; // Changed to Blue
         default: return 'bg-white text-black border-white';
       }
     }
@@ -94,12 +91,9 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         case 'Received': return 'bg-[#1A1A1A] text-white border-white/30';
         case 'Under Review': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
         case 'Shortlisted': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
-        
-        // CHANGED TO BLUE
         case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
-        
         case 'Withdrawn': return 'bg-[#1A1A1A] text-gray-400 border-gray-600';
-        case 'Rejected': return 'bg-[#1A1A1A] text-red-400 border-red-500/50';
+        case 'Rejected': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50'; // Changed to Blue
         default: return 'bg-[#1A1A1A] text-white border-white/30';
       }
     }
@@ -107,12 +101,9 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       case 'Received': return 'bg-gray-100 text-gray-700 border-gray-300';
       case 'Under Review': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       case 'Shortlisted': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
-      
-      // CHANGED TO BLUE
       case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
-      
       case 'Withdrawn': return 'bg-gray-100 text-gray-600 border-gray-300';
-      case 'Rejected': return 'bg-red-50 text-red-700 border-red-300';
+      case 'Rejected': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30'; // Changed to Blue
       default: return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
     }
   };
@@ -258,6 +249,10 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     // Can withdraw only if not Hired, Rejected, or Withdrawn
     const canWithdraw = ['Received', 'Under Review', 'Shortlisted'].includes(activeRole.status);
 
+    // --- FIX: Calculate active index dynamically ---
+    const activeIndex = companyGroup.applicationsList.findIndex(app => app.application_id === activeRole.application_id);
+    const displayIndex = activeIndex >= 0 ? activeIndex + 1 : 1;
+
     return (
       <div key={companyGroup.company_name} role="listitem" className="w-full">
         <div className={`overflow-hidden rounded-lg sm:rounded-xl shadow-md border transition-all duration-200 hover:shadow-lg ${cardBg} ${activeRole.status === 'Rejected' ? 'opacity-80' : ''}`}>
@@ -275,8 +270,9 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                 <h3 className={`text-sm sm:text-2xl font-extrabold leading-tight break-words line-clamp-2 w-full ${textColor}`}>
                   {companyGroup.company_name}
                 </h3>
+                {/* FIX: Dynamic showing X of Y roles */}
                 <p className={`text-[10px] sm:text-sm font-extrabold mt-0.5 sm:mt-1 break-words line-clamp-1 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
-                  {activeRole.job_title} {appCount > 1 && `(Showing 1 of ${appCount} roles)`}
+                  {activeRole.job_title} {appCount > 1 && `(Showing ${displayIndex} of ${appCount} roles)`}
                 </p>
               </div>
 
