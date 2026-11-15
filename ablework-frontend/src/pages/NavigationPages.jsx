@@ -464,7 +464,7 @@ export function Home() {
             {/* Left Side: Content */}
             <div className="w-full lg:w-1/2 p-8 sm:p-12 md:p-16 lg:p-24 flex flex-col justify-center z-10">
               
-             <span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff] text-white text-xs font-black uppercase tracking-widest shadow-sm">
+<span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff]/10 text-[#f4f4f4] text-xs font-black uppercase tracking-widest">
   Welcome to AbleWork
 </span>
 
@@ -846,7 +846,7 @@ export function Home() {
               </section>
 
                           {/* --- REDESIGNED DEVICES SHOWCASE SECTION --- */}
-<section className={`w-full relative py-12 sm:py-16 md:py-20 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)]' : 'bg-gradient-to-b from-transparent via-[#f8f9fa] to-[#eef2ff]'}`}>
+<section className={`w-full relative py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)]' : 'bg-gradient-to-b from-transparent via-[#f8f9fa] to-[#eef2ff]'}`}>
                 
                 {/* --- ANIMATION KEYFRAMES --- */}
                 <style>{`
@@ -880,7 +880,7 @@ export function Home() {
                   <div className="absolute top-10 left-10 w-72 h-72 bg-[#2C7FFF]/20 rounded-full blur-[100px]" style={{ animation: 'pulseGlow 8s ease-in-out infinite' }}></div>
                   <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#03045E]/10 rounded-full blur-[120px]" style={{ animation: 'pulseGlow 10s ease-in-out infinite reverse' }}></div>
                 </div>
-<div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-10 md:gap-16 relative z-10">
+<div className="w-full flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16 lg:gap-24 relative z-10">
                   
                   {/* Left Side: Devices with 3D Tilt & Motion */}
                   <div 
@@ -949,12 +949,12 @@ export function Home() {
                       </span>
                     </h2>
                     
-<p tabIndex="0" role="text" aria-label="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen..." className={`text-sm sm:text-lg font-semibold leading-relaxed mb-8 text-center md:text-left w-full ${isContrast ? 'text-[var(--color-textMuted)]' : 'text-[#03045E]/70'}`}>
+<p tabIndex="0" role="text" aria-label="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen..." className={`text-sm sm:text-lg font-semibold leading-relaxed mb-8 text-center md:text-left max-w-lg ${isContrast ? 'text-[var(--color-textMuted)]' : 'text-[#03045E]/70'}`}>
                       Whether you are browsing on a mobile phone or managing your profile on a laptop, ABLEWORK adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere.
                     </p>
 
                                     {/* Expanded Feature Grid to fill space */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-2 w-full text-left">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-2 w-full max-w-lg text-left">
                        
                        {/* Item 1: PWD Verification */}
                        <div 
@@ -1033,7 +1033,7 @@ export function Home() {
                 </div>
               </section>
 
-<section className={`relative py-12 sm:py-20 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 my-6 sm:my-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)] border-y border-[var(--color-border)]' : 'bg-[#f4f4f4] border-y border-[#d1d5db]'}`}>
+<section className={`relative py-12 sm:py-20 px-3 sm:px-4 md:px-8 my-6 sm:my-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)] border-y border-[var(--color-border)]' : 'bg-[#f4f4f4] border-y border-[#d1d5db]'}`}>
           {/* Subtle background glow to fill space */}
           <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-accent)]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
