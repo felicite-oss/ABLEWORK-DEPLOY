@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import API_BASE_URL from '../../../config';
+import { parseWithdrawalReasons, labelForReason } from '../../shared/withdrawalReasons';
+
 
 export default function EmployerApplications({ profile, refreshStats }) {
   const { mode } = useContext(AccessibilityContext);
@@ -597,6 +599,37 @@ export default function EmployerApplications({ profile, refreshStats }) {
                     </>
                   )}
                </div>
+            )}
+
+                        {selectedApp.application_status === 'Withdrawn' && selectedApp.withdrawal_reasons && (
+              <div
+                role="note"
+                aria-label="Applicant withdrawal reason"
+                className={`mb-6 p-4 rounded-xl border-2 ${
+                  isDark
+                    ? 'bg-black border-red-400/50 text-white'
+                    : 'bg-red-50 border-red-300 text-[#03045E]'
+                }`}
+              >
+                <h4 className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-2 text-red-500">
+                  Withdrawn by Applicant
+                  {selectedApp.withdrawn_at && (
+                    <span className="normal-case font-semibold opacity-60">
+                      {' '}on {new Date(selectedApp.withdrawn_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </h4>
+                <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm font-semibold">
+                  {parseWithdrawalReasons(selectedApp.withdrawal_reasons).map(key => (
+                    <li key={key}>{labelForReason(key)}</li>
+                  ))}
+                </ul>
+                {selectedApp.withdrawal_details && (
+                  <p className="mt-2 text-xs sm:text-sm italic opacity-80">
+                    "{selectedApp.withdrawal_details}"
+                  </p>
+                )}
+              </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-6">

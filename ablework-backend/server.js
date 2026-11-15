@@ -68,7 +68,9 @@ async function sendNotification(userId, title, message, type) {
     if (type === 'match') {
       inAppMessage += '. Check your Smart Matches tab for details.';
     } else if (type === 'update' || type === 'application') {
-      inAppMessage += ' Check your Job Tracker for details.';
+    inAppMessage += ' Check your Job Tracker for details.';
+    } else if (type === 'withdrawal') {
+    inAppMessage += ' Review the details in your Review Applicants tab.';
     }
 
     await db.execute(
@@ -1140,6 +1142,7 @@ app.get('/api/applicant/:id/applications', async (req, res) => {
         const [applications] = await db.execute(`
             SELECT
                 a.id as application_id, a.job_id, a.status, a.applied_at, a.employer_message,
+                a.withdrawal_reasons, a.withdrawal_details, a.withdrawn_at,
                 j.job_title, j.company_name, j.job_description, j.salary_range, 
                 j.benefits, j.provided_accommodations, j.required_skills
             FROM applications a
@@ -1469,6 +1472,7 @@ app.get('/api/employer/:id/applications', async (req, res) => {
         const [applications] = await db.execute(`
             SELECT a.id as application_id, a.applicant_id, a.status as application_status, a.applied_at,
                    a.resume_path, a.certificate_path, a.cover_letter,
+                   a.withdrawal_reasons, a.withdrawal_details, a.withdrawn_at,
                    j.job_title, j.id as job_id,
                    ap.firstname, ap.lastname, ap.skills, ap.accommodations_needed, ap.disability_type,
                    u.email, u.phone
@@ -2212,24 +2216,118 @@ app.post('/api/users/:id/verify-password', async (req, res) => {
     }
 });
 
+// ---------------------------------------------------------
+// ROUTE: APPLICANT WITHDRAWS / DECLINES A POSITION
+// Handles Received, Under Review, Shortlisted, AND Hired.
+// ---------------------------------------------------------
 app.put('/api/applications/:id/withdraw', async (req, res) => {
     const applicationId = req.params.id;
+    const { reasons, details } = req.body;
+
+    // Validate reason checklist — at least one reason required
+    if (!Array.isArray(reasons) || reasons.length === 0) {
+    return res.status(400).json({
+        message: "Please select at least one reason for withdrawing."
+    });
+    }
+
+    // Sanity checks — keys are opaque to the backend, but we bound their shape.
+    const validReasons = reasons
+        .filter(r => typeof r === 'string')
+        .map(r => r.trim())
+        .filter(Boolean)
+        .slice(0, 10); // max 10 reasons
+
+    if (validReasons.length === 0) {
+        return res.status(400).json({
+            message: "Invalid withdrawal reasons provided."
+        });
+    }
+
+    if (typeof details === 'string' && details.length > 2000) {
+        return res.status(400).json({
+            message: "Withdrawal details are too long (max 2000 characters)."
+        });
+    }
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
     try {
-        const [updateResult] = await db.execute(
-            `UPDATE applications
-             SET status = 'Withdrawn', employer_message = 'You have withdrawn this application.'
-             WHERE id = ? AND status NOT IN ('Hired', 'Rejected')`,
+        const [rows] = await connection.execute(
+            `SELECT a.id, a.applicant_id, a.status, a.job_id,
+                    j.job_title, j.company_name, j.employer_id
+             FROM applications a
+             JOIN job_postings j ON a.job_id = j.id
+             WHERE a.id = ?`,
             [applicationId]
         );
 
-        if (updateResult.affectedRows > 0) {
-            res.status(200).json({ message: "Application successfully withdrawn." });
-        } else {
-            res.status(400).json({ message: "Cannot withdraw this application. It may have already been finalized." });
+        if (rows.length === 0) {
+            await connection.rollback();
+            connection.release();
+            return res.status(404).json({ message: "Application not found." });
         }
+
+        const app = rows[0];
+        const WITHDRAWABLE_STATUSES = ['Received', 'Under Review', 'Shortlisted', 'Hired'];
+
+        if (!WITHDRAWABLE_STATUSES.includes(app.status)) {
+            await connection.rollback();
+            connection.release();
+            return res.status(400).json({
+                message: `Cannot withdraw this application. It is currently "${app.status}".`
+            });
+        }
+
+        const wasHired = app.status === 'Hired';
+
+        // 1. Mark the application withdrawn with reason data
+        await connection.execute(
+            `UPDATE applications
+             SET status = 'Withdrawn',
+                 withdrawal_reasons = ?,
+                 withdrawal_details = ?,
+                 withdrawn_at = NOW(),
+                 employer_message = 'The applicant has withdrawn from this position.'
+             WHERE id = ?`,
+            [JSON.stringify(validReasons), details || null, applicationId]
+        );
+
+        // 2. If the applicant was Hired, re-open the job so the employer can refill it
+        if (wasHired) {
+            await connection.execute(
+                "UPDATE job_postings SET status = 'Active' WHERE id = ? AND status = 'Archived'",
+                [app.job_id]
+            );
+        }
+
+        await connection.commit();
+
+        // 3. Notify employer (email + in-app), after commit
+        const reasonLabel = reasons.join(', ');
+        const alertTitle = wasHired
+            ? `Applicant Declined Hired Position: ${app.job_title}`
+            : `Application Withdrawn: ${app.job_title}`;
+        const alertMessage = wasHired
+            ? `The candidate you hired for ${app.job_title} has withdrawn from the position. Reason: ${reasonLabel}. The job posting has been re-opened so you can fill the role again.`
+            : `A candidate has withdrawn their application for ${app.job_title}. Reason: ${reasonLabel}.`;
+
+        await sendNotification(app.employer_id, alertTitle, alertMessage, 'withdrawal');
+
+        res.status(200).json({
+            message: wasHired
+                ? "You have withdrawn from this position. The job has been re-opened for other applicants."
+                : "Application successfully withdrawn.",
+            wasHired
+        });
+
     } catch (error) {
+        await connection.rollback();
         console.error("Withdraw Error:", error.message);
         res.status(500).json({ message: "Failed to withdraw application." });
+    } finally {
+        connection.release();
     }
 });
 // ---------------------------------------------------------

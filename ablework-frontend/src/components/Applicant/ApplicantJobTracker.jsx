@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useContext } from 'react';
 import API_BASE_URL from '../../../config';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
+import {WITHDRAWAL_REASON_OPTIONS,WITHDRAWABLE_STATUSES,} from '../../shared/withdrawalReasons';
 
 export default function ApplicantJobTracker({ applications = [], profile, refreshData }) {
   const { mode } = useContext(AccessibilityContext);
@@ -28,6 +29,10 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   // State for Modals
   const [viewingDetails, setViewingDetails] = useState(null); // Job details modal
   const [confirmWithdraw, setConfirmWithdraw] = useState({ isOpen: false, appId: null, loading: false });
+  const [withdrawReasons, setWithdrawReasons] = useState([]);
+  const [withdrawDetails, setWithdrawDetails] = useState('');
+  const [withdrawError, setWithdrawError] = useState('');
+const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
   const [sweetAlert, setSweetAlert] = useState({ isOpen: false, title: '', text: '', type: 'notice' });
 
   useEffect(() => {
@@ -52,24 +57,55 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
 
   const executeWithdraw = async () => {
     if (!confirmWithdraw.appId) return;
+
+    // Client-side validation before hitting the server
+    if (withdrawReasons.length === 0) {
+      setWithdrawError('Please select at least one reason.');
+      return;
+    }
+    if (withdrawReasons.includes('other') && !withdrawDetails.trim()) {
+      setWithdrawError('Please describe your reason in the text box.');
+      return;
+    }
+
+    setWithdrawError('');
     setConfirmWithdraw(prev => ({ ...prev, loading: true }));
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/applications/${confirmWithdraw.appId}/withdraw`, {
-        method: 'PUT'
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reasons: withdrawReasons,
+          details: withdrawReasons.includes('other') ? withdrawDetails.trim() : null,
+        }),
       });
+
+      const data = await res.json().catch(() => ({}));
+
       if (res.ok) {
+        const wasHired = withdrawTargetStatus === 'Hired';
         setConfirmWithdraw({ isOpen: false, appId: null, loading: false });
-        setSweetAlert({ isOpen: true, title: 'Success', text: 'Your application has been successfully withdrawn.', type: 'success' });
+        setWithdrawReasons([]);
+        setWithdrawDetails('');
+        setWithdrawTargetStatus(null);
+        setSweetAlert({
+          isOpen: true,
+          title: 'Success',
+          text: wasHired
+            ? 'You have withdrawn from this position. The job has been re-opened for other applicants, and the employer has been notified.'
+            : 'Your application has been successfully withdrawn. The employer has been notified.',
+          type: 'success',
+        });
         if (refreshData) refreshData();
       } else {
-        setConfirmWithdraw({ isOpen: false, appId: null, loading: false });
-        setSweetAlert({ isOpen: true, title: 'Notice', text: 'Unable to withdraw application at this time.', type: 'notice' });
+        setConfirmWithdraw(prev => ({ ...prev, loading: false }));
+        setWithdrawError(data.message || 'Unable to withdraw application at this time.');
       }
     } catch (err) {
       console.error("Error withdrawing:", err);
-      setConfirmWithdraw({ isOpen: false, appId: null, loading: false });
-      setSweetAlert({ isOpen: true, title: 'Error', text: 'Server error while withdrawing.', type: 'notice' });
+      setConfirmWithdraw(prev => ({ ...prev, loading: false }));
+      setWithdrawError('Network error. Please try again.');
     }
   };
 
@@ -244,9 +280,8 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     const isOpen = expandedCompany === companyGroup.company_name;
     const activeRole = selectedRolePerCompany[companyGroup.company_name] || companyGroup.applicationsList[0];
     const appCount = companyGroup.applicationsList.length;
-    
-    // Can withdraw only if not Hired, Rejected, or Withdrawn
-    const canWithdraw = ['Received', 'Under Review', 'Shortlisted'].includes(activeRole.status);
+// Withdrawable statuses come from the shared constant (includes Hired).
+     const canWithdraw = WITHDRAWABLE_STATUSES.includes(activeRole.status);
 
     const activeIndex = companyGroup.applicationsList.findIndex(app => app.application_id === activeRole.application_id);
     const displayIndex = activeIndex >= 0 ? activeIndex + 1 : 1;
@@ -371,17 +406,30 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                   <div className={`pt-3 mt-1 border-t ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); 
+                        e.stopPropagation();
+                        // Reset reason state each time the modal opens
+                        setWithdrawReasons([]);
+                        setWithdrawDetails('');
+                        setWithdrawError('');
+                        setWithdrawTargetStatus(activeRole.status);
                         setConfirmWithdraw({ isOpen: true, appId: activeRole.application_id, loading: false });
                       }}
-                      aria-label={`Withdraw application for ${activeRole.job_title} at ${companyGroup.company_name}`}
+                      aria-label={
+                        activeRole.status === 'Hired'
+                          ? `Withdraw from hired position: ${activeRole.job_title} at ${companyGroup.company_name}. The employer will be notified with your reason.`
+                          : `Withdraw application for ${activeRole.job_title} at ${companyGroup.company_name}. The employer will be notified with your reason.`
+                      }
                       className={`w-full sm:w-auto px-5 py-3 text-sm font-black rounded-xl border-2 transition-all cursor-pointer shadow-sm focus:outline-none focus-visible:ring-4 ${
-                        isDark 
-                          ? 'bg-[#1A1A1A] text-white border-white/30 hover:bg-white hover:text-black focus-visible:ring-white' 
-                          : 'bg-white text-[#03045E] border-[#03045E]/30 hover:bg-gray-50 focus-visible:ring-[#03045E]'
+                        activeRole.status === 'Hired'
+                          ? (isDark
+                              ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 focus-visible:ring-red-500'
+                              : 'bg-red-600 text-white border-red-600 hover:bg-red-700 focus-visible:ring-red-500')
+                          : (isDark
+                              ? 'bg-[#1A1A1A] text-white border-white/30 hover:bg-white hover:text-black focus-visible:ring-white'
+                              : 'bg-white text-[#03045E] border-[#03045E]/30 hover:bg-gray-50 focus-visible:ring-[#03045E]')
                       }`}
                     >
-                      Withdraw Application
+                      {activeRole.status === 'Hired' ? 'Withdraw from Position' : 'Withdraw Application'}
                     </button>
                   </div>
                 )}
@@ -532,21 +580,129 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       {/* JOB DETAILS MODAL */}
       <JobDetailsModal role={viewingDetails} onClose={() => setViewingDetails(null)} isDark={isDark} />
 
-      {/* Withdraw Confirmation Modal */}
+      {/* Withdraw Confirmation Modal — with reason checklist */}
       {confirmWithdraw.isOpen && (
-        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title">
-          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
-            <div aria-hidden="true" className={`h-1.5 sm:h-2 w-full ${isDark ? 'bg-red-500' : 'bg-red-500'}`} />
-            <div className="relative px-6 pt-6 pb-6 flex flex-col items-center text-center">
-              <div aria-hidden="true" className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 border-4 ${isDark ? 'border-red-500 text-red-500' : 'border-red-500 text-red-500'}`}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div
+          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200"
+          style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-withdraw-title"
+          aria-describedby="confirm-withdraw-desc"
+        >
+          <div className={`relative w-full max-w-md max-h-[90vh] flex flex-col rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
+            <div aria-hidden="true" className="h-1.5 sm:h-2 w-full bg-red-500 shrink-0" />
+
+            <div className="px-5 sm:px-6 pt-5 pb-4 flex flex-col items-center text-center shrink-0 border-b-2 border-current/10">
+              <div aria-hidden="true" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center mb-3 border-4 border-red-500 text-red-500">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               </div>
-              <h2 id="confirm-withdraw-title" tabIndex="0" className="text-xl font-black mb-2 focus:outline-none">Withdraw Application?</h2>
-              <p tabIndex="0" className={`text-xs font-bold mb-6 focus:outline-none ${mutedText}`}>Are you sure you want to withdraw? You will be removed from the employer's candidate list for this job.</p>
-              <div className="flex w-full gap-3">
-                <button onClick={() => setConfirmWithdraw({ isOpen: false, appId: null, loading: false })} disabled={confirmWithdraw.loading} className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white/70 border-white/30 hover:bg-white/10 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 hover:bg-[#03045E]/5 focus-visible:ring-[#03045E]'}`}>Cancel</button>
-                <button onClick={executeWithdraw} disabled={confirmWithdraw.loading} className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-red-400 border-red-500 hover:bg-red-500 hover:text-white focus-visible:ring-red-500' : 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500'}`}>{confirmWithdraw.loading ? 'Processing...' : 'Yes, Withdraw'}</button>
-              </div>
+              <h2 id="confirm-withdraw-title" tabIndex="0" className="text-lg sm:text-xl font-black mb-1 focus:outline-none">
+                {withdrawTargetStatus === 'Hired' ? 'Withdraw from Hired Position?' : 'Withdraw Application?'}
+              </h2>
+              <p id="confirm-withdraw-desc" tabIndex="0" className={`text-xs font-semibold focus:outline-none ${mutedText}`}>
+                {withdrawTargetStatus === 'Hired'
+                  ? 'You are currently hired for this role. Withdrawing will re-open this position for other applicants, and the employer will be notified with your reason.'
+                  : 'The employer will be notified with your reason. You will be removed from their candidate list for this role.'}
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-4">
+              <fieldset>
+                <legend className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider mb-2">
+                  Why are you withdrawing? (required)
+                </legend>
+                <div className="flex flex-col gap-0.5">
+                  {WITHDRAWAL_REASON_OPTIONS.map(reason => (
+                    <label
+                      key={reason.key}
+                      className={`flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors focus-within:ring-2 ${isDark ? 'hover:bg-white/10 focus-within:ring-white' : 'hover:bg-[#03045E]/5 focus-within:ring-[#2C7FFF]'}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={withdrawReasons.includes(reason.key)}
+                        onChange={() => {
+                          setWithdrawReasons(prev =>
+                            prev.includes(reason.key)
+                              ? prev.filter(k => k !== reason.key)
+                              : [...prev, reason.key]
+                          );
+                          setWithdrawError('');
+                        }}
+                        className="mt-0.5 w-5 h-5 accent-[#2C7FFF] shrink-0"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold leading-snug">{reason.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              {withdrawReasons.includes('other') && (
+                <div className="mt-3">
+                  <label
+                    htmlFor="withdraw-details-input"
+                    className="block text-[11px] sm:text-xs font-extrabold uppercase tracking-wider mb-1.5"
+                  >
+                    Please describe your reason (required)
+                  </label>
+                  <textarea
+                    id="withdraw-details-input"
+                    required
+                    maxLength={500}
+                    value={withdrawDetails}
+                    onChange={(e) => {
+                      setWithdrawDetails(e.target.value);
+                      setWithdrawError('');
+                    }}
+                    placeholder="Tell the employer briefly why you are withdrawing..."
+                    className={`w-full p-3 rounded-lg border-2 min-h-[90px] text-sm font-medium resize-y focus:outline-none focus-visible:ring-4 ${
+                      isDark
+                        ? 'bg-black border-white/30 text-white placeholder-white/40 focus-visible:ring-white'
+                        : 'bg-white border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/40 focus-visible:ring-blue-300'
+                    }`}
+                  />
+                  <p className={`mt-1 text-[10px] font-semibold text-right ${mutedText}`}>
+                    {withdrawDetails.length}/500
+                  </p>
+                </div>
+              )}
+
+              {withdrawError && (
+                <p
+                  role="alert"
+                  aria-live="assertive"
+                  className="mt-3 text-xs font-bold text-red-500"
+                >
+                  {withdrawError}
+                </p>
+              )}
+            </div>
+
+            <div className={`px-5 sm:px-6 py-4 border-t-2 flex flex-col-reverse sm:flex-row gap-2 shrink-0 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+              <button
+                onClick={() => {
+                  setConfirmWithdraw({ isOpen: false, appId: null, loading: false });
+                  setWithdrawReasons([]);
+                  setWithdrawDetails('');
+                  setWithdrawError('');
+                  setWithdrawTargetStatus(null);
+                }}
+                disabled={confirmWithdraw.loading}
+                className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white/70 border-white/30 hover:bg-white/10 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 hover:bg-[#03045E]/5 focus-visible:ring-[#03045E]'}`}
+              >
+                Keep Application
+              </button>
+              <button
+                onClick={executeWithdraw}
+                disabled={
+                  confirmWithdraw.loading ||
+                  withdrawReasons.length === 0 ||
+                  (withdrawReasons.includes('other') && !withdrawDetails.trim())
+                }
+                className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500' : 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500'}`}
+              >
+                {confirmWithdraw.loading ? 'Processing...' : (withdrawTargetStatus === 'Hired' ? 'Confirm Withdrawal' : 'Yes, Withdraw')}
+              </button>
             </div>
           </div>
         </div>
