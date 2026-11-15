@@ -464,9 +464,9 @@ export function Home() {
             {/* Left Side: Content */}
             <div className="w-full lg:w-1/2 p-8 sm:p-12 md:p-16 lg:p-24 flex flex-col justify-center z-10">
               
-<span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] text-xs font-black uppercase tracking-widest">
-  Welcome to AbleWork
-</span>
+<span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff]/10 text-[#f4f4f4] text-xs font-black uppercase tracking-widest">
+                  Welcome to AbleWork
+                </span>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#03045e] leading-[1.1] mb-6">
                 Building an Inclusive Workforce for Everyone
