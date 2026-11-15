@@ -1119,3 +1119,12 @@ html.dark-mode .welcome-badge *,
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
+
+/* Force black text on the Install App button in dark mode */
+html.dark-mode button[class*="bg-[#d4d4d4]"], 
+html.dark-mode button[class*="bg-[#d4d4d4]"] *,
+.theme-Dark button[class*="bg-[#d4d4d4]"],
+.theme-Dark button[class*="bg-[#d4d4d4]"] * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
