@@ -1328,7 +1328,7 @@ const handleAddressType = (e) => {
                         onClick={() => toggleSelection(skill, selectedSkills, setSelectedSkills)}
                         className={`px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border transition ${
                           selectedSkills.includes(skill)
-                            ? 'bg-[#2C7FFF] text-white border-[#2C7FFF] shadow-md'
+                            ? `bg-[#2C7FFF] ${isDarkMode || isContrast ? '!text-black' : 'text-white'} border-[#2C7FFF] shadow-md`
                             : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF]'
                         }`}
                         title={`Click to select or deselect ${skill}`}
@@ -1450,8 +1450,7 @@ const handleAddressType = (e) => {
                       setStatusMessage({ type: '', text: '' });
                       setResumeFile(file);
                     }}
-                    className={`w-full text-xs sm:text-sm ${isAccessibilityMode || isContrast || isDarkMode ? 'text-black' : 'text-[#03045E]'} file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold cursor-pointer`}
-                    style={{ color: primaryColor }}
+                    className={`w-full text-xs sm:text-sm ${isDarkMode || isContrast ? '!text-black' : 'text-[#03045E]'} file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold file:!text-black cursor-pointer`}
                     required
                     title="Please upload your Base Resume."
                     aria-label="Resume document upload."
