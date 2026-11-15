@@ -12,13 +12,12 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   const isDark = isContrast || isDarkMode;
   const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
-  // Base Colors based on Theme
+  // Base Colors (60-30-10 Rule Applied)
   const pageBg = isDark ? 'bg-black' : 'bg-transparent';
   const textColor = isDark ? 'text-white' : 'text-[#03045E]';
   const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   const cardBg = isDark ? 'bg-[#111111] border-white/30' : 'bg-white border-[#03045E]/20';
   const panelBg = isDark ? 'bg-[#1A1A1A] border-white/20' : 'bg-[#f4f4f4] border-[#03045E]/15';
-  const primaryBtn = isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#2C7FFF] text-white hover:bg-[#1a5ce6]';
 
   const [filter, setFilter] = useState('All');
   const [expandedCompany, setExpandedCompany] = useState(null);
@@ -26,31 +25,27 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  const [expandedDetails, setExpandedDetails] = useState({});
-
+  // State for Modals
+  const [viewingDetails, setViewingDetails] = useState(null); // Job details modal
   const [confirmWithdraw, setConfirmWithdraw] = useState({ isOpen: false, appId: null, loading: false });
   const [sweetAlert, setSweetAlert] = useState({ isOpen: false, title: '', text: '', type: 'notice' });
 
   useEffect(() => {
     setCurrentPage(1);
     setExpandedCompany(null);
-    setExpandedDetails({});
   }, [filter]);
 
-  // --- FIX: Keep selected roles in sync when new data arrives ---
+  // Sync selected roles if data updates
   useEffect(() => {
     setSelectedRolePerCompany(prev => {
       const updated = { ...prev };
       let hasChanged = false;
-      
       applications.forEach(app => {
         if (updated[app.company_name] && updated[app.company_name].application_id === app.application_id) {
-          // If the backend updated the details (like job_description), refresh the local object
           updated[app.company_name] = app;
           hasChanged = true;
         }
       });
-      
       return hasChanged ? updated : prev;
     });
   }, [applications]);
@@ -78,11 +73,8 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     }
   };
 
-  const closeSweetAlert = () => {
-    setSweetAlert({ ...sweetAlert, isOpen: false });
-  };
-
   const getStatusStyle = (status) => {
+    // Strict color coding: Green for Hired, Red for Rejected, Blue/Gray for others
     if (isHighContrastOrDarkComfort) {
       switch (status) {
         case 'Received': return 'bg-white text-black border-white';
@@ -119,20 +111,14 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   const trackingTabs = ['All', 'Received', 'Under Review', 'Shortlisted', 'Hired', 'Rejected', 'Withdrawn'];
   
   const filteredApps = useMemo(() => {
-    return applications.filter(app => {
-      if (filter === 'All') return true;
-      return app.status === filter;
-    });
+    return applications.filter(app => filter === 'All' || app.status === filter);
   }, [applications, filter]);
 
   const groupedCompanies = useMemo(() => {
     const groups = {};
     filteredApps.forEach(app => {
       if (!groups[app.company_name]) {
-        groups[app.company_name] = {
-          company_name: app.company_name,
-          applicationsList: [app]
-        };
+        groups[app.company_name] = { company_name: app.company_name, applicationsList: [app] };
       } else {
         groups[app.company_name].applicationsList.push(app);
       }
@@ -145,10 +131,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   const currentCompanies = groupedCompanies.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(groupedCompanies.length / itemsPerPage);
 
-  const getTabCount = (tabName) => {
-    if (tabName === 'All') return applications.length;
-    return applications.filter(app => app.status === tabName).length;
-  };
+  const getTabCount = (tabName) => tabName === 'All' ? applications.length : applications.filter(app => app.status === tabName).length;
 
   const getStatusMessage = (app) => {
     if (app.employer_message) return app.employer_message;
@@ -170,18 +153,101 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     }
   };
 
+  // --- JOB DETAILS MODAL (TalkBack Friendly) ---
+  const JobDetailsModal = ({ role, onClose, isDark }) => {
+    if (!role) return null;
+
+    return (
+      <div 
+        className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200"
+        style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="job-details-title"
+      >
+        <div className={`relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
+          
+          {/* Header */}
+          <div className={`flex justify-between items-start p-5 border-b-2 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+            <div>
+              <h2 id="job-details-title" className="text-xl font-extrabold leading-tight pr-4">
+                {role.job_title}
+              </h2>
+              <p className={`text-sm font-semibold mt-1 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
+                {role.company_name}
+              </p>
+            </div>
+            <button 
+              onClick={onClose}
+              className={`p-2 rounded-full transition-colors focus:outline-none focus-visible:ring-4 ${isDark ? 'hover:bg-white/20 focus-visible:ring-white' : 'hover:bg-gray-100 focus-visible:ring-[#2C7FFF]'}`}
+              aria-label="Close job details"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          {/* Scrollable Content */}
+          <div className="p-5 overflow-y-auto flex flex-col gap-5">
+            {role.salary_range && (
+              <div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Salary Range</span>
+                <p className="text-base font-bold">{role.salary_range}</p>
+              </div>
+            )}
+
+            {parseSafeArray(role.benefits).length > 0 && (
+              <div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Benefits</span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {parseSafeArray(role.benefits).map((benefit, i) => (
+                    <span key={i} className={`px-3 py-1 text-xs font-semibold rounded-lg border ${isDark ? 'bg-white/5 border-white/20' : 'bg-gray-50 border-gray-200'}`}>{benefit}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {parseSafeArray(role.provided_accommodations).length > 0 && (
+              <div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Provided Accommodations</span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {parseSafeArray(role.provided_accommodations).map((acc, i) => (
+                    <span key={i} className={`px-3 py-1 text-xs font-semibold rounded-lg border ${isDark ? 'bg-blue-900/30 border-blue-700 text-blue-300' : 'bg-blue-50 border-blue-200 text-[#2C7FFF]'}`}>{acc}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {role.job_description && (
+              <div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Job Description</span>
+                <p className={`text-sm mt-2 whitespace-pre-wrap leading-relaxed ${isDark ? 'text-white/80' : 'text-[#03045E]/80'}`}>
+                  {role.job_description}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className={`p-4 border-t-2 mt-auto ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+            <button 
+              onClick={onClose}
+              className={`w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider border-2 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'bg-white text-black border-white hover:bg-gray-200 focus-visible:ring-gray-400' : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#020236] focus-visible:ring-blue-300'}`}
+            >
+              Close Details
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderCard = (companyGroup) => {
     const isOpen = expandedCompany === companyGroup.company_name;
-    
-    // Fallback to first application if selectedRole isn't set
     const activeRole = selectedRolePerCompany[companyGroup.company_name] || companyGroup.applicationsList[0];
     const appCount = companyGroup.applicationsList.length;
     
-    // Determine if withdrawal is allowed
-    const canWithdraw = activeRole.status === 'Received' || activeRole.status === 'Under Review' || activeRole.status === 'Shortlisted';
-    
-    // Check if job details are expanded
-    const showDetails = expandedDetails[activeRole.application_id];
+    // Can withdraw only if not Hired, Rejected, or Withdrawn
+    const canWithdraw = ['Received', 'Under Review', 'Shortlisted'].includes(activeRole.status);
 
     return (
       <div key={companyGroup.company_name} role="listitem" className="w-full">
@@ -206,14 +272,9 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
               </div>
 
               <div className="flex shrink-0 items-start">
-                <div
-                  className={`px-2 py-0.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-sm font-extrabold rounded-lg border whitespace-nowrap flex items-center gap-1.5 sm:gap-2 ${getStatusStyle(activeRole.status)}`}
-                >
+                <div className={`px-2 py-0.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-sm font-extrabold rounded-lg border whitespace-nowrap flex items-center gap-1.5 sm:gap-2 ${getStatusStyle(activeRole.status)}`}>
                   {activeRole.status}
-                  <svg
-                    className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-                    fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"
-                  >
+                  <svg className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -244,7 +305,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                     <div className="flex flex-wrap gap-2" role="group" aria-label="Select a role to view details">
                       {companyGroup.applicationsList.map((app, index) => {
                         const isSelected = activeRole.application_id === app.application_id;
-                        // Unique ID for screen readers if two roles have the same name
                         const uniqueLabel = appCount > 1 && companyGroup.applicationsList.filter(a => a.job_title === app.job_title).length > 1 
                           ? `${app.job_title} (Application ${index + 1})` 
                           : app.job_title;
@@ -262,6 +322,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                             }`}
                           >
                             <span>{app.job_title}</span>
+                            {/* FIX: Only show Hired badge if status is EXACTLY Hired */}
                             {app.status === 'Hired' && (
                               <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider ${
                                 isSelected 
@@ -291,58 +352,19 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                   </p>
                 </div>
 
-                {/* --- JOB DETAILS SECTION --- */}
+                {/* --- JOB DETAILS TRIGGER (Now opens Modal) --- */}
                 <div className={`pt-3 border-t ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
                   <button 
-                    onClick={() => setExpandedDetails(prev => ({ ...prev, [activeRole.application_id]: !showDetails }))}
-                    aria-expanded={showDetails}
+                    onClick={() => setViewingDetails(activeRole)}
+                    aria-haspopup="dialog"
                     className={`text-[11px] sm:text-sm font-bold flex items-center gap-1.5 transition-colors focus:outline-none focus-visible:underline ${isDark ? 'text-blue-400 hover:text-white' : 'text-[#2C7FFF] hover:text-[#03045E]'}`}
                   >
-                    {showDetails ? 'Hide Job Details' : 'View Job Details & Benefits'}
-                    <svg className={`w-3.5 h-3.5 transition-transform ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                    View Job Details & Benefits
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                   </button>
-
-                  {showDetails && (
-                    <div className={`mt-3 p-3 rounded-lg border flex flex-col gap-3 shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/10 text-[#03045E]'}`}>
-                      {activeRole.salary_range && (
-                        <div>
-                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Salary</span>
-                          <p className="text-xs font-semibold">{activeRole.salary_range}</p>
-                        </div>
-                      )}
-                      
-                      {parseSafeArray(activeRole.benefits).length > 0 && (
-                        <div>
-                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Benefits</span>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {parseSafeArray(activeRole.benefits).map((benefit, i) => (
-                              <span key={i} className={`px-2 py-0.5 text-[10px] rounded border ${isDark ? 'bg-white/10 border-white/20' : 'bg-gray-100 border-gray-200'}`}>{benefit}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {parseSafeArray(activeRole.provided_accommodations).length > 0 && (
-                        <div>
-                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Accommodations</span>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {parseSafeArray(activeRole.provided_accommodations).map((acc, i) => (
-                              <span key={i} className={`px-2 py-0.5 text-[10px] rounded border ${isDark ? 'bg-blue-900/30 border-blue-700 text-blue-300' : 'bg-blue-50 border-blue-200 text-[#2C7FFF]'}`}>{acc}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {activeRole.job_description && (
-                        <div>
-                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Job Description</span>
-                          <p className={`text-xs mt-1 whitespace-pre-wrap line-clamp-4 hover:line-clamp-none transition-all ${mutedText}`}>{activeRole.job_description}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
+                {/* WITHDRAW BUTTON - Updated to follow 60-30-10 UI Rules */}
                 {canWithdraw && (
                   <div className={`pt-3 mt-1 border-t ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
                     <button
@@ -353,8 +375,8 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                       aria-label={`Withdraw application for ${activeRole.job_title} at ${companyGroup.company_name}`}
                       className={`w-full sm:w-auto px-5 py-3 text-sm font-black rounded-xl border-2 transition-all cursor-pointer shadow-sm focus:outline-none focus-visible:ring-4 ${
                         isDark 
-                          ? 'bg-black text-red-400 border-red-500 hover:bg-red-500 hover:text-white focus-visible:ring-red-500' 
-                          : 'bg-white text-red-600 border-red-500 hover:bg-red-50 hover:text-red-700 focus-visible:ring-red-500'
+                          ? 'bg-[#1A1A1A] text-white border-white/30 hover:bg-white hover:text-black focus-visible:ring-white' 
+                          : 'bg-white text-[#03045E] border-[#03045E]/30 hover:bg-gray-50 focus-visible:ring-[#03045E]'
                       }`}
                     >
                       Withdraw Application
@@ -375,9 +397,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
         <div className="min-w-0 w-full">
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold break-words">
-            My Job Tracker
-          </h2>
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold break-words">My Job Tracker</h2>
           <p className={`mt-0.5 sm:mt-1.5 text-[11px] sm:text-sm md:text-base font-semibold ${mutedText}`}>
             Monitor the status of your applications in real-time.
           </p>
@@ -415,9 +435,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
               {tab}
               {count > 0 && (
                 <span className={`min-w-[16px] h-4 sm:min-w-[20px] sm:h-5 px-1 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-black shrink-0 ${
-                  filter === tab 
-                    ? (isDark ? 'bg-black text-white' : 'bg-white text-[#03045E]') 
-                    : (isDark ? 'bg-white/20 text-white' : 'bg-[#03045E]/10 text-[#03045E]')
+                  filter === tab ? (isDark ? 'bg-black text-white' : 'bg-white text-[#03045E]') : (isDark ? 'bg-white/20 text-white' : 'bg-[#03045E]/10 text-[#03045E]')
                 }`}>
                   {count}
                 </span>
@@ -433,7 +451,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
           <div role="list" className="md:hidden flex flex-col gap-3 w-full">
             {currentCompanies.map(company => renderCard(company))}
           </div>
-
           <div role="list" className="hidden md:flex flex-row gap-3 sm:gap-6 w-full items-start">
             <div className="flex-1 flex flex-col gap-3 sm:gap-6 w-full">
               {currentCompanies.filter((_, i) => i % 2 === 0).map(company => renderCard(company))}
@@ -446,17 +463,11 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       ) : (
         <div className={`p-5 sm:p-12 rounded-lg sm:rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[280px] ${isDark ? 'border-white/20 bg-[#111111]' : 'border-[#03045E]/30 bg-[#f4f4f4]'}`}>
           <div className={`w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-sm mb-3 sm:mb-5 border ${isDark ? 'bg-black border-white/20 text-blue-400' : 'bg-white border-[#03045E]/20 text-[#2C7FFF]'}`}>
-            <svg className="w-5 h-5 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-            </svg>
+            <svg className="w-5 h-5 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
           </div>
-          <h3 className="text-base sm:text-xl font-extrabold mb-1.5 sm:mb-2">
-            No {filter.toLowerCase()} applications found
-          </h3>
+          <h3 className="text-base sm:text-xl font-extrabold mb-1.5 sm:mb-2">No {filter.toLowerCase()} applications found</h3>
           <p className={`text-[11px] sm:text-sm font-semibold max-w-md leading-relaxed px-2 ${mutedText}`}>
-            {filter === 'All'
-              ? "You haven't submitted any job applications yet. Head over to Smart Matches or Explore Jobs to get started!"
-              : `You don't have any applications currently in the "${filter}" state.`}
+            {filter === 'All' ? "You haven't submitted any job applications yet. Head over to Smart Matches or Explore Jobs to get started!" : `You don't have any applications currently in the "${filter}" state.`}
           </p>
         </div>
       )}
@@ -467,95 +478,56 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            aria-label="Go to previous page"
-            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 ${
-              isDark 
-                ? 'bg-black text-white border-white/30 focus-visible:ring-white' 
-                : 'bg-white text-[#03045E] border-[#03045E]/30 focus-visible:ring-blue-300'
-            }`}
+            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 disabled:opacity-50 focus:outline-none focus-visible:ring-4 ${isDark ? 'bg-black text-white border-white/30 focus-visible:ring-white' : 'bg-white text-[#03045E] border-[#03045E]/30 focus-visible:ring-blue-300'}`}
           >
             Previous
           </button>
-          <span className={`text-[10px] sm:text-xs font-black ${mutedText}`}>
-            Page {currentPage} of {totalPages}
-          </span>
+          <span className={`text-[10px] sm:text-xs font-black ${mutedText}`}>Page {currentPage} of {totalPages}</span>
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            aria-label="Go to next page"
-            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 ${
-              isDark 
-                ? 'bg-black text-white border-white/30 focus-visible:ring-white' 
-                : 'bg-white text-[#03045E] border-[#03045E]/30 focus-visible:ring-blue-300'
-            }`}
+            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 disabled:opacity-50 focus:outline-none focus-visible:ring-4 ${isDark ? 'bg-black text-white border-white/30 focus-visible:ring-white' : 'bg-white text-[#03045E] border-[#03045E]/30 focus-visible:ring-blue-300'}`}
           >
             Next
           </button>
         </nav>
       )}
 
-      {/* Modals with Aria support */}
+      {/* JOB DETAILS MODAL */}
+      <JobDetailsModal role={viewingDetails} onClose={() => setViewingDetails(null)} isDark={isDark} />
+
+      {/* Withdraw Confirmation Modal */}
       {confirmWithdraw.isOpen && (
-        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(72, 71, 71, 0.6)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title" tabIndex="-1">
-          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/30 text-white' : 'bg-white border-[#03045E]/30 text-[#03045E]'}`}>
-            <div aria-hidden="true" className={`h-1.5 sm:h-2 w-full ${isDark ? 'bg-red-500' : 'bg-[#03045E]'}`} />
+        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title">
+          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
+            <div aria-hidden="true" className={`h-1.5 sm:h-2 w-full ${isDark ? 'bg-red-500' : 'bg-red-500'}`} />
             <div className="relative px-6 pt-6 pb-6 flex flex-col items-center text-center">
-              <div aria-hidden="true" className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 border-4 ${isDark ? 'border-red-500 text-red-500' : 'border-[#03045E] text-[#03045E]'}`}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+              <div aria-hidden="true" className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 border-4 ${isDark ? 'border-red-500 text-red-500' : 'border-red-500 text-red-500'}`}>
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               </div>
               <h2 id="confirm-withdraw-title" tabIndex="0" className="text-xl font-black mb-2 focus:outline-none">Withdraw Application?</h2>
-              <p tabIndex="0" className={`text-xs font-bold mb-6 focus:outline-none ${mutedText}`}>
-                Are you sure you want to withdraw? You will be removed from the employer's candidate list for this job.
-              </p>
+              <p tabIndex="0" className={`text-xs font-bold mb-6 focus:outline-none ${mutedText}`}>Are you sure you want to withdraw? You will be removed from the employer's candidate list for this job.</p>
               <div className="flex w-full gap-3">
-                <button 
-                  onClick={() => setConfirmWithdraw({ isOpen: false, appId: null, loading: false })} 
-                  disabled={confirmWithdraw.loading} 
-                  className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 transition-all focus:outline-none focus-visible:ring-4 ${
-                    isDark ? 'text-white/70 border-white/30 hover:bg-white/10 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 hover:bg-[#03045E]/5 focus-visible:ring-[#03045E]'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={executeWithdraw} 
-                  disabled={confirmWithdraw.loading} 
-                  className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${
-                    isDark ? 'text-red-400 border-red-500 hover:bg-red-500 hover:text-white focus-visible:ring-red-500' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white focus-visible:ring-[#03045E]'
-                  }`}
-                >
-                  {confirmWithdraw.loading ? 'Processing...' : 'Yes, Withdraw'}
-                </button>
+                <button onClick={() => setConfirmWithdraw({ isOpen: false, appId: null, loading: false })} disabled={confirmWithdraw.loading} className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white/70 border-white/30 hover:bg-white/10 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 hover:bg-[#03045E]/5 focus-visible:ring-[#03045E]'}`}>Cancel</button>
+                <button onClick={executeWithdraw} disabled={confirmWithdraw.loading} className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-red-400 border-red-500 hover:bg-red-500 hover:text-white focus-visible:ring-red-500' : 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500'}`}>{confirmWithdraw.loading ? 'Processing...' : 'Yes, Withdraw'}</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* SweetAlert Modal */}
       {sweetAlert.isOpen && (
-        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(72, 71, 71, 0.6)' }} role="alertdialog" aria-modal="true" aria-labelledby="sweetalert-title" tabIndex="-1">
-          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/30 text-white' : 'bg-white border-[#03045E]/30 text-[#03045E]'}`}>
+        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }} role="alertdialog" aria-modal="true" aria-labelledby="sweetalert-title">
+          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
             <div aria-hidden="true" className={`h-1.5 sm:h-2 w-full ${isDark ? 'bg-white' : 'bg-[#03045E]'}`} />
             <div className="relative px-6 pt-6 pb-6 flex flex-col items-center text-center">
               <div aria-hidden="true" className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 border-4 ${isDark ? 'border-white text-white' : 'border-[#03045E] text-[#03045E]'}`}>
-                {sweetAlert.type === 'success' ? (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                ) : (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                )}
+                {sweetAlert.type === 'success' ? <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> : <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
               </div>
               <h2 id="sweetalert-title" tabIndex="0" className="text-xl font-black mb-2 focus:outline-none">{sweetAlert.title}</h2>
               <p tabIndex="0" className={`text-xs font-bold mb-6 focus:outline-none ${mutedText}`}>{sweetAlert.text}</p>
-              <button 
-                onClick={closeSweetAlert} 
-                className={`w-full py-3 rounded-lg font-black text-xs uppercase tracking-wider bg-transparent border-2 transition-all focus:outline-none focus-visible:ring-4 ${
-                  isDark ? 'text-white border-white hover:bg-white hover:text-black focus-visible:ring-white' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white focus-visible:ring-[#03045E]'
-                }`}
-              >
-                Got It
-              </button>
+              <button onClick={() => setSweetAlert({ ...sweetAlert, isOpen: false })} className={`w-full py-3 rounded-lg font-black text-xs uppercase tracking-wider bg-transparent border-2 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white border-white hover:bg-white hover:text-black focus-visible:ring-white' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white focus-visible:ring-[#03045E]'}`}>Got It</button>
             </div>
           </div>
         </div>
