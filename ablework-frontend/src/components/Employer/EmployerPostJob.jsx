@@ -418,10 +418,11 @@ const accommodationSuggestions = [
                     key={template.label}
                     type="button"
                     onClick={() => setJobDescription(prev => prev + template.prefix)}
-                    className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border ${
+                    style={{ color: isDark ? '#ffffff' : '#03045E' }}
+                    className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm ${
                       isDark 
-                        ? 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-white hover:text-black' 
-                        : 'bg-white text-[#03045E] border-gray-300 hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]'
+                        ? 'bg-[#2C7FFF] border-[#2C7FFF] hover:bg-white hover:text-black' 
+                        : 'bg-white border-gray-400 hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
                     }`}
                   >
                     + {template.label}

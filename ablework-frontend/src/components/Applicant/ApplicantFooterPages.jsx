@@ -690,6 +690,7 @@ export function ApplicantContact({ onBack, profile }) {
 
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+    const [proofImage, setProofImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
@@ -704,27 +705,32 @@ export function ApplicantContact({ onBack, profile }) {
     setAlert({ show: false, type: '', text: '' });
 
     try {
+      const formData = new FormData();
+      formData.append('userId', profile?.user_id || profile?.id || '');
+      formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
+      formData.append('userEmail', profile?.email || 'N/A');
+      formData.append('userRole', profile?.role || 'Applicant'); // Change to 'Employer' for employer side
+      formData.append('subject', subject);
+      formData.append('message', message);
+      
+      if (proofImage) {
+        formData.append('proof_image', proofImage);
+      }
+
       const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: profile?.user_id || profile?.id || null,
-          userName: profile ? `${profile.firstname || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
-          userEmail: profile?.email || 'N/A',
-          userRole: profile?.role || 'Applicant',
-          subject,
-          message
-        })
+        body: formData
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setAlert({ show: true, type: 'success', text: data.message || 'Ticket submitted successfully!' });
+        setAlert({ show: true, type: 'success', text: data.message || 'Submitted successfully!' });
         setSubject('');
         setMessage('');
+        setProofImage(null); // Reset image
       } else {
-        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit ticket.' });
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
       }
     } catch (err) {
       console.error(err);
@@ -775,23 +781,11 @@ export function ApplicantContact({ onBack, profile }) {
             Submit a Support Ticket
           </h3>
           
-          {/* ACCESSIBLE ALERT BANNER */}
+        {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
           {alert.show && (
             <div 
               role="alert"
-              className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 ${
-                alert.type === 'success' 
-                  ? (isHighContrastOrDarkComfort 
-                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' 
-                      : isDark 
-                        ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500' 
-                        : 'bg-emerald-50 text-emerald-800 border-emerald-300')
-                  : (isHighContrastOrDarkComfort 
-                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' // Blue for errors in high contrast
-                      : isDark 
-                        ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' // Blue for errors in dark mode
-                        : 'bg-[#2C7FFF] text-white border-[#2C7FFF]')  // Blue for errors in light mode
-              }`}
+              className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
             >
               {alert.text}
             </div>
@@ -819,6 +813,17 @@ export function ApplicantContact({ onBack, profile }) {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe your issue, question, or report suspicious activity..."
               className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div>
+            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setProofImage(e.target.files[0])}
+              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
               disabled={isSubmitting}
             />
           </div>

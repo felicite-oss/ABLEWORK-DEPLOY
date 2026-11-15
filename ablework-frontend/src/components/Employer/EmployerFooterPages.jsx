@@ -630,8 +630,7 @@ export function EmployerContact({ onBack, profile }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
-  // Submit handler
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     if (!subject.trim() || !message.trim()) {
       setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
@@ -642,27 +641,32 @@ export function EmployerContact({ onBack, profile }) {
     setAlert({ show: false, type: '', text: '' });
 
     try {
+      const formData = new FormData();
+      formData.append('userId', profile?.user_id || profile?.id || '');
+      formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
+      formData.append('userEmail', profile?.email || 'N/A');
+      formData.append('userRole', profile?.role || 'Employer'); 
+      formData.append('subject', subject);
+      formData.append('message', message);
+      
+      if (proofImage) {
+        formData.append('proof_image', proofImage);
+      }
+
       const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: profile?.user_id || profile?.id || null,
-          userName: profile ? `${profile.company_name || profile.firstname || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
-          userEmail: profile?.email || 'N/A',
-          userRole: 'Employer',
-          subject,
-          message
-        })
+        body: formData
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setAlert({ show: true, type: 'success', text: data.message || 'Message sent successfully!' });
+        setAlert({ show: true, type: 'success', text: data.message || 'Submitted successfully!' });
         setSubject('');
         setMessage('');
+        setProofImage(null); // Reset image
       } else {
-        setAlert({ show: true, type: 'error', text: data.message || 'Failed to send message.' });
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
       }
     } catch (err) {
       console.error(err);
@@ -712,23 +716,11 @@ export function EmployerContact({ onBack, profile }) {
         <div className={`rounded-2xl sm:rounded-3xl shadow-xl border-2 p-5 sm:p-8 ${cardBg}`}>
           <h2 className={`text-lg sm:text-2xl font-black mb-4 sm:mb-6 ${textColor}`}>Send Us a Message</h2>
           
-          {/* ACCESSIBLE ALERT BANNER (Blue for errors) */}
+             {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
           {alert.show && (
             <div 
               role="alert"
-              className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 mb-4 ${
-                alert.type === 'success' 
-                  ? (isHighContrastOrDarkComfort 
-                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' 
-                      : isDark 
-                        ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500' 
-                        : 'bg-emerald-50 text-emerald-800 border-emerald-300')
-                  : (isHighContrastOrDarkComfort 
-                      ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
-                      : isDark 
-                        ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
-                        : 'bg-[#2C7FFF] text-white border-[#2C7FFF]')
-              }`}
+              className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
             >
               {alert.text}
             </div>
@@ -759,6 +751,17 @@ export function EmployerContact({ onBack, profile }) {
                 disabled={isSubmitting}
               />
             </div>
+                      <div>
+            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setProofImage(e.target.files[0])}
+              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
+              disabled={isSubmitting}
+            />
+          </div>
+
             <button
               type="submit"
               disabled={isSubmitting}

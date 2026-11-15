@@ -121,6 +121,28 @@ export function AdminSupportTickets() {
                 {ticket.message}
               </div>
 
+                            {/* Display Attached Proof Image */}
+              {ticket.image_path && (
+                <div className="mb-4">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#03045E]/60 block mb-2">Attached Proof:</span>
+                  <a 
+                    href={ticket.image_path.startsWith('http') ? ticket.image_path : `${API_BASE_URL}/uploads/${ticket.image_path.replace(/^uploads[\\/]/, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block relative group"
+                  >
+                    <img 
+                      src={ticket.image_path.startsWith('http') ? ticket.image_path : `${API_BASE_URL}/uploads/${ticket.image_path.replace(/^uploads[\\/]/, '')}`}
+                      alt="Proof attachment" 
+                      className="max-w-xs max-h-48 object-cover rounded-lg border-2 border-[#03045E]/20 shadow-sm group-hover:opacity-80 transition-opacity"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-lg">
+                      <span className="text-white font-bold text-xs bg-black/60 px-2 py-1 rounded">Click to enlarge</span>
+                    </div>
+                  </a>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex flex-wrap gap-3">
                 {ticket.status === 'Open' && (

@@ -2261,8 +2261,9 @@ app.get('/api/users/:id/status', async (req, res) => {
 // ---------------------------------------------------------
 // ROUTE: SUBMIT SUPPORT TICKET
 // ---------------------------------------------------------
-app.post('/api/support/ticket', async (req, res) => {
+app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) => {
     const { userId, userName, userEmail, userRole, subject, message } = req.body;
+    const imagePath = req.file ? req.file.path : null; 
 
     if (!subject || !message) {
         return res.status(400).json({ message: "Subject and message are required." });
@@ -2270,9 +2271,9 @@ app.post('/api/support/ticket', async (req, res) => {
 
     try {
         await db.execute(
-            `INSERT INTO support_tickets (user_id, user_name, user_email, user_role, subject, message) 
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [userId || null, userName || 'Guest', userEmail || 'N/A', userRole || 'Guest', subject, message]
+            `INSERT INTO support_tickets (user_id, user_name, user_email, user_role, subject, message, image_path) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [userId || null, userName || 'Guest', userEmail || 'N/A', userRole || 'Guest', subject, message, imagePath]
         );
 
         res.status(201).json({ message: "Support ticket submitted successfully. Our team will review this shortly." });
