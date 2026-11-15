@@ -385,8 +385,8 @@ const accommodationSuggestions = [
               className={`${inputCls} resize-y`}
             ></textarea>
             
-            {/* Quick Insert Labels */}
-            <div className="flex flex-wrap items-center gap-2 mt-1">
+             {/* Quick Insert Labels */}
+            <div className="flex flex-wrap items-center gap-2 mt-2 mb-1">
               <span className={`text-[10px] font-bold uppercase tracking-wider ${muted}`}>Quick Insert:</span>
               {[
                 { label: 'Role Overview', prefix: '\n\nRole Overview:\n' },
@@ -398,10 +398,10 @@ const accommodationSuggestions = [
                   key={template.label}
                   type="button"
                   onClick={() => setJobDescription(prev => prev + template.prefix)}
-                  className={`px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-md border-2 transition-all cursor-pointer ${
                     isDark 
-                      ? 'bg-black text-white border-white/40 hover:bg-white hover:text-black' 
-                      : 'bg-[#f4f4f4] text-[#03045E] border-gray-300 hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]'
+                      ? 'bg-[#1A1A1A] text-white border-white/50 hover:bg-white hover:text-black' 
+                      : 'bg-[#E6F0FF] text-[#03045E] border-[#2C7FFF]/30 hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]'
                   }`}
                 >
                   + {template.label}

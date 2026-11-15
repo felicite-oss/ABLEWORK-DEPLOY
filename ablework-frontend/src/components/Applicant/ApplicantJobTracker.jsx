@@ -74,13 +74,16 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   };
 
   const getStatusStyle = (status) => {
-    // Strict color coding: Green for Hired, Red for Rejected, Blue/Gray for others
+    // Strict color coding: Blue for Hired, Red for Rejected, Gray for others
     if (isHighContrastOrDarkComfort) {
       switch (status) {
         case 'Received': return 'bg-white text-black border-white';
         case 'Under Review': return 'bg-white text-black border-white';
         case 'Shortlisted': return 'bg-white text-black border-white';
-        case 'Hired': return 'bg-black text-emerald-400 border-emerald-500';
+        
+        // CHANGED TO BLUE
+        case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
+        
         case 'Withdrawn': return 'bg-black text-white border-white';
         case 'Rejected': return 'bg-black text-red-500 border-red-500';
         default: return 'bg-white text-black border-white';
@@ -91,7 +94,10 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
         case 'Received': return 'bg-[#1A1A1A] text-white border-white/30';
         case 'Under Review': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
         case 'Shortlisted': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
-        case 'Hired': return 'bg-[#1A1A1A] text-emerald-400 border-emerald-500/50';
+        
+        // CHANGED TO BLUE
+        case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
+        
         case 'Withdrawn': return 'bg-[#1A1A1A] text-gray-400 border-gray-600';
         case 'Rejected': return 'bg-[#1A1A1A] text-red-400 border-red-500/50';
         default: return 'bg-[#1A1A1A] text-white border-white/30';
@@ -101,7 +107,10 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       case 'Received': return 'bg-gray-100 text-gray-700 border-gray-300';
       case 'Under Review': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       case 'Shortlisted': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
+      
+      // CHANGED TO BLUE
       case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
+      
       case 'Withdrawn': return 'bg-gray-100 text-gray-600 border-gray-300';
       case 'Rejected': return 'bg-red-50 text-red-700 border-red-300';
       default: return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
