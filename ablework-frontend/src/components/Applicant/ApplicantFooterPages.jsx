@@ -696,11 +696,12 @@ export function ApplicantContact({ onBack, profile }) {
     setAlert({ show: false, type: '', text: '' });
 
     try {
+      // Ensure we are sending the correct data
       const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: profile?.user_id || profile?.id,
+          userId: profile?.user_id || profile?.id || null,
           userName: profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
           userEmail: profile?.email || 'N/A',
           userRole: profile?.role || 'Applicant',
@@ -712,7 +713,7 @@ export function ApplicantContact({ onBack, profile }) {
       const data = await res.json();
 
       if (res.ok) {
-        setAlert({ show: true, type: 'success', text: data.message });
+        setAlert({ show: true, type: 'success', text: data.message || 'Ticket submitted successfully!' });
         setSubject('');
         setMessage('');
       } else {
@@ -733,32 +734,31 @@ export function ApplicantContact({ onBack, profile }) {
       onBack={onBack}
     >
       <div className="grid md:grid-cols-2 gap-8">
-
         {/* LEFT SIDE: INFO CARDS */}
         <div className="space-y-6">
           <div role="region" aria-label="System Name: ABLEWORK" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">System Name</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">ABLEWORK</p>
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">System Name</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">ABLEWORK</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Project Team</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">5i</p>
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Project Team</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">5i</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Email Support</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">ableworksys5i@gmail.com</p>
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Email Support</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">ableworksys5i@gmail.com</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Office Address</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Office Address</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Data Custody Team</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] leading-relaxed transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Data Custody Team</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] leading-relaxed">
               Paquio, Loueala Jean H.<br />
               Pagado, Jesie Marie D.<br />
               Astodillo, Felicite S.<br />
@@ -768,14 +768,14 @@ export function ApplicantContact({ onBack, profile }) {
           </div>
 
           <div role="region" aria-label="Institution: STIWNU" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
-            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Institution</h3>
-            <p tabIndex="0" className="text-sm font-semibold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">STIWNU</p>
+            <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Institution</h3>
+            <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">STIWNU</p>
           </div>
         </div>
 
         {/* RIGHT SIDE: SUPPORT FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <h3 tabIndex="0" className="text-lg font-bold text-[#03045E] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1 w-fit">Submit a Support Ticket</h3>
+          <h3 tabIndex="0" className="text-lg font-bold text-[#03045E]">Submit a Support Ticket</h3>
           
           {/* Alert Banner */}
           {alert.show && (
@@ -799,7 +799,6 @@ export function ApplicantContact({ onBack, profile }) {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Subject / Issue Summary"
-              aria-label="Subject or Issue Summary"
               className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
               disabled={isSubmitting}
             />
@@ -813,7 +812,6 @@ export function ApplicantContact({ onBack, profile }) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe your issue, question, or report suspicious activity..."
-              aria-label="Describe your issue or question"
               className="w-full p-3.5 bg-[#f4f4f4] border border-[#03045E]/15 rounded-xl text-sm font-medium text-[#03045E] placeholder-[#03045E]/50 focus:outline-none focus:border-[#2C7FFF]"
               disabled={isSubmitting}
             />
@@ -822,8 +820,7 @@ export function ApplicantContact({ onBack, profile }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            aria-label="Submit Request Ticket"
-            className="group w-full py-4 px-6 bg-[#03045E] text-[#f4f4f4] font-extrabold text-sm rounded-2xl border-2 border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:text-[#f4f4f4] transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group w-full py-4 px-6 bg-[#03045E] text-[#f4f4f4] font-extrabold text-sm rounded-2xl border-2 border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50"
           >
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#2C7FFF] group-hover:bg-[#f4f4f4] transition-colors" />

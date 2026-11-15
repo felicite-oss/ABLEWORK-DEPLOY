@@ -1097,7 +1097,12 @@ export default function EmployerDashboard() {
               {activeTab === 'settings' && profile && <EmployerAccountSettings profile={profile} />}
               {activeTab === 'employer-policy' && <EmployerPolicy onBack={() => handleTabChange('overview')} />}
               {activeTab === 'employer-terms' && <EmployerTerms onBack={() => handleTabChange('overview')} />}
-              {activeTab === 'employer-contact' && <EmployerContact onBack={() => handleTabChange('overview')} />}
+              {activeTab === 'employer-contact' && (
+                <EmployerContact 
+                  onBack={() => handleTabChange('overview')} 
+                  profile={profile} // <-- ADD THIS
+                />
+              )}
             </div>
           </div>
         </main>

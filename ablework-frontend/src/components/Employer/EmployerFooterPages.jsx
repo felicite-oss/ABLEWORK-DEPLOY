@@ -614,25 +614,72 @@ export function EmployerTerms({ onBack }) {
   );
 }
 
-export function EmployerContact({ onBack }) {
+export function EmployerContact({ onBack, profile }) {
   const { mode } = useContext(AccessibilityContext);
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDark = isDarkMode || isContrast;
 
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!subject.trim() || !message.trim()) {
+      setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setAlert({ show: false, type: '', text: '' });
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: profile?.user_id || profile?.id || null,
+          userName: profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
+          userEmail: profile?.email || 'N/A',
+          userRole: profile?.role || 'Employer',
+          subject,
+          message
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setAlert({ show: true, type: 'success', text: data.message || 'Ticket submitted successfully!' });
+        setSubject('');
+        setMessage('');
+      } else {
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit ticket.' });
+      }
+    } catch (err) {
+      console.error(err);
+      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-      <main role="main" aria-label="Contact Us Screen" className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14 animate-in fade-in duration-300">
+    <main role="main" aria-label="Contact Us Screen" className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14 animate-in fade-in duration-300">
       <h1 className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
         Contact Us
       </h1>
 
       <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
+        {/* LEFT SIDE: INFO */}
         <div style={isDark ? { backgroundColor: 'transparent', borderColor: '#D1D5DB' } : {}} className="rounded-2xl sm:rounded-3xl shadow-xl border-2 backdrop-blur-sm bg-[var(--color-surface)]/50 text-[#03045E] border-white/40 p-5 sm:p-8">
           <h2 className="text-lg sm:text-2xl font-black mb-4 sm:mb-6">Get in Touch</h2>
           <div className="space-y-4 sm:space-y-6">
             <div>
               <h3 className="text-xs sm:text-base font-black">Email</h3>
-              <p className="text-xs sm:text-base font-semibold">employers@ablework.com</p>
+              <p className="text-xs sm:text-base font-semibold">ableworksys5i@gmail.com</p>
             </div>
             <div>
               <h3 className="text-xs sm:text-base font-black">Partner Helpline</h3>
@@ -649,59 +696,52 @@ export function EmployerContact({ onBack }) {
           </div>
         </div>
 
+        {/* RIGHT SIDE: FORM */}
         <div style={isDark ? { backgroundColor: 'transparent', borderColor: '#D1D5DB' } : {}} className="rounded-2xl sm:rounded-3xl shadow-xl border-2 backdrop-blur-sm bg-[var(--color-surface)]/50 text-[#03045E] border-white/40 p-5 sm:p-8">
           <h2 className="text-lg sm:text-2xl font-black mb-4 sm:mb-6">Send Us a Message</h2>
-          <form className="space-y-3 sm:space-y-4" onSubmit={(e) => e.preventDefault()}>
+          
+          {alert.show && (
+            <div className={`p-3 rounded-xl border-2 text-sm font-bold mb-4 ${alert.type === 'success' ? 'bg-green-50 text-green-700 border-green-300' : 'bg-red-50 text-red-700 border-red-300'}`}>
+              {alert.text}
+            </div>
+          )}
+
+          <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="emp-contact-name" className="sr-only">Your Name</label>
+              <label htmlFor="emp-subject" className="sr-only">Subject</label>
               <input
-                id="emp-contact-name"
+                id="emp-subject"
                 type="text"
-                placeholder="Your Name"
-                aria-label="Your Name"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Subject / Issue Summary"
+                className="w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70"
+                disabled={isSubmitting}
               />
             </div>
             <div>
-              <label htmlFor="emp-contact-email" className="sr-only">Your Email</label>
-              <input
-                id="emp-contact-email"
-                type="email"
-                placeholder="Your Email"
-                aria-label="Your Email"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
-              />
-            </div>
-            <div>
-              <label htmlFor="emp-contact-message" className="sr-only">Your Message</label>
+              <label htmlFor="emp-message" className="sr-only">Message</label>
               <textarea
-                id="emp-contact-message"
+                id="emp-message"
                 rows="5"
-                placeholder="Your Message"
-                aria-label="Your Message"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Describe your issue or report suspicious activity..."
+                className="w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70"
+                disabled={isSubmitting}
               />
             </div>
             <button
-              type="button"
-              className={`w-full py-2.5 sm:py-3 rounded-full font-bold transition border-2 hover:brightness-125 text-xs sm:text-sm ${
-                isContrast
-                  ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-surface)] hover:text-[var(--color-background)] hover:border-[var(--color-accent)]'
-                  : 'bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:text-[#f4f4f4] hover:border-[#2C7FFF]'
-              }`}
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-2.5 sm:py-3 rounded-full font-bold transition border-2 hover:brightness-125 text-xs sm:text-sm bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:text-[#f4f4f4] hover:border-[#2C7FFF] disabled:opacity-50"
             >
-              Send Message
+              {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
           </form>
         </div>
       </div>
-       </main>
+    </main>
   );
 }
 
