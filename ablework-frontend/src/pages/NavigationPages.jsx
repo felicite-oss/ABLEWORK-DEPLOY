@@ -510,11 +510,10 @@ export function Home() {
               </div>
 
             </div>
-
             {/* Right Side: Image with Wavy Curve */}
-            <div className="w-full lg:w-1/2 relative min-h-[400px] lg:min-h-full">
+            <div className="w-full lg:w-1/2 relative min-h-[400px] lg:min-h-full bg-[#f4f4f4]">
               
-              {/* SVG Mask for the Wavy Cut Effect (Matches Image 1) */}
+              {/* SVG Mask for the Wavy Cut Effect */}
               <svg 
                 className="absolute inset-y-0 left-0 h-full w-16 sm:w-24 lg:w-32 z-10 text-[#f4f4f4] fill-current hidden lg:block" 
                 viewBox="0 0 100 100" 
@@ -527,11 +526,14 @@ export function Home() {
               <img
                 src={backgroundImg}
                 alt="Inclusive Workforce"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
               
-              {/* Color Tint Overlay */}
-              <div className="absolute inset-0 bg-[#2c7fff]/20 mix-blend-multiply"></div>
+              {/* New Softer Color Tint & Gradient (Uses brand colors) */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#f4f4f4] via-[#2c7fff]/10 to-transparent"></div>
+              
+              {/* Optional: Adds a nice subtle shadow on the left edge to emphasize the wave */}
+              <div className="absolute inset-y-0 left-0 w-8 sm:w-12 lg:w-16 bg-gradient-to-r from-black/5 to-transparent hidden lg:block"></div>
             </div>
 
           </div>
