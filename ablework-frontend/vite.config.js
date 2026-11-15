@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate', // Automatically updates the app when a new version is pushed
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['logo192.png', 'logo512.png'],
       manifest: {
         name: 'AbleWork: PWD Employment',
         short_name: 'AbleWork',
