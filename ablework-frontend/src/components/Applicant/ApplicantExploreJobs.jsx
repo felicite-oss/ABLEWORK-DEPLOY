@@ -33,16 +33,21 @@ const safeParse = (data) => {
 
 const getDistanceBadgeStyles = (km, isDarkScreen) => {
   const distance = Number(km);
-  if (isNaN(distance)) return `bg-[#2C7FFF]/15 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'} border-[#03045E]/40`;
+  if (isNaN(distance)) return `bg-[#2C7FFF]/15 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'} border-${isDarkScreen ? 'white/40' : '[#03045E]/40'}`;
   
   if (distance <= 5) {
-    return 'bg-white text-[#10B981] border-[#10B981]';
+    return isDarkScreen 
+      ? 'bg-[#1A1A1A] text-[#10B981] border-[#10B981]' 
+      : 'bg-white text-[#10B981] border-[#10B981]';
   } else {
-    return `bg-[#2C7FFF]/15 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'} border-[#03045E]/40`;
+    return `bg-[#2C7FFF]/15 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'} border-${isDarkScreen ? 'white/40' : '[#03045E]/40'}`;
   }
 };
 
-const getMatchColor = (percentage) => {
+const getMatchColor = (percentage, isDarkScreen) => {
+  if (isDarkScreen) {
+    return 'bg-[#1A1A1A] text-white border-gray-400';
+  }
   if (percentage >= 80) return 'bg-[#2C7FFF]/15 text-[#03045E] border-[#2C7FFF]';
   if (percentage >= 50) return 'bg-[#2C7FFF]/10 text-[#03045E] border-[#03045E]/40';
   return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
@@ -50,61 +55,46 @@ const getMatchColor = (percentage) => {
 
 const MatchBreakdown = ({ job, isDarkScreen, colorUI }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Parse the scores from the backend
-  const distanceScore = Math.max(0, 60 - (parseFloat(job.distance_km) / 5) * 60); // Approximated for UI
-  const skillsScore = (parseFloat(job.skills_similarity) || 0) * (0.6 * 40);
-  const descScore = (parseFloat(job.description_similarity) || 0) * (0.4 * 40);
-
-  const totalSkills = Math.round(skillsScore);
-  const totalDesc = Math.round(descScore);
+  const distanceScore = Math.max(0, 60 - (parseFloat(job.distance_km) / 5) * 60); 
+  const semanticScore = (parseFloat(job.semantic_similarity_raw) || 0) * 40;
+  const totalSemantic = Math.round(semanticScore);
   const totalDist = Math.round(distanceScore);
 
   return (
-    <div className="mt-2 mb-4 border-t border-[#03045E]/15 pt-3">
+    <div className={`mt-2 mb-4 border-t pt-3 ${isDarkScreen ? 'border-white/15' : 'border-[#03045E]/15'}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        aria-label={isOpen ? "Hide match breakdown" : "Show match breakdown"}
-        className="flex items-center gap-1.5 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-[#2C7FFF] hover:text-[#03045E] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1"
+        aria-label={isOpen ? "Hide match breakdown" : "Show why this job is a match"}
+        className={`flex items-center gap-1.5 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 ${isDarkScreen ? 'text-white hover:text-gray-300' : 'text-[#2C7FFF] hover:text-[#03045E]'}`}
       >
-        <svg className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
+        <svg aria-hidden="true" className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
         Why this match?
       </button>
 
       {isOpen && (
-        <div className="mt-3 flex flex-col gap-2.5 animate-fadeIn" role="region" aria-label="Match score breakdown">
-          {/* Skills */}
-          <div>
-            <div className="flex justify-between text-[10px] sm:text-xs font-bold mb-1 text-[#03045E]">
-              <span>Skills Match (Max 24 pts)</span>
-              <span className="text-[#2C7FFF]">{totalSkills} pts</span>
+        <div className="mt-3 flex flex-col gap-3 animate-fadeIn" role="region" aria-label="Match score breakdown details">
+          
+          {/* Unified Skills (Semantic AI) */}
+          <div tabIndex="0" aria-label={`Skills match score: ${totalSemantic} out of 40 points.`} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded">
+            <div aria-hidden="true" className={`flex justify-between text-[10px] sm:text-xs font-bold mb-1 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
+              <span>Skills & AI Match (Max 40 pts)</span>
+              <span className="text-[#2C7FFF]">{totalSemantic} pts</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 overflow-hidden">
-              <div className="bg-[#2C7FFF] h-full rounded-full transition-all duration-1000" style={{ width: `${(totalSkills / 24) * 100}%` }} />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <div className="flex justify-between text-[10px] sm:text-xs font-bold mb-1 text-[#03045E]">
-              <span>Description Match (Max 16 pts)</span>
-              <span className="text-[#10B981]">{totalDesc} pts</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 overflow-hidden">
-              <div className="bg-[#10B981] h-full rounded-full transition-all duration-1000" style={{ width: `${(totalDesc / 16) * 100}%` }} />
+            <div aria-hidden="true" className={`w-full rounded-full h-1.5 sm:h-2 overflow-hidden ${isDarkScreen ? 'bg-gray-700' : 'bg-gray-200'}`}>
+              <div className="bg-[#2C7FFF] h-full rounded-full transition-all duration-1000" style={{ width: `${(totalSemantic / 40) * 100}%` }} />
             </div>
           </div>
 
-          {/* Distance */}
-          <div>
-            <div className="flex justify-between text-[10px] sm:text-xs font-bold mb-1 text-[#03045E]">
+          {/* Rule-Based Distance */}
+          <div tabIndex="0" aria-label={`Distance match score: ${totalDist} out of 60 points.`} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded">
+            <div aria-hidden="true" className={`flex justify-between text-[10px] sm:text-xs font-bold mb-1 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
               <span>Distance (Max 60 pts)</span>
               <span className="text-[#F59E0B]">{totalDist} pts</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 overflow-hidden">
+            <div aria-hidden="true" className={`w-full rounded-full h-1.5 sm:h-2 overflow-hidden ${isDarkScreen ? 'bg-gray-700' : 'bg-gray-200'}`}>
               <div className="bg-[#F59E0B] h-full rounded-full transition-all duration-1000" style={{ width: `${(totalDist / 60) * 100}%` }} />
             </div>
           </div>
@@ -146,9 +136,21 @@ const CompanyLogo = ({ logoUrl, companyName, size = 'md' }) => {
   );
 };
 
+const extractRoleOverview = (description) => {
+  if (!description) return '';
+  // Looks for common headers that indicate the end of the overview
+  const match = description.match(/(Key Responsibilities:|Qualifications:|Workplace Accommodations:|What You Will Need)/i);
+  if (match) {
+    return description.substring(0, match.index).trim();
+  }
+  return description;
+};
+
 const JobCardDescription = ({ description, isExpanded, onToggle }) => {
   const textRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
+
+  const overviewText = extractRoleOverview(description);
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -159,22 +161,25 @@ const JobCardDescription = ({ description, isExpanded, onToggle }) => {
     checkOverflow();
     window.addEventListener('resize', checkOverflow);
     return () => window.removeEventListener('resize', checkOverflow);
-  }, [description, isExpanded]);
+  }, [overviewText, isExpanded]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-[80px] sm:min-h-[100px]">
+    <div className="flex-1 flex flex-col min-h-[80px] sm:min-h-[100px] mt-1">
       <p 
         ref={textRef}
+        tabIndex="0"
+        aria-label={`Role Overview: ${overviewText}`}
         onClick={(e) => {
-          // Prevent toggling if clicking inside, wait for button
           if ((isOverflowing || isExpanded)) {
             e.stopPropagation();
             onToggle();
           }
         }}
-        className={`text-[#03045E] text-xs sm:text-sm font-semibold leading-relaxed ${(isOverflowing || isExpanded) ? 'cursor-pointer' : ''} ${isExpanded ? '' : 'line-clamp-2'}`}
+        className={`text-xs sm:text-sm font-semibold leading-relaxed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 -m-1 ${
+          isDarkScreen ? 'text-white' : 'text-[#03045E]'
+        } ${(isOverflowing || isExpanded) ? 'cursor-pointer' : ''} ${isExpanded ? '' : 'line-clamp-2'}`}
       >
-        {description}
+        {overviewText}
       </p>
       
       {(isOverflowing || isExpanded) && (
@@ -183,7 +188,8 @@ const JobCardDescription = ({ description, isExpanded, onToggle }) => {
             e.stopPropagation();
             onToggle();
           }}
-          className="text-[10px] sm:text-xs font-bold text-[#2C7FFF] hover:underline mt-1 cursor-pointer text-left w-fit"
+          aria-label={isExpanded ? "Collapse role overview" : "Read full role overview"}
+          className="text-[10px] sm:text-xs font-bold text-[#2C7FFF] hover:underline mt-1 cursor-pointer text-left w-fit focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded"
         >
           {isExpanded ? 'Read less' : 'Read more'}
         </button>
@@ -807,7 +813,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
       {filteredJobs.length > 0 ? (
         <div className="flex flex-col gap-6 w-full">
           <div role="list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full items-stretch">
-              {currentJobs.map(job => {
+                            {currentJobs.map(job => {
                 const hasApplied = checkHasApplied(job.id);
                 const isHighlighted = String(highlightId) === String(job.id);
 
@@ -815,10 +821,12 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                   <div
                     key={job.id}
                     id={`job-${job.id}`}
-                    role="listitem"
-                    tabIndex={0}
-                    className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white shadow-md border-2 border-[#03045E]/20 flex flex-col justify-between gap-4 h-full transition-all duration-500 ${
-                      hasApplied ? 'opacity-85 bg-[#f4f4f4]' : ''
+                    role="article"
+                    aria-label={`Job opening for ${job.job_title} at ${job.company_name}`}
+                    className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md border-2 flex flex-col justify-between gap-4 h-full transition-all duration-500 ${
+                      isDarkScreen ? 'bg-black border-white/20' : 'bg-white border-[#03045E]/20'
+                    } ${
+                      hasApplied ? (isDarkScreen ? 'opacity-60' : 'opacity-85 bg-[#f4f4f4]') : ''
                     } ${
                       isHighlighted 
                         ? 'animate-bounce ring-4 ring-[#2C7FFF] shadow-[0_0_20px_rgba(44,127,255,0.5)] z-10 scale-[1.02]' 
@@ -827,57 +835,77 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                   >
                     {/* TOP SECTION: Badges, Title, Company */}
                     <div className="flex flex-col gap-3">
+                      
+                      {/* Badges Row */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 ${getMatchColor(job.match_percentage || 0)}`}>
+                        <div 
+                          tabIndex="0"
+                          aria-label={`Overall match score: ${job.match_percentage || 0} percent.`}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${getMatchColor(job.match_percentage || 0, isDarkScreen)}`}
+                        >
                           <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="12" cy="12" r="10" />
                             <circle cx="12" cy="12" r="3" />
                           </svg>
-                          <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest">
+                          <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest">
                             {job.match_percentage || 0}% MATCH
                           </span>
                         </div>
-                        <div className={`flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 ${getDistanceBadgeStyles(job.distance_km, isDarkScreen)}`}>
+                        <div 
+                          tabIndex="0"
+                          aria-label={`Distance: ${job.distance_km || '0.0'} kilometers away.`}
+                          className={`flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${getDistanceBadgeStyles(job.distance_km, isDarkScreen)}`}
+                        >
                           <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
-                          <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest">
+                          <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest">
                             {job.distance_km || '0.0'} KM AWAY
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Title & Company Row */}
+                      <div 
+                        tabIndex="0"
+                        aria-label={`Job Title: ${job.job_title}. Company: ${job.company_name}.`}
+                        className="flex items-center gap-2 sm:gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1 w-fit"
+                      >
                         <CompanyLogo logoUrl={job.company_logo} companyName={job.company_name} size="sm" />
                         <div className="min-w-0">
-                          <h2 className="text-base sm:text-lg font-extrabold text-[#03045E] truncate leading-tight">
+                          <h2 aria-hidden="true" className={`text-base sm:text-lg font-extrabold truncate leading-tight ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
                             {job.job_title}
                           </h2>
-                          <p className="text-xs sm:text-sm font-bold text-[#2C7FFF] truncate">
+                          <p aria-hidden="true" className="text-xs sm:text-sm font-bold text-[#2C7FFF] truncate">
                             {job.company_name}
                           </p>
                         </div>
                       </div>
 
+                      {/* Overview Row */}
                       <JobCardDescription 
                         description={job.job_description} 
                         isExpanded={expandedJobs.includes(job.id)}
                         onToggle={() => toggleExpand(job.id)}
+                        isDarkScreen={isDarkScreen}
                       />
                     </div>
 
                     {/* BOTTOM SECTION: Breakdown & Buttons */}
                     <div className="flex flex-col gap-2 mt-auto">
                       
-                      {/* NEW: Match Breakdown Component */}
                       <MatchBreakdown job={job} isDarkScreen={isDarkScreen} colorUI={colorUI} />
 
                       <div className="flex gap-2 w-full mt-2">
                         <button
                           onClick={() => openModal(job)}
-                          aria-label={`View details for ${job.job_title}`}
-                          className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer bg-white border-2 border-[#03045E]/25 text-[#03045E] hover:border-[#03045E]"
+                          aria-label={`View full details for ${job.job_title} at ${job.company_name}`}
+                          className={`flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${
+                            isDarkScreen 
+                              ? 'bg-black border-white/30 text-white hover:border-white' 
+                              : 'bg-white border-[#03045E]/25 text-[#03045E] hover:border-[#03045E]'
+                          }`}
                         >
                           View Details
                         </button>
@@ -885,17 +913,21 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                         {hasApplied ? (
                           <button
                             disabled
-                            aria-label={`Already applied for ${job.job_title}`}
+                            aria-label={`Already applied for ${job.job_title}. This button is disabled.`}
                             className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-[#10B981]/15 text-[#10B981] border-2 border-[#10B981]/30 cursor-not-allowed"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                             Applied
                           </button>
                         ) : (
                           <button
                             onClick={() => openApplyModal(job)}
-                            aria-label={`Apply now for ${job.job_title}`}
-                            className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]"
+                            aria-label={`Apply now for ${job.job_title} at ${job.company_name}`}
+                            className={`flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#2C7FFF] ${
+                              isDarkScreen 
+                                ? 'bg-white text-black border-white hover:bg-gray-200' 
+                                : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
+                            }`}
                           >
                             Apply Now
                           </button>
