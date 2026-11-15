@@ -749,7 +749,6 @@ const DISTANCE_WEIGHT = 60;
 const SEMANTIC_WEIGHT = 40;
 const SEMANTIC_SKILLS_SUBWEIGHT = 0.6;
 const SEMANTIC_DESC_SUBWEIGHT = 0.4;
-const KEYWORD_COVERAGE_BONUS = 0.10;
 const MATCH_THRESHOLD = 50;
 
 const REQUIREMENT_HINT =
@@ -827,7 +826,6 @@ async function getSkillMatchScores(appSkillsText, jobInputs) {
     const results = jobInputs.map(() => ({
         skillsSim: 0,
         descSim: 0,
-        coverage: 0,
         semanticRaw: 0
     }));
 
@@ -836,6 +834,7 @@ async function getSkillMatchScores(appSkillsText, jobInputs) {
     const texts = [appSkillsText];
     const slots = [];
 
+    // Rebuild the slots array so SBERT actually embeds the job inputs
     jobInputs.forEach((job, i) => {
         if (job.requiredSkillsText) {
             slots.push({ i, field: 'skillsSim' });
@@ -858,20 +857,10 @@ async function getSkillMatchScores(appSkillsText, jobInputs) {
         return results;
     }
 
-    // Lexical bonus: applicant skills the posting literally names.
-    jobInputs.forEach((job, i) => {
-        const skills = job.applicantSkills || [];
-        if (!skills.length) return;
-
-        const haystack = `${job.descriptionText} ${job.requiredSkillsText}`.toLowerCase();
-        const hits = skills.filter(s => s.length > 2 && haystack.includes(s.toLowerCase())).length;
-        results[i].coverage = hits / skills.length;
-    });
-
     results.forEach(r => {
         const semantic = (r.skillsSim * SEMANTIC_SKILLS_SUBWEIGHT) +
                          (r.descSim * SEMANTIC_DESC_SUBWEIGHT);
-        r.semanticRaw = clamp01(semantic + (r.coverage * KEYWORD_COVERAGE_BONUS));
+        r.semanticRaw = clamp01(semantic);
     });
 
     return results;
@@ -938,7 +927,7 @@ async function calculateMatches(applicant, jobs) {
     const matched = [];
     for (let i = 0; i < ruleFiltered.length; i++) {
         const job = ruleFiltered[i];
-        const scored = semanticResults[i] || { skillsSim: 0, descSim: 0, coverage: 0, semanticRaw: 0 };
+        const scored = semanticResults[i] || { skillsSim: 0, descSim: 0, semanticRaw: 0 };
 
         const semanticScore = scored.semanticRaw * SEMANTIC_WEIGHT;
         const overallMatchPercentage = Math.round(job.distance_score + semanticScore);
@@ -949,8 +938,7 @@ async function calculateMatches(applicant, jobs) {
                 match_percentage: overallMatchPercentage,
                 semantic_similarity_raw: scored.semanticRaw.toFixed(2),
                 skills_similarity: scored.skillsSim.toFixed(2),
-                description_similarity: scored.descSim.toFixed(2),
-                keyword_coverage: scored.coverage.toFixed(2)
+                description_similarity: scored.descSim.toFixed(2)
             });
         }
     }
