@@ -120,7 +120,8 @@ const JobCardDescription = ({ description, isExpanded, onToggle }) => {
     </div>
   );
 };
-// 👆 END OF NEW COMPONENT 👆
+
+// ... (Keep all your imports and top-level functions like safeParse, getDistanceBadgeStyles, getMatchColor, CompanyLogo, JobCardDescription exactly as they are) ...
 
 // ADD highlightId TO PROPS
 export default function ApplicantExploreJobs({ profile, jobs, applications = [], refreshData, initialSelectedJob, clearJobFromMap, highlightId }) {
@@ -130,7 +131,8 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     isDarkScreen,
     isColorVisionPalette,
   } = useApplicantTheme();
-const isDeactivated = profile?.account_status === 'Deactivated' || profile?.status === 'Deactivated';
+  
+  const isDeactivated = profile?.account_status === 'Deactivated' || profile?.status === 'Deactivated';
   const colorUI = isColorVisionPalette && !isDarkScreen;
   const [applyingTo, setApplyingTo] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -156,7 +158,7 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
     try {
       const saved = localStorage.getItem('applicantLocallyAppliedJobs');
       const parsed = saved ? JSON.parse(saved) : [];
-      return Array.isArray(parsed) ? parsed : [];
+      return Array.isArray(parsed) ? parsed.map(String) : []; // Ensure they are stored as strings
     } catch {
       return [];
     }
@@ -174,8 +176,19 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
     setCurrentPage(1);
   }, [searchQuery, selectedSalary, selectedIndustry, selectedSkills, selectedAccs, activeTab]);
 
+  // Robust check for applied jobs
   const checkHasApplied = (jobId) => {
-    return applications.some(app => String(app.job_id) === String(jobId)) || locallyAppliedJobs.some(id => String(id) === String(jobId));
+    const targetId = String(jobId);
+    
+    // Check server applications
+    const appliedOnServer = applications.some(app => 
+      String(app.job_id) === targetId || String(app.id) === targetId
+    );
+    
+    // Check local storage cache
+    const appliedLocally = locallyAppliedJobs.some(id => String(id) === targetId);
+
+    return appliedOnServer || appliedLocally;
   };
 
   useEffect(() => {
@@ -264,6 +277,7 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
   const toggleAcc = (acc) => setSelectedAccs(prev => prev.includes(acc) ? prev.filter(a => a !== acc) : [...prev, acc]);
   const toggleExpand = (jobId) => setExpandedJobs(prev => prev.includes(jobId) ? prev.filter(id => id !== jobId) : [...prev, jobId]);
 
+  // Calculate applied count dynamically
   const appliedCount = useMemo(() => {
     if (!jobs) return 0;
     return jobs.filter(job => checkHasApplied(job.id)).length;
@@ -301,6 +315,9 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
       }
 
       const isApplied = checkHasApplied(job.id);
+      
+      // If we are on the 'applied' tab, only show applied jobs.
+      // If we are on the 'available' tab, only show un-applied jobs.
       if (activeTab === 'applied') {
         return isApplied;
       } else {
@@ -317,6 +334,7 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
   const closeSweetAlert = () => {
     setSweetAlert({ ...sweetAlert, isOpen: false });
   };
+
   const submitApplication = async (e) => {
     e.preventDefault();
     if (!useExistingResume && !resumeFile) {
@@ -352,14 +370,22 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
       const data = await res.json();
       if (res.ok) {
         closeModal();
-        setLocallyAppliedJobs(prev => [...prev, selectedJob.id]);
+        // Force save to local state immediately so it moves to the applied tab
+        setLocallyAppliedJobs(prev => {
+          const updated = [...prev, String(selectedJob.id)];
+          localStorage.setItem('applicantLocallyAppliedJobs', JSON.stringify(updated));
+          return updated;
+        });
+        
         setSweetAlert({
           isOpen: true,
           type: 'success',
           title: 'Application Sent!',
           text: 'Your application was submitted successfully. The employer will review your profile soon. Good luck!'
         });
-        refreshData();
+        
+        // Optional: Refresh data silently to sync backend, but UI is already updated
+        if (refreshData) refreshData();
       } else {
         setSweetAlert({
           isOpen: true,
@@ -510,7 +536,7 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
           
           <div className="flex gap-1 p-1 bg-[#f4f4f4] rounded-xl border-2 border-[#03045E]/15 w-full sm:w-fit">
             <button
-                onClick={() => setActiveTab('available')}
+                onClick={() => { setActiveTab('available'); setCurrentPage(1); }}
                 className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-extrabold text-[11px] sm:text-sm transition-all whitespace-nowrap flex items-center justify-center ${
                     activeTab === 'available'
                     ? 'bg-[#03045E] text-white shadow-md'
@@ -520,7 +546,7 @@ const isDeactivated = profile?.account_status === 'Deactivated' || profile?.stat
                 Available Jobs
             </button>
             <button
-                onClick={() => setActiveTab('applied')}
+                onClick={() => { setActiveTab('applied'); setCurrentPage(1); }}
                 className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-extrabold text-[11px] sm:text-sm transition-all whitespace-nowrap flex items-center justify-center gap-1.5 ${
                     activeTab === 'applied'
                     ? 'bg-[#03045E] text-white shadow-md'
