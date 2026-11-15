@@ -1346,86 +1346,88 @@ const handleAddressType = (e) => {
 
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
                 
-                                {/* --- PWD ID UPLOAD (Camera + Gallery) --- */}
-                <div className="flex-1 p-4 rounded-md border-2 border-dashed border-[#03045E]/20 bg-[#f4f4f4]/50 min-w-0">
-                  <label tabIndex="0" title="Upload PWD ID" className="block text-xs sm:text-sm font-bold text-[#03045E] mb-1 focus:outline-none">
-                    Upload PWD ID <span className="text-red-500">*</span>
-                  </label>
-                  
-                  {/* Hidden inputs */}
-                  <input
-                    ref={cameraInputRef}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={(e) => {
-                      const file = e.target.files[0] || null;
-                      if (file && file.size > MAX_UPLOAD_BYTES) {
-                        setStatusMessage({ type: 'error', text: `PWD ID is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is ${MAX_UPLOAD_MB} MB.` });
-                        e.target.value = null;
-                        setPwdFile(null);
-                        return;
-                      }
-                      setStatusMessage({ type: '', text: '' });
-                      setPwdFile(file);
-                    }}
-                    className="hidden"
-                  />
-                  <input
-                    ref={galleryInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0] || null;
-                      if (file && file.size > MAX_UPLOAD_BYTES) {
-                        setStatusMessage({ type: 'error', text: `PWD ID is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is ${MAX_UPLOAD_MB} MB.` });
-                        e.target.value = null;
-                        setPwdFile(null);
-                        return;
-                      }
-                      setStatusMessage({ type: '', text: '' });
-                      setPwdFile(file);
-                    }}
-                    className="hidden"
-                  />
+          {/* --- PWD ID UPLOAD (Camera + Gallery) --- */}
+<div className="flex-1 p-4 rounded-[5px] border-2 border-dashed border-[#2C7FFF]/40 bg-[#f4f4f4]/50 min-w-0">
+  <label tabIndex="0" title="Upload PWD ID" className="block text-xs sm:text-sm font-bold text-[#2C7FFF] mb-1 focus:outline-none">
+    Upload PWD ID <span className="text-red-500">*</span>
+  </label>
+  
+  {/* Hidden inputs */}
+  <input
+    ref={cameraInputRef}
+    type="file"
+    accept="image/*"
+    capture="environment"
+    onChange={(e) => {
+      const file = e.target.files[0] || null;
+      if (file && file.size > MAX_UPLOAD_BYTES) {
+        setStatusMessage({ type: 'error', text: `PWD ID is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is ${MAX_UPLOAD_MB} MB.` });
+        e.target.value = null;
+        setPwdFile(null);
+        return;
+      }
+      setStatusMessage({ type: '', text: '' });
+      setPwdFile(file);
+    }}
+    className="hidden"
+  />
+  <input
+    ref={galleryInputRef}
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+      const file = e.target.files[0] || null;
+      if (file && file.size > MAX_UPLOAD_BYTES) {
+        setStatusMessage({ type: 'error', text: `PWD ID is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is ${MAX_UPLOAD_MB} MB.` });
+        e.target.value = null;
+        setPwdFile(null);
+        return;
+      }
+      setStatusMessage({ type: '', text: '' });
+      setPwdFile(file);
+    }}
+    className="hidden"
+  />
 
-                  {/* Button to trigger Camera or Gallery */}
-                  <div className="flex flex-row gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => cameraInputRef.current?.click()}
-                      className="flex-1 flex flex-row items-center justify-center gap-1.5 py-2.5 px-2 bg-white border-2 border-[#03045E]/20 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#03045E] hover:border-[#2C7FFF] transition-colors cursor-pointer"
-                    >
-                      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span className="truncate">Take Photo</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => galleryInputRef.current?.click()}
-                      className="flex-1 flex flex-row items-center justify-center gap-1.5 py-2.5 px-2 bg-white border-2 border-[#03045E]/20 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#03045E] hover:border-[#2C7FFF] transition-colors cursor-pointer"
-                    >
-                      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span className="truncate">Gallery</span>
-                    </button>
-                  </div>
+  {/* Button to trigger Camera or Gallery */}
+  <div className="flex flex-row gap-2 mt-2">
+    <button
+      type="button"
+      onClick={() => cameraInputRef.current?.click()}
+      className="flex-1 flex flex-row items-center justify-center gap-1.5 py-2.5 px-2 bg-white border-2 border-[#2C7FFF]/30 rounded-[5px] text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#2C7FFF] hover:border-[#2C7FFF] transition-colors cursor-pointer"
+    >
+      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span className="truncate">Take Photo</span>
+    </button>
+    <button
+      type="button"
+      onClick={() => galleryInputRef.current?.click()}
+      className="flex-1 flex flex-row items-center justify-center gap-1.5 py-2.5 px-2 bg-white border-2 border-[#2C7FFF]/30 rounded-[5px] text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#2C7FFF] hover:border-[#2C7FFF] transition-colors cursor-pointer"
+    >
+      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span className="truncate">Gallery</span>
+    </button>
+  </div>
 
-                  {/* File Preview / Status */}
-                  <div className="mt-2 text-center">
-                    {pwdFile ? (
-                      <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 p-1.5 rounded border border-green-200">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                        <span className="truncate max-w-[150px]">{pwdFile.name}</span>
-                      </div>
-                    ) : (
-                      <p className="text-[10px] text-[#03045E]/60 font-semibold">No image selected</p>
-                    )}
-                  </div>
-                </div>
+  {/* File Preview / Status */}
+  <div className="mt-3 text-center">
+    {pwdFile ? (
+      <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-[#2C7FFF] bg-transparent p-1.5 rounded-[5px] border border-[#2C7FFF]">
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span className="truncate max-w-[150px]">{pwdFile.name}</span>
+      </div>
+    ) : (
+      <p className="text-[10px] text-[#2C7FFF]/70 font-semibold">No image selected</p>
+    )}
+  </div>
+</div>
 
                               {/* --- RESUME UPLOAD (Custom Button) --- */}
                 <div className="flex-1 p-4 rounded-md border-2 border-dashed border-[#03045E]/20 bg-[#f4f4f4]/50 min-w-0">
