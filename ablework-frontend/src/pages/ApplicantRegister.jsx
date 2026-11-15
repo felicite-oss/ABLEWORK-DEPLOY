@@ -1427,12 +1427,14 @@ const handleAddressType = (e) => {
                   </div>
                 </div>
 
-                {/* --- RESUME UPLOAD (Standard File Picker) --- */}
+                              {/* --- RESUME UPLOAD (Custom Button) --- */}
                 <div className="flex-1 p-4 rounded-md border-2 border-dashed border-[#03045E]/20 bg-[#f4f4f4]/50 min-w-0">
                   <label htmlFor="resumeFile" tabIndex="0" title="Upload Resume" className="block text-xs sm:text-sm font-bold text-[#03045E] mb-1 focus:outline-none">
                     Base Resume <span className="text-red-500">*</span>
                   </label>
-                                 <input
+                  
+                  {/* Hidden native input */}
+                  <input
                     id="resumeFile"
                     type="file"
                     accept=".pdf,.doc,.docx"
@@ -1450,15 +1452,25 @@ const handleAddressType = (e) => {
                       setStatusMessage({ type: '', text: '' });
                       setResumeFile(file);
                     }}
-                    className={`w-full text-xs sm:text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold cursor-pointer`}
-                    style={{ 
-                      color: (isDarkMode || isContrast) ? '#ffffff' : primaryColor,
-                      '--file-text-color': (isDarkMode || isContrast) ? '#000000' : primaryColor
-                    }}
+                    className="hidden"
                     required
                     title="Please upload your Base Resume."
                     aria-label="Resume document upload."
                   />
+
+                  {/* Custom Button that triggers the hidden input */}
+                  <label
+                    htmlFor="resumeFile"
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 border-[var(--color-border)] bg-white text-xs font-bold cursor-pointer transition-colors hover:bg-gray-50 ${isDarkMode || isContrast ? '!text-black' : 'text-[#03045E]'}`}
+                  >
+                    Choose File
+                  </label>
+
+                  {/* Display selected file name (or "No file chosen") */}
+                  <span className={`ml-2 text-xs sm:text-sm font-semibold ${(isDarkMode || isContrast) ? '!text-white' : 'text-[#03045E]'}`}>
+                    {resumeFile ? resumeFile.name : 'No file chosen'}
+                  </span>
+
                   <p tabIndex="0" className="text-[10px] text-[#03045E]/70 mt-2 font-semibold focus:outline-none">
                     Supported: .pdf, .docx (Max: {MAX_UPLOAD_MB}MB)
                   </p>
