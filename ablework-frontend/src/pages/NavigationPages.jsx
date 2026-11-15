@@ -455,102 +455,123 @@ export function Home() {
 
       <div className="flex-1 overflow-y-auto flex flex-col pt-16">
 
-<section className="w-full relative p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14">
-          <div
-            className={`hero-bg-img absolute inset-0 rounded-2xl sm:rounded-[3rem] bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left ${isContrast ? 'bg-[var(--color-background)]/60' : 'bg-white/10'}`}
-            style={{ backgroundImage: `url(${backgroundImg})` }}
-            aria-hidden="true"
-          ></div>
-
-          <div className={`relative z-10 p-4 sm:p-12 rounded-2xl sm:rounded-[3rem] shadow-2xl border backdrop-blur-[1px] ${isContrast ? 'bg-[var(--color-surface)]/80 border-[var(--color-border)] text-[var(--color-text)]' : 'bg-[var(--color-surface)]/50 border-white/40 text-[#03045E]'}`}>
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-12 items-start">
-              <div>
-                <span tabIndex="0" role="text" aria-label="Welcome to AbleWork" title="Welcome to AbleWork" className={`inline-block px-3 py-1 sm:px-4 sm:py-1.5 rounded-full ${isContrast ? 'bg-[var(--color-accentSoft)] text-[var(--color-text)] border border-[var(--color-accent)]' : 'bg-[#2C7FFF]/15 text-[#2C7FFF] bg-white/10'} font-black text-[10px] sm:text-xs uppercase tracking-widest mb-3 sm:mb-4 backdrop-blur-sm shadow-sm`}>
+        {/* --- NEW HERO SECTION (MATCHING IMAGE 1) --- */}
+        <div className="w-full bg-[#f4f4f4] py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+          
+          {/* Main Card Container */}
+          <div className="w-full max-w-[1400px] bg-[#f4f4f4] rounded-[2rem] shadow-[0_20px_50px_rgba(3,4,94,0.1)] overflow-hidden flex flex-col lg:flex-row border border-[#03045e]/10 relative">
+            
+            {/* Left Side: Content */}
+            <div className="w-full lg:w-1/2 p-8 sm:p-12 md:p-16 lg:p-24 flex flex-col justify-center z-10">
+              
+              <div className="mb-6">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] text-xs font-black uppercase tracking-widest">
                   Welcome to AbleWork
                 </span>
+              </div>
 
-                <h1 tabIndex="0" role="heading" aria-level="1" aria-label="Building an Inclusive Workforce for Everyone" title="Building an Inclusive Workforce for Everyone" className={`text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4 sm:mb-6 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'} [text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]`} style={isContrast ? { textShadow: 'none' } : undefined}>
-                  Building an Inclusive Workforce for Everyone
-                </h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#03045e] leading-[1.1] mb-6">
+                Building an Inclusive Workforce for Everyone
+              </h1>
 
-<p tabIndex="0" role="text" aria-label="AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations." title="AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations." 
-className={`text-sm sm:text-lg font-semibold leading-relaxed mb-5 sm:mb-8 p-2.5 sm:p-3 rounded-xl ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'} [text-shadow:0_0_6px_rgba(255,255,255,1),0_0_12px_rgba(255,255,255,1),0_0_24px_rgba(255,255,255,0.9),0_2px_4px_rgba(255,255,255,0.9)]`} style={(isContrast || isDarkMode) ? { textShadow: 'none' } : undefined}>
-  AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations.
-</p>
+              <p className="text-sm sm:text-base md:text-lg text-[#03045e]/70 leading-relaxed mb-10 max-w-lg font-medium">
+                AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations.
+              </p>
 
-                <div className="flex flex-wrap gap-3 sm:gap-4">
-                  <Link
-                    to="/register-select"
-                    aria-label="Get Started Today"
-                    title="Get Started Today"
-                    className={`get-started-btn px-5 py-3 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 group text-sm sm:text-base ${
-                      isContrast 
-                        ? 'bg-[#1a1a1a] text-white border-2 border-white hover:bg-[#2C7FFF] hover:border-[#2C7FFF]' 
-                        : 'bg-[#03045E] text-[#f4f4f4] border-2 border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:brightness-125'
-                    }`}
-                  >
-                    Get Started Today
-                    <svg aria-hidden="true" className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                  </Link>
+              <div className="flex flex-wrap items-center gap-4 mb-12">
+                <Link
+                  to="/register-select"
+                  className="px-8 py-3.5 rounded-full bg-[#03045e] text-[#f4f4f4] font-bold shadow-lg hover:bg-[#2c7fff] hover:-translate-y-0.5 transition-all"
+                >
+                  Get Started Today
+                </Link>
+                <Link
+                  to="/about"
+                  className="px-8 py-3.5 rounded-full border-2 border-[#03045e]/20 text-[#03045e] font-bold hover:border-[#2c7fff] hover:text-[#2c7fff] transition-all"
+                >
+                  Learn More
+                </Link>
+              </div>
 
-                  <Link
-                    to="/about"
-                    aria-label="Learn More"
-                    title="Learn More"
-className={`learn-more-btn px-5 py-3 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all shadow-sm text-sm sm:text-base ${
-  isContrast
-    ? 'bg-[#1a1a1a] text-white border-2 border-white hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
-    : `bg-[var(--color-surface)]/50 ${isDarkMode ? 'text-black' : 'text-[#03045E]'} border-2 border-transparent hover:bg-[#2c7fff] hover:text-[#f4f4f4] hover:brightness-125`
-}`}
-                  >
-                    Learn More
-                  </Link>
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-4 pt-8 border-t border-[#03045e]/10">
+                <div>
+                  <h4 className="text-2xl sm:text-3xl font-black text-[#2c7fff]">100%</h4>
+                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#03045e]">Accessible</p>
                 </div>
-
-                <div className={`grid grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-12 pt-6 sm:pt-10 border-t ${isContrast ? 'border-[var(--color-border)]' : 'border-[#03045E]/20'}`}>
-                  <div tabIndex="0" role="text" aria-label="100% Accessible" title="100% Accessible">
-                    <h4 className={`text-xl sm:text-3xl font-black ${isContrast || isDarkMode ? 'text-[var(--color-text)]' : 'text-[var(--color-accent)]'} ${!isDarkMode ? 'max-md:[text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]' : ''}`}>100%</h4>
-                    <p className={`text-[10px] sm:text-xs font-black uppercase tracking-wider mt-1 ${isContrast || isDarkMode ? 'text-[var(--color-text)]' : 'text-[#03045E]'} ${!isDarkMode ? 'max-md:[text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]' : ''}`}>Accessible</p>
-                  </div>
-                  <div tabIndex="0" role="text" aria-label="24/7 Support" title="24/7 Support">
-                    <h4 className={`text-xl sm:text-3xl font-black ${isContrast || isDarkMode ? 'text-[var(--color-text)]' : 'text-[var(--color-accent)]'} ${!isDarkMode ? 'max-md:[text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]' : ''}`}>24/7</h4>
-                    <p className={`text-[10px] sm:text-xs font-black uppercase tracking-wider mt-1 ${isContrast || isDarkMode ? 'text-[var(--color-text)]' : 'text-[#03045E]'} ${!isDarkMode ? 'max-md:[text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]' : ''}`}>Support</p>
-                  </div>
-                  <div tabIndex="0" role="text" aria-label="Secure Platform" title="Secure Platform">
-                    <h4 className={`text-xl sm:text-3xl font-black ${isContrast || isDarkMode ? 'text-[var(--color-text)]' : 'text-[var(--color-accent)]'} ${!isDarkMode ? 'max-md:[text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]' : ''}`}>Secure</h4>
-                    <p className={`text-[10px] sm:text-xs font-black uppercase tracking-wider mt-1 ${isContrast || isDarkMode ? 'text-[var(--color-text)]' : 'text-[#03045E]'} ${!isDarkMode ? 'max-md:[text-shadow:0_0_8px_rgba(255,255,255,0.95),0_0_16px_rgba(255,255,255,0.85),0_0_24px_rgba(255,255,255,0.7),0_2px_4px_rgba(255,255,255,0.9)]' : ''}`}>Platform</p>
-                  </div>
+                <div>
+                  <h4 className="text-2xl sm:text-3xl font-black text-[#2c7fff]">24/7</h4>
+                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#03045e]">Support</p>
+                </div>
+                <div>
+                  <h4 className="text-2xl sm:text-3xl font-black text-[#2c7fff]">Secure</h4>
+                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#03045e]">Platform</p>
                 </div>
               </div>
 
-              <div className={`h-full flex flex-col justify-center rounded-xl sm:rounded-[2rem] p-4 sm:p-8 shadow-xl border ${isContrast ? 'bg-[var(--color-surface)]/70 border-[var(--color-border)] text-[var(--color-text)]' : 'bg-[var(--color-surface)]/70 border-[#03045E]/20 text-[#03045E]'}`}>
-                <h2 tabIndex="0" role="heading" aria-level="2" aria-label="Why Choose AbleWork?" title="Why Choose AbleWork?" className={`text-lg sm:text-2xl font-black mb-4 sm:mb-6 tracking-tight flex items-center gap-3 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
-                  <span aria-hidden="true" className="w-3 h-3 rounded-full bg-[var(--color-accent)]"></span>
-                  Why Choose ABLEWORK?
-                </h2>
+            </div>
 
-                <div className="space-y-4 sm:space-y-6">
-                  <Feature
-                    title="Smart Job Matching"
-                    text="Find employment opportunities customized specifically to match your professional skills."
-                  />
-                  <Feature
-                    title="Inclusive Employment"
-                    text="Directly connect persons with disabilities with certified inclusive and supportive employers."
-                  />
-                  <Feature
-                    title="Streamlined Application"
-                    text="Search, track, and apply for available jobs easily through one centralized platform."
-                  />
-                  <Feature
-                    title="Direct Employer Network"
-                    text="Empower forward-thinking employers to discover your verified qualified profile."
-                  />
-                </div>
+            {/* Right Side: Image with Wavy Curve */}
+            <div className="w-full lg:w-1/2 relative min-h-[400px] lg:min-h-full">
+              
+              {/* SVG Mask for the Wavy Cut Effect (Matches Image 1) */}
+              <svg 
+                className="absolute inset-y-0 left-0 h-full w-16 sm:w-24 lg:w-32 z-10 text-[#f4f4f4] fill-current hidden lg:block" 
+                viewBox="0 0 100 100" 
+                preserveAspectRatio="none"
+              >
+                <path d="M0,0 C100,0 20,50 100,100 L0,100 Z" />
+              </svg>
+
+              {/* The Image */}
+              <img
+                src={backgroundImg}
+                alt="Inclusive Workforce"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              
+              {/* Color Tint Overlay */}
+              <div className="absolute inset-0 bg-[#2c7fff]/20 mix-blend-multiply"></div>
+            </div>
+
+          </div>
+
+          {/* --- Why Choose Section (Moved below for better layout) --- */}
+          <div className="w-full max-w-[1400px] mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
               </div>
+              <h3 className="text-[#03045e] font-black text-lg mb-2">Smart Job Matching</h3>
+              <p className="text-[#03045e]/70 text-sm font-medium">Find employment opportunities customized specifically to match your professional skills.</p>
+            </div>
+
+            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <h3 className="text-[#03045e] font-black text-lg mb-2">Inclusive Employment</h3>
+              <p className="text-[#03045e]/70 text-sm font-medium">Directly connect persons with disabilities with certified inclusive and supportive employers.</p>
+            </div>
+
+            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <h3 className="text-[#03045e] font-black text-lg mb-2">Streamlined Application</h3>
+              <p className="text-[#03045e]/70 text-sm font-medium">Search, track, and apply for available jobs easily through one centralized platform.</p>
+            </div>
+
+            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <h3 className="text-[#03045e] font-black text-lg mb-2">Direct Employer Network</h3>
+              <p className="text-[#03045e]/70 text-sm font-medium">Empower forward-thinking employers to discover your verified qualified profile.</p>
             </div>
           </div>
-        </section>
+
+        </div>
 
 <section className="w-full p-3 sm:p-6 md:p-10">
           <div className={`p-5 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border-2 shadow-xl backdrop-blur-sm ${isContrast ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-border)]' : 'bg-[var(--color-surface)]/50 text-[#03045E] border-[#03045E]/20'}`}>
