@@ -690,7 +690,7 @@ export function ApplicantContact({ onBack, profile }) {
 
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-    const [proofImage, setProofImage] = useState(null);
+  const [proofImage, setProofImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
@@ -709,7 +709,7 @@ export function ApplicantContact({ onBack, profile }) {
       formData.append('userId', profile?.user_id || profile?.id || '');
       formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
       formData.append('userEmail', profile?.email || 'N/A');
-      formData.append('userRole', profile?.role || 'Applicant'); // Change to 'Employer' for employer side
+      formData.append('userRole', profile?.role || 'Applicant'); 
       formData.append('subject', subject);
       formData.append('message', message);
       
@@ -781,7 +781,7 @@ export function ApplicantContact({ onBack, profile }) {
             Submit a Support Ticket
           </h3>
           
-        {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
+          {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
           {alert.show && (
             <div 
               role="alert"
@@ -791,13 +791,16 @@ export function ApplicantContact({ onBack, profile }) {
             </div>
           )}
 
+          {/* RESTORED SUBJECT INPUT */}
           <div>
             <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
             <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => setProofImage(e.target.files[0])}
-              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer file:text-[#03045E] ${inputBg}`}
+              id="ticket-subject"
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Subject / Issue Summary"
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
               disabled={isSubmitting}
             />
           </div>
@@ -815,6 +818,7 @@ export function ApplicantContact({ onBack, profile }) {
             />
           </div>
 
+          {/* PROOF IMAGE UPLOAD */}
           <div>
             <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
             <input
@@ -849,7 +853,6 @@ export function ApplicantContact({ onBack, profile }) {
     </ApplicantPageLayout>
   );
 }
-
 
 export function ApplicantFooter({ activeTab, setActiveTab, isContrast: propContrast }) {
   const { mode } = useContext(AccessibilityContext);

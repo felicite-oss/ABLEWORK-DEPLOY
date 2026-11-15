@@ -621,16 +621,15 @@ export function EmployerContact({ onBack, profile }) {
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDark = isDarkMode || isContrast;
-  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   // State for the form
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-    const [proofImage, setProofImage] = useState(null);
+  const [proofImage, setProofImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!subject.trim() || !message.trim()) {
       setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
@@ -716,17 +715,18 @@ export function EmployerContact({ onBack, profile }) {
         <div className={`rounded-2xl sm:rounded-3xl shadow-xl border-2 p-5 sm:p-8 ${cardBg}`}>
           <h2 className={`text-lg sm:text-2xl font-black mb-4 sm:mb-6 ${textColor}`}>Send Us a Message</h2>
           
-             {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
+          {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
           {alert.show && (
             <div 
               role="alert"
-              className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
+              className="p-4 mb-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
             >
               {alert.text}
             </div>
           )}
 
           <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
+            {/* RESTORED SUBJECT INPUT */}
             <div>
               <label htmlFor="emp-subject" className="sr-only">Subject</label>
               <input
@@ -739,6 +739,7 @@ export function EmployerContact({ onBack, profile }) {
                 disabled={isSubmitting}
               />
             </div>
+
             <div>
               <label htmlFor="emp-message" className="sr-only">Message</label>
               <textarea
@@ -751,16 +752,18 @@ export function EmployerContact({ onBack, profile }) {
                 disabled={isSubmitting}
               />
             </div>
-                      <div>
-            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => setProofImage(e.target.files[0])}
-              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer file:text-[#03045E] ${inputBg}`}
-              disabled={isSubmitting}
-            />
-          </div>
+
+            {/* PROOF IMAGE UPLOAD */}
+            <div>
+              <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => setProofImage(e.target.files[0])}
+                className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
+                disabled={isSubmitting}
+              />
+            </div>
 
             <button
               type="submit"
@@ -780,6 +783,7 @@ export function EmployerContact({ onBack, profile }) {
     </main>
   );
 }
+
 export function EmployerFooter({ activeTab, setActiveTab }) {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
