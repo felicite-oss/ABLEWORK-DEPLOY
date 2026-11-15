@@ -14,11 +14,8 @@ export default defineConfig({
         name: 'AbleWork: PWD Employment',
         short_name: 'AbleWork',
         description: 'An inclusive employment platform connecting PWDs with employers.',
-        
-        // CHANGE BOTH OF THESE TO LIGHT COLORS
-        theme_color: '#ffffff', 
-        background_color: '#ffffff', 
-        
+        theme_color: '#03045E', 
+        background_color: '#f4f4f4', 
         display: 'standalone',
         start_url: '/login',
         orientation: 'portrait-primary',
