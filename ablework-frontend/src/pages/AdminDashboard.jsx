@@ -1235,9 +1235,9 @@ export default function AdminDashboard() {
                     )
                   })}
                 </div>
-                              <div ref={usersListRef} className={`max-h-[500px] overflow-y-auto overflow-x-auto rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} ${cardBg}`}>
+                               <div ref={usersListRef} className={`max-h-[500px] overflow-y-auto overflow-x-auto rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} ${cardBg}`}>
                   {currentUsers.length > 0 ? (
-                    <table className="w-full text-left border-collapse min-w-[600px]">
+                    <table className="w-full text-left border-collapse min-w-[700px]">
                       <thead className={`sticky top-0 z-10 ${surfaceBg} border-b-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'}`}>
                         <tr>
                           <th className={`px-4 py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider ${txtMain}`}>Name / Company</th>
@@ -1273,7 +1273,7 @@ export default function AdminDashboard() {
 
                             {/* Email Column */}
                             <td className="px-4 py-3">
-                              <p className={`text-xs font-bold truncate max-w-[150px] ${txtMuted}`}>{user.email}</p>
+                              <p className={`text-xs font-bold truncate max-w-[200px] ${txtMuted}`}>{user.email}</p>
                             </td>
 
                             {/* Role Column */}
