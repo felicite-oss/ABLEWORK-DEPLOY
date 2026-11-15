@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
-
+import InstallPWA from './components/InstallPWA';
 import Login from './pages/Login';
 import RegisterSelect from './pages/RegisterSelect';
 import ApplicantRegister from './pages/ApplicantRegister';
@@ -168,6 +168,11 @@ function AppRoutes() {
           <GlobalOverlays />
 
           <AccessibilityWelcome />
+
+          {/* ========================================== */}
+          {/* GLOBAL PWA INSTALL BANNER */}
+          {/* ========================================== */}
+          <InstallPWA />
 
           <main 
             id="main-content" 

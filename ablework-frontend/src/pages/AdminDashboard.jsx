@@ -29,18 +29,12 @@ export default function AdminDashboard() {
   const [isDark, setIsDark] = useState(false);
   const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false);
   const [ready, setReady] = useState(false);
-  
-  // --- ADDED STATE FOR SUPPORT TICKETS COUNT (Replace 0 with actual state) ---
   const [supportTicketCount, setSupportTicketCount] = useState(0); 
-  // -------------------------------------------------------------------------
-
   const mainRef = useRef(null);
   const usersOverviewRef = useRef(null);
   const usersListRef = useRef(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
-
   const [pwdModal, setPwdModal] = useState({ isOpen: false, user: null });
   const [employerModal, setEmployerModal] = useState({ isOpen: false, user: null });
   const [rejectModal, setRejectModal] = useState({ isOpen: false, userId: null, reason: '' });
@@ -48,7 +42,6 @@ export default function AdminDashboard() {
   const [disableModal, setDisableModal] = useState({ isOpen: false, userId: null });
   const [restoreModal, setRestoreModal] = useState({ isOpen: false, userId: null });
   const [confirmPopup, setConfirmPopup] = useState({ isOpen: false, type: null, userId: null, reason: null, loading: false });
-
   const [approveLoading, setApproveLoading] = useState(false);
   const [disableLoading, setDisableLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
@@ -121,13 +114,18 @@ export default function AdminDashboard() {
       const chartRes = await fetch(`${API_BASE_URL}/api/admin/analytics/annual`);
       const empRes = await fetch(`${API_BASE_URL}/api/admin/employers/all`);
       const appRes = await fetch(`${API_BASE_URL}/api/admin/applicants/all`); 
+      const ticketsRes = await fetch(`${API_BASE_URL}/api/admin/support/tickets`); 
       
       if (statsRes.ok) setStats(await statsRes.json());
       if (chartRes.ok) setChartData(await chartRes.json());
       if (empRes.ok) setEmployers(await empRes.json());
       if (appRes.ok) setApplicants(await appRes.json());
-      
-      // If you fetch support tickets here, you can update setSupportTicketCount(...)
+      if (ticketsRes.ok) {
+        const ticketsData = await ticketsRes.json();
+        const openTickets = ticketsData.filter(t => t.status === 'Open').length;
+        setSupportTicketCount(openTickets);
+      }
+
     } catch (error) {
       console.error("Failed to load admin data");
     } finally {
@@ -1018,7 +1016,7 @@ export default function AdminDashboard() {
 
            {activeTab === 'SupportTickets' && (
             <div className="flex flex-col gap-3 sm:gap-6 animate-in fade-in duration-300 mt-6">
-              <AdminSupportTickets />
+              <AdminSupportTickets onTicketResolved={() => fetchAdminData(true)} />
             </div>
           )}
 

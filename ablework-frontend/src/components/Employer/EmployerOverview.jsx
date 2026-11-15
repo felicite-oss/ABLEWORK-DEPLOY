@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import API_BASE_URL from '../../../config';
 
 const mockChartData = [
   { name: 'Mon', applications: 4 },
@@ -13,16 +14,23 @@ const mockChartData = [
   { name: 'Sun', applications: 9 },
 ];
 
-// NEW MOCK DATA FOR DISABILITY BREAKDOWN
-// MOCK DATA FOR DISABILITY BREAKDOWN
 const mockDisabilityData = [
   { name: 'Motor & Neuromuscular', value: 30, color: '#2C7FFF' },
   { name: 'Vision Impairments', value: 25, color: '#10B981' },
   { name: 'Hearing & Speech', value: 20, color: '#F59E0B' },
   { name: 'Amputation', value: 10, color: '#8B5CF6' },
   { name: 'Polio', value: 10, color: '#EC4899' },
-    { name: 'Deafblindness', value: 5, color: '#6B7280' }, 
+  { name: 'Deafblindness', value: 5, color: '#6B7280' }, 
 ];
+
+const getLogoUrl = (logoPath) => {
+  if (!logoPath) return '';
+  if (logoPath.startsWith('http://') || logoPath.startsWith('https://')) {
+    return logoPath;
+  }
+  return `${API_BASE_URL}${logoPath.startsWith('/') ? '' : '/'}${logoPath}`;
+};
+
 export default function EmployerOverview({ profile, stats, setActiveTab }) {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
@@ -32,6 +40,10 @@ export default function EmployerOverview({ profile, stats, setActiveTab }) {
   const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
+
+  // 👇 ADD STATE FOR IMAGE ERROR HANDLING
+  const [imageError, setImageError] = useState(false);
+  // 👆 ------------------------------
 
   useEffect(() => {
     const onKey = (e) => {
@@ -133,7 +145,27 @@ export default function EmployerOverview({ profile, stats, setActiveTab }) {
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-primary, #2C7FFF)' }}></span> Live System
             </span>
           </div>
-          <h1 className={`text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-[#03045E]'}`}>Dashboard Overview</h1>
+           <div className="flex items-center gap-3 mb-1">
+            {/* Company Logo */}
+            {profile?.company_logo && !imageError ? (
+              <img
+                src={getLogoUrl(profile.company_logo)}
+                alt={`${profile.company_name} logo`}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover border-2 border-white shadow-sm bg-white"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div 
+                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#2C7FFF] text-white flex items-center justify-center font-black text-lg shadow-sm border-2 border-white`}
+              >
+                {profile?.company_name?.[0]?.toUpperCase() || 'E'}
+              </div>
+            )}
+
+            <h1 className={`text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
+              Dashboard Overview
+            </h1>
+          </div>
           <p className={`text-xs sm:text-sm font-semibold ${isDark ? 'text-gray-300' : 'text-[#03045E]/80'} mt-0.5`}>Real-time statistics, geofenced recruitment zone, and candidate pipelines for <span className={`font-bold ${isDark ? 'text-white' : 'text-[#03045E]'}`}>{profile.company_name}</span>.</p>
         </div>
       </div>
