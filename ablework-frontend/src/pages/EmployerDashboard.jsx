@@ -1100,7 +1100,7 @@ export default function EmployerDashboard() {
               {activeTab === 'employer-contact' && (
                 <EmployerContact 
                   onBack={() => handleTabChange('overview')} 
-                  profile={profile} // <-- ADD THIS 
+                  profile={profile} 
                 />
               )}
             </div>

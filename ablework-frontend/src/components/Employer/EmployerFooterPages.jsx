@@ -3,6 +3,7 @@ import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
 import LightLogo from '../../assets/LIGHT MODE.png';
+import API_BASE_URL from '../../../config';
 
 
 export function EmployerPolicy({ onBack }) {
@@ -620,11 +621,13 @@ export function EmployerContact({ onBack, profile }) {
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDark = isDarkMode || isContrast;
 
+  // State for the form
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
+  // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!subject.trim() || !message.trim()) {
@@ -641,9 +644,9 @@ export function EmployerContact({ onBack, profile }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: profile?.user_id || profile?.id || null,
-          userName: profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
+          userName: profile ? `${profile.company_name || profile.firstname || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
           userEmail: profile?.email || 'N/A',
-          userRole: profile?.role || 'Employer',
+          userRole: 'Employer',
           subject,
           message
         })
@@ -652,11 +655,11 @@ export function EmployerContact({ onBack, profile }) {
       const data = await res.json();
 
       if (res.ok) {
-        setAlert({ show: true, type: 'success', text: data.message || 'Ticket submitted successfully!' });
+        setAlert({ show: true, type: 'success', text: data.message || 'Message sent successfully!' });
         setSubject('');
         setMessage('');
       } else {
-        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit ticket.' });
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to send message.' });
       }
     } catch (err) {
       console.error(err);
@@ -679,6 +682,7 @@ export function EmployerContact({ onBack, profile }) {
           <div className="space-y-4 sm:space-y-6">
             <div>
               <h3 className="text-xs sm:text-base font-black">Email</h3>
+              {/* FIXED EMAIL HERE */}
               <p className="text-xs sm:text-base font-semibold">ableworksys5i@gmail.com</p>
             </div>
             <div>
@@ -700,6 +704,7 @@ export function EmployerContact({ onBack, profile }) {
         <div style={isDark ? { backgroundColor: 'transparent', borderColor: '#D1D5DB' } : {}} className="rounded-2xl sm:rounded-3xl shadow-xl border-2 backdrop-blur-sm bg-[var(--color-surface)]/50 text-[#03045E] border-white/40 p-5 sm:p-8">
           <h2 className="text-lg sm:text-2xl font-black mb-4 sm:mb-6">Send Us a Message</h2>
           
+          {/* Alert Banner */}
           {alert.show && (
             <div className={`p-3 rounded-xl border-2 text-sm font-bold mb-4 ${alert.type === 'success' ? 'bg-green-50 text-green-700 border-green-300' : 'bg-red-50 text-red-700 border-red-300'}`}>
               {alert.text}
@@ -715,7 +720,9 @@ export function EmployerContact({ onBack, profile }) {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Subject / Issue Summary"
-                className="w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70"
+                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] ${
+                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
+                }`}
                 disabled={isSubmitting}
               />
             </div>
@@ -727,14 +734,20 @@ export function EmployerContact({ onBack, profile }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Describe your issue or report suspicious activity..."
-                className="w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70"
+                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#2C7FFF] ${
+                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
+                }`}
                 disabled={isSubmitting}
               />
             </div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-2.5 sm:py-3 rounded-full font-bold transition border-2 hover:brightness-125 text-xs sm:text-sm bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:text-[#f4f4f4] hover:border-[#2C7FFF] disabled:opacity-50"
+              className={`w-full py-2.5 sm:py-3 rounded-full font-bold transition border-2 hover:brightness-125 text-xs sm:text-sm ${
+                isContrast
+                  ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-surface)] hover:text-[var(--color-background)] hover:border-[var(--color-accent)]'
+                  : 'bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:text-[#f4f4f4] hover:border-[#2C7FFF]'
+              } disabled:opacity-50`}
             >
               {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
@@ -744,7 +757,6 @@ export function EmployerContact({ onBack, profile }) {
     </main>
   );
 }
-
 export function EmployerFooter({ activeTab, setActiveTab }) {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();

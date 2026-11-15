@@ -3,7 +3,7 @@ import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
 import LightLogo from '../../assets/LIGHT MODE.png';
-import API_BASE_URL from '../../../config'; 
+import API_BASE_URL from '../../../config';
 
 export function ApplicantPageLayout({ title, subtitle, children, onBack }) {
   const { mode } = useContext(AccessibilityContext);
@@ -687,6 +687,8 @@ export function ApplicantContact({ onBack, profile }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 1. Validate inputs
     if (!subject.trim() || !message.trim()) {
       setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
       return;
@@ -696,13 +698,13 @@ export function ApplicantContact({ onBack, profile }) {
     setAlert({ show: false, type: '', text: '' });
 
     try {
-      // Ensure we are sending the correct data
+      // 2. Send data to backend
       const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: profile?.user_id || profile?.id || null,
-          userName: profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
+          userName: profile ? `${profile.firstname || ''} ${profile.lastname || ''}`.trim() : 'Guest User',
           userEmail: profile?.email || 'N/A',
           userRole: profile?.role || 'Applicant',
           subject,
@@ -712,6 +714,7 @@ export function ApplicantContact({ onBack, profile }) {
 
       const data = await res.json();
 
+      // 3. Handle response
       if (res.ok) {
         setAlert({ show: true, type: 'success', text: data.message || 'Ticket submitted successfully!' });
         setSubject('');
@@ -734,28 +737,25 @@ export function ApplicantContact({ onBack, profile }) {
       onBack={onBack}
     >
       <div className="grid md:grid-cols-2 gap-8">
+
         {/* LEFT SIDE: INFO CARDS */}
         <div className="space-y-6">
           <div role="region" aria-label="System Name: ABLEWORK" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">System Name</h3>
             <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">ABLEWORK</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Project Team</h3>
             <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">5i</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Email Support</h3>
             <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">ableworksys5i@gmail.com</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Office Address</h3>
             <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Data Custody Team</h3>
             <p tabIndex="0" className="text-sm font-semibold text-[#03045E] leading-relaxed">
@@ -766,7 +766,6 @@ export function ApplicantContact({ onBack, profile }) {
               Gamboa, John Bryan T.
             </p>
           </div>
-
           <div role="region" aria-label="Institution: STIWNU" className="p-5 rounded-2xl bg-[#03045E]/5 border border-[#03045E]/10">
             <h3 tabIndex="0" className="font-bold text-[#03045E] mb-1">Institution</h3>
             <p tabIndex="0" className="text-sm font-semibold text-[#03045E]">STIWNU</p>
