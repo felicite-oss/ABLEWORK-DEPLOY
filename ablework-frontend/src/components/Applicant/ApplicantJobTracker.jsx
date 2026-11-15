@@ -1,14 +1,31 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import API_BASE_URL from '../../../config';
+import { AccessibilityContext } from '../../context/AccessibilityContext';
+import { useColorPalette } from '../../context/ColorPaletteContext';
 
 export default function ApplicantJobTracker({ applications = [], profile, refreshData }) {
+  const { mode } = useContext(AccessibilityContext);
+  const { paletteKey } = useColorPalette();
+  
+  const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
+  const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
+  const isDark = isContrast || isDarkMode;
+  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
+
+  // Base Colors based on Theme
+  const pageBg = isDark ? 'bg-black' : 'bg-transparent';
+  const textColor = isDark ? 'text-white' : 'text-[#03045E]';
+  const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+  const cardBg = isDark ? 'bg-[#111111] border-white/30' : 'bg-white border-[#03045E]/20';
+  const panelBg = isDark ? 'bg-[#1A1A1A] border-white/20' : 'bg-[#f4f4f4] border-[#03045E]/15';
+  const primaryBtn = isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#2C7FFF] text-white hover:bg-[#1a5ce6]';
+
   const [filter, setFilter] = useState('All');
   const [expandedCompany, setExpandedCompany] = useState(null);
   const [selectedRolePerCompany, setSelectedRolePerCompany] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  // New state to track which job details are expanded
   const [expandedDetails, setExpandedDetails] = useState({});
 
   const [confirmWithdraw, setConfirmWithdraw] = useState({ isOpen: false, appId: null, loading: false });
@@ -16,9 +33,27 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
 
   useEffect(() => {
     setCurrentPage(1);
-    setExpandedCompany(null); // Close all when filter changes
-    setExpandedDetails({}); // Reset details expansion
+    setExpandedCompany(null);
+    setExpandedDetails({});
   }, [filter]);
+
+  // --- FIX: Keep selected roles in sync when new data arrives ---
+  useEffect(() => {
+    setSelectedRolePerCompany(prev => {
+      const updated = { ...prev };
+      let hasChanged = false;
+      
+      applications.forEach(app => {
+        if (updated[app.company_name] && updated[app.company_name].application_id === app.application_id) {
+          // If the backend updated the details (like job_description), refresh the local object
+          updated[app.company_name] = app;
+          hasChanged = true;
+        }
+      });
+      
+      return hasChanged ? updated : prev;
+    });
+  }, [applications]);
 
   const executeWithdraw = async () => {
     if (!confirmWithdraw.appId) return;
@@ -48,24 +83,37 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   };
 
   const getStatusStyle = (status) => {
+    if (isHighContrastOrDarkComfort) {
+      switch (status) {
+        case 'Received': return 'bg-white text-black border-white';
+        case 'Under Review': return 'bg-white text-black border-white';
+        case 'Shortlisted': return 'bg-white text-black border-white';
+        case 'Hired': return 'bg-black text-emerald-400 border-emerald-500';
+        case 'Withdrawn': return 'bg-black text-white border-white';
+        case 'Rejected': return 'bg-black text-red-500 border-red-500';
+        default: return 'bg-white text-black border-white';
+      }
+    }
+    if (isDark) {
+      switch (status) {
+        case 'Received': return 'bg-[#1A1A1A] text-white border-white/30';
+        case 'Under Review': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
+        case 'Shortlisted': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
+        case 'Hired': return 'bg-[#1A1A1A] text-emerald-400 border-emerald-500/50';
+        case 'Withdrawn': return 'bg-[#1A1A1A] text-gray-400 border-gray-600';
+        case 'Rejected': return 'bg-[#1A1A1A] text-red-400 border-red-500/50';
+        default: return 'bg-[#1A1A1A] text-white border-white/30';
+      }
+    }
     switch (status) {
       case 'Received': return 'bg-gray-100 text-gray-700 border-gray-300';
       case 'Under Review': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       case 'Shortlisted': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
-      case 'Hired': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
+      case 'Hired': return 'bg-emerald-50 text-emerald-700 border-emerald-300';
       case 'Withdrawn': return 'bg-gray-100 text-gray-600 border-gray-300';
-      case 'Rejected': return 'opacity-90';
+      case 'Rejected': return 'bg-red-50 text-red-700 border-red-300';
       default: return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
     }
-  };
-
-  const getRejectedStyle = (status) => {
-    if (status !== 'Rejected') return undefined;
-    return {
-      backgroundColor: 'rgba(239, 68, 68, 0.1)',
-      color: '#b91c1c',
-      borderColor: 'rgba(239, 68, 68, 0.5)'
-    };
   };
 
   const trackingTabs = ['All', 'Received', 'Under Review', 'Shortlisted', 'Hired', 'Rejected', 'Withdrawn'];
@@ -114,7 +162,6 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     }
   };
 
-  // Safe array parsing for JSON strings from the DB
   const parseSafeArray = (data) => {
     if (!data) return [];
     if (Array.isArray(data)) return data;
@@ -123,48 +170,46 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
     }
   };
 
-    const renderCard = (companyGroup) => {
+  const renderCard = (companyGroup) => {
     const isOpen = expandedCompany === companyGroup.company_name;
     
-    // Determine which role to show
+    // Fallback to first application if selectedRole isn't set
     const activeRole = selectedRolePerCompany[companyGroup.company_name] || companyGroup.applicationsList[0];
     const appCount = companyGroup.applicationsList.length;
+    
+    // Determine if withdrawal is allowed
     const canWithdraw = activeRole.status === 'Received' || activeRole.status === 'Under Review' || activeRole.status === 'Shortlisted';
     
     // Check if job details are expanded
     const showDetails = expandedDetails[activeRole.application_id];
 
-    // Count how many roles they are hired for in THIS company (usually just 1)
-    const hiredCount = companyGroup.applicationsList.filter(a => a.status === 'Hired').length;
-
     return (
       <div key={companyGroup.company_name} role="listitem" className="w-full">
-        <div className={`overflow-hidden rounded-lg sm:rounded-xl bg-white shadow-md border border-[#03045E]/20 transition-all duration-200 hover:shadow-lg ${activeRole.status === 'Rejected' ? 'opacity-80' : ''}`}>
+        <div className={`overflow-hidden rounded-lg sm:rounded-xl shadow-md border transition-all duration-200 hover:shadow-lg ${cardBg} ${activeRole.status === 'Rejected' ? 'opacity-80' : ''}`}>
           
           <button
             type="button"
             onClick={() => setExpandedCompany(isOpen ? null : companyGroup.company_name)}
-            className="w-full text-left h-[140px] sm:h-[160px] p-3 sm:p-4 flex flex-col justify-between cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-inset"
+            aria-expanded={isOpen}
+            aria-controls={`panel-${companyGroup.company_name.replace(/\s+/g, '-')}`}
+            aria-label={`${companyGroup.company_name}. You have ${appCount} application${appCount > 1 ? 's' : ''} here. Status: ${activeRole.status}. Click to ${isOpen ? 'hide' : 'show'} details.`}
+            className={`w-full text-left min-h-[140px] sm:min-h-[160px] p-3 sm:p-4 flex flex-col justify-between cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2C7FFF] ${isDark ? 'focus-visible:ring-white' : ''}`}
           >
             <div className="flex flex-row justify-between items-start gap-2 sm:gap-4 w-full min-w-0">
               <div className="flex-1 min-w-0 flex flex-col">
-                <h3 className="text-sm sm:text-2xl font-extrabold text-[#03045E] leading-tight break-words line-clamp-2 w-full">
+                <h3 className={`text-sm sm:text-2xl font-extrabold leading-tight break-words line-clamp-2 w-full ${textColor}`}>
                   {companyGroup.company_name}
                 </h3>
-                <p className="text-[10px] sm:text-sm font-extrabold text-[#2C7FFF] mt-0.5 sm:mt-1 break-words line-clamp-1">
+                <p className={`text-[10px] sm:text-sm font-extrabold mt-0.5 sm:mt-1 break-words line-clamp-1 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
                   {activeRole.job_title} {appCount > 1 && `(Showing 1 of ${appCount} roles)`}
                 </p>
               </div>
 
               <div className="flex shrink-0 items-start">
                 <div
-                  tabIndex="0"
-                  role="text"
-                  className={`px-2 py-0.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-sm font-extrabold rounded-lg border whitespace-nowrap flex items-center gap-1.5 sm:gap-2 focus:outline-none ${getStatusStyle(activeRole.status)}`}
-                  style={getRejectedStyle(activeRole.status)}
+                  className={`px-2 py-0.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-sm font-extrabold rounded-lg border whitespace-nowrap flex items-center gap-1.5 sm:gap-2 ${getStatusStyle(activeRole.status)}`}
                 >
-                  {/* ADDED: Show hired count if they are hired for multiple roles here */}
-                  {activeRole.status} {hiredCount > 1 && `(${hiredCount})`}
+                  {activeRole.status}
                   <svg
                     className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                     fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"
@@ -176,7 +221,7 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
             </div>
 
             <div>
-              <p className="text-[9px] sm:text-xs font-semibold text-[#03045E]/60">
+              <p className={`text-[9px] sm:text-xs font-semibold mt-2 ${mutedText}`}>
                 Applied on {new Date(activeRole.applied_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
@@ -188,30 +233,41 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
             className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
           >
             <div className="overflow-hidden">   
-              <div className="border-t border-[#03045E]/15 bg-[#f4f4f4] px-3 py-3 sm:px-4 sm:py-4 flex flex-col gap-4">
+              <div className={`border-t px-3 py-3 sm:px-4 sm:py-4 flex flex-col gap-4 ${panelBg}`}>
                 
                 {/* Role Switcher */}
                 {appCount > 1 && (
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] sm:text-xs font-extrabold text-[#03045E]/70 uppercase tracking-widest">
+                    <label className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-widest ${mutedText}`}>
                       Select Role to View
                     </label>
-                    <div className="flex flex-wrap gap-2">
-                      {companyGroup.applicationsList.map((app) => {
+                    <div className="flex flex-wrap gap-2" role="group" aria-label="Select a role to view details">
+                      {companyGroup.applicationsList.map((app, index) => {
                         const isSelected = activeRole.application_id === app.application_id;
+                        // Unique ID for screen readers if two roles have the same name
+                        const uniqueLabel = appCount > 1 && companyGroup.applicationsList.filter(a => a.job_title === app.job_title).length > 1 
+                          ? `${app.job_title} (Application ${index + 1})` 
+                          : app.job_title;
+
                         return (
                           <button
                             key={app.application_id}
                             onClick={() => setSelectedRolePerCompany(prev => ({ ...prev, [companyGroup.company_name]: app }))}
-                            className={`px-3 py-2 text-xs sm:text-sm font-bold rounded-lg border-2 transition-all cursor-pointer flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${
+                            aria-pressed={isSelected}
+                            aria-label={`View details for ${uniqueLabel}. Current status: ${app.status}.`}
+                            className={`px-3 py-2 text-xs sm:text-sm font-bold rounded-lg border-2 transition-all cursor-pointer flex items-center gap-2 focus:outline-none focus-visible:ring-4 ${
                               isSelected
-                                ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
-                                : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF]'
+                                ? (isDark ? 'bg-white text-black border-white focus-visible:ring-gray-400' : 'bg-[#2C7FFF] text-white border-[#2C7FFF] focus-visible:ring-blue-300')
+                                : (isDark ? 'bg-transparent text-white border-white/30 hover:border-white focus-visible:ring-white' : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF] focus-visible:ring-blue-300')
                             }`}
                           >
-                            {app.job_title}
+                            <span>{app.job_title}</span>
                             {app.status === 'Hired' && (
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase ${isSelected ? 'bg-white text-[#2C7FFF]' : 'bg-green-100 text-green-700'}`}>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider ${
+                                isSelected 
+                                  ? (isDark ? 'bg-black text-emerald-400' : 'bg-white text-emerald-600') 
+                                  : (isDark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-700')
+                              }`}>
                                 Hired
                               </span>
                             )}
@@ -223,43 +279,44 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                 )}
 
                 {/* Status Message */}
-                <div className="flex flex-col gap-0.5 flex-1 min-w-0 border-t border-[#03045E]/10 pt-3">
-                  <h4 className="text-[9px] sm:text-xs font-extrabold text-[#2C7FFF] uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 focus:outline-none">
+                <div className={`flex flex-col gap-0.5 flex-1 min-w-0 border-t pt-3 ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
+                  <h4 className={`text-[9px] sm:text-xs font-extrabold uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
                     <svg className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
                     </svg>
                     {activeRole.employer_message ? 'Message from Employer' : 'Status Update'}
                   </h4>
-                  <p className="text-[11px] sm:text-sm text-[#03045E] font-medium whitespace-pre-wrap leading-snug break-words focus:outline-none mt-1">
+                  <p className={`text-[11px] sm:text-sm font-medium whitespace-pre-wrap leading-snug break-words mt-1 ${textColor}`}>
                     {getStatusMessage(activeRole)}
                   </p>
                 </div>
 
                 {/* --- JOB DETAILS SECTION --- */}
-                <div className="pt-3 border-t border-[#03045E]/10">
+                <div className={`pt-3 border-t ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
                   <button 
                     onClick={() => setExpandedDetails(prev => ({ ...prev, [activeRole.application_id]: !showDetails }))}
-                    className="text-[11px] sm:text-sm font-bold text-[#2C7FFF] hover:text-[#03045E] flex items-center gap-1.5 transition-colors focus:outline-none"
+                    aria-expanded={showDetails}
+                    className={`text-[11px] sm:text-sm font-bold flex items-center gap-1.5 transition-colors focus:outline-none focus-visible:underline ${isDark ? 'text-blue-400 hover:text-white' : 'text-[#2C7FFF] hover:text-[#03045E]'}`}
                   >
                     {showDetails ? 'Hide Job Details' : 'View Job Details & Benefits'}
                     <svg className={`w-3.5 h-3.5 transition-transform ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                   </button>
 
                   {showDetails && (
-                    <div className="mt-3 bg-white p-3 rounded-lg border border-[#03045E]/10 flex flex-col gap-3 shadow-sm">
+                    <div className={`mt-3 p-3 rounded-lg border flex flex-col gap-3 shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/10 text-[#03045E]'}`}>
                       {activeRole.salary_range && (
                         <div>
-                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Salary</span>
-                          <p className="text-xs font-semibold text-[#03045E]">{activeRole.salary_range}</p>
+                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Salary</span>
+                          <p className="text-xs font-semibold">{activeRole.salary_range}</p>
                         </div>
                       )}
                       
                       {parseSafeArray(activeRole.benefits).length > 0 && (
                         <div>
-                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Benefits</span>
+                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Benefits</span>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {parseSafeArray(activeRole.benefits).map((benefit, i) => (
-                              <span key={i} className="px-2 py-0.5 bg-gray-100 text-[#03045E] text-[10px] rounded border border-gray-200">{benefit}</span>
+                              <span key={i} className={`px-2 py-0.5 text-[10px] rounded border ${isDark ? 'bg-white/10 border-white/20' : 'bg-gray-100 border-gray-200'}`}>{benefit}</span>
                             ))}
                           </div>
                         </div>
@@ -267,10 +324,10 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
 
                       {parseSafeArray(activeRole.provided_accommodations).length > 0 && (
                         <div>
-                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Accommodations</span>
+                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Accommodations</span>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {parseSafeArray(activeRole.provided_accommodations).map((acc, i) => (
-                              <span key={i} className="px-2 py-0.5 bg-blue-50 text-[#2C7FFF] text-[10px] rounded border border-blue-200">{acc}</span>
+                              <span key={i} className={`px-2 py-0.5 text-[10px] rounded border ${isDark ? 'bg-blue-900/30 border-blue-700 text-blue-300' : 'bg-blue-50 border-blue-200 text-[#2C7FFF]'}`}>{acc}</span>
                             ))}
                           </div>
                         </div>
@@ -278,8 +335,8 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
 
                       {activeRole.job_description && (
                         <div>
-                          <span className="text-[10px] font-bold text-[#03045E]/60 uppercase">Job Description</span>
-                          <p className="text-xs text-[#03045E]/80 mt-1 whitespace-pre-wrap line-clamp-4 hover:line-clamp-none transition-all">{activeRole.job_description}</p>
+                          <span className={`text-[10px] font-bold uppercase ${mutedText}`}>Job Description</span>
+                          <p className={`text-xs mt-1 whitespace-pre-wrap line-clamp-4 hover:line-clamp-none transition-all ${mutedText}`}>{activeRole.job_description}</p>
                         </div>
                       )}
                     </div>
@@ -287,13 +344,18 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
                 </div>
 
                 {canWithdraw && (
-                  <div className="pt-3 mt-1 border-t border-[#03045E]/10">
+                  <div className={`pt-3 mt-1 border-t ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
                     <button
                       onClick={(e) => {
                         e.stopPropagation(); 
                         setConfirmWithdraw({ isOpen: true, appId: activeRole.application_id, loading: false });
                       }}
-                      className="w-full sm:w-auto px-5 py-3 text-sm font-black rounded-xl border-2 transition-all cursor-pointer shadow-sm !bg-white !text-red-600 !border-red-500 hover:!bg-red-50 hover:!text-red-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-500"
+                      aria-label={`Withdraw application for ${activeRole.job_title} at ${companyGroup.company_name}`}
+                      className={`w-full sm:w-auto px-5 py-3 text-sm font-black rounded-xl border-2 transition-all cursor-pointer shadow-sm focus:outline-none focus-visible:ring-4 ${
+                        isDark 
+                          ? 'bg-black text-red-400 border-red-500 hover:bg-red-500 hover:text-white focus-visible:ring-red-500' 
+                          : 'bg-white text-red-600 border-red-500 hover:bg-red-50 hover:text-red-700 focus-visible:ring-red-500'
+                      }`}
                     >
                       Withdraw Application
                     </button>
@@ -308,22 +370,22 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
   };
 
   return (
-    <div className="animate-fadeIn w-full space-y-4 sm:space-y-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] pb-4">
+    <div className={`animate-fadeIn w-full space-y-4 sm:space-y-8 pb-4 ${pageBg} ${textColor}`}>
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
         <div className="min-w-0 w-full">
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#03045E] break-words">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold break-words">
             My Job Tracker
           </h2>
-          <p className="text-[#03045e] mt-0.5 sm:mt-1.5 text-[11px] sm:text-sm md:text-base font-semibold">
+          <p className={`mt-0.5 sm:mt-1.5 text-[11px] sm:text-sm md:text-base font-semibold ${mutedText}`}>
             Monitor the status of your applications in real-time.
           </p>
         </div>
         {applications.length > 0 && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-[#f4f4f4] border border-[#03045E]/20 shrink-0">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#2C7FFF]" />
-            <span className="text-[9px] sm:text-xs font-extrabold uppercase tracking-widest text-[#03045E]">
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full border shrink-0 ${isDark ? 'bg-[#111111] border-white/20' : 'bg-[#f4f4f4] border-[#03045E]/20'}`}>
+            <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${isDark ? 'bg-blue-400' : 'bg-[#2C7FFF]'}`} />
+            <span className="text-[9px] sm:text-xs font-extrabold uppercase tracking-widest">
               {applications.length} application{applications.length !== 1 ? 's' : ''}
             </span>
           </div>
@@ -331,23 +393,31 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 sm:gap-2 sm:p-2 rounded-lg sm:rounded-xl bg-[#f4f4f4] border border-[#03045E]/15 w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+      <div 
+        role="tablist" 
+        aria-label="Application status filters"
+        className={`flex gap-1 p-1 sm:gap-2 sm:p-2 rounded-lg sm:rounded-xl border w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] ${isDark ? 'bg-[#111111] border-white/20' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
+      >
         {trackingTabs.map(tab => {
           const count = getTabCount(tab);
           return (
             <button
               key={tab}
+              role="tab"
+              aria-selected={filter === tab}
               onClick={() => setFilter(tab)}
-              className={`flex-1 min-w-fit px-1.5 py-1.5 sm:px-4 sm:py-2.5 rounded-md sm:rounded-lg font-extrabold text-[9px] min-[380px]:text-[10px] sm:text-sm whitespace-nowrap transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2C7FFF] ${
+              className={`flex-1 min-w-fit px-1.5 py-1.5 sm:px-4 sm:py-2.5 rounded-md sm:rounded-lg font-extrabold text-[9px] min-[380px]:text-[10px] sm:text-sm whitespace-nowrap transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer focus:outline-none focus-visible:ring-4 ${
                 filter === tab
-                  ? 'bg-[#03045E] text-white shadow-md'
-                  : 'text-[#03045E]/70 hover:bg-white hover:text-[#03045E]'
+                  ? (isDark ? 'bg-white text-black shadow-md focus-visible:ring-gray-400' : 'bg-[#03045E] text-white shadow-md focus-visible:ring-blue-300')
+                  : (isDark ? 'text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white' : 'text-[#03045E]/70 hover:bg-white hover:text-[#03045E] focus-visible:ring-blue-300')
               }`}
             >
               {tab}
               {count > 0 && (
                 <span className={`min-w-[16px] h-4 sm:min-w-[20px] sm:h-5 px-1 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-black shrink-0 ${
-                  filter === tab ? 'bg-white text-[#03045E]' : 'bg-[#03045E]/10 text-[#03045E]'
+                  filter === tab 
+                    ? (isDark ? 'bg-black text-white' : 'bg-white text-[#03045E]') 
+                    : (isDark ? 'bg-white/20 text-white' : 'bg-[#03045E]/10 text-[#03045E]')
                 }`}>
                   {count}
                 </span>
@@ -374,16 +444,16 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
           </div>
         </>
       ) : (
-        <div className="p-5 sm:p-12 rounded-lg sm:rounded-xl border-2 border-dashed border-[#03045E]/30 bg-[#f4f4f4] flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[280px]">
-          <div className="w-10 h-10 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 sm:mb-5 border border-[#03045E]/20 text-[#2C7FFF]">
+        <div className={`p-5 sm:p-12 rounded-lg sm:rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[280px] ${isDark ? 'border-white/20 bg-[#111111]' : 'border-[#03045E]/30 bg-[#f4f4f4]'}`}>
+          <div className={`w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-sm mb-3 sm:mb-5 border ${isDark ? 'bg-black border-white/20 text-blue-400' : 'bg-white border-[#03045E]/20 text-[#2C7FFF]'}`}>
             <svg className="w-5 h-5 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
             </svg>
           </div>
-          <h3 className="text-base sm:text-xl font-extrabold text-[#03045E] mb-1.5 sm:mb-2">
+          <h3 className="text-base sm:text-xl font-extrabold mb-1.5 sm:mb-2">
             No {filter.toLowerCase()} applications found
           </h3>
-          <p className="text-[11px] sm:text-sm font-semibold text-[#03045E]/70 max-w-md leading-relaxed px-2">
+          <p className={`text-[11px] sm:text-sm font-semibold max-w-md leading-relaxed px-2 ${mutedText}`}>
             {filter === 'All'
               ? "You haven't submitted any job applications yet. Head over to Smart Matches or Explore Jobs to get started!"
               : `You don't have any applications currently in the "${filter}" state.`}
@@ -393,55 +463,68 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-between items-center gap-3 w-full pt-4 mt-2">
+        <nav aria-label="Application tracker pagination" className={`flex justify-between items-center gap-3 w-full pt-4 mt-2 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 bg-white text-[#03045E] border-[#03045E]/30 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2C7FFF]"
+            aria-label="Go to previous page"
+            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 ${
+              isDark 
+                ? 'bg-black text-white border-white/30 focus-visible:ring-white' 
+                : 'bg-white text-[#03045E] border-[#03045E]/30 focus-visible:ring-blue-300'
+            }`}
           >
             Previous
           </button>
-          <span className="text-[10px] sm:text-xs font-black text-[#03045E]/70">
+          <span className={`text-[10px] sm:text-xs font-black ${mutedText}`}>
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 bg-white text-[#03045E] border-[#03045E]/30 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2C7FFF]"
+            aria-label="Go to next page"
+            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer border-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-4 ${
+              isDark 
+                ? 'bg-black text-white border-white/30 focus-visible:ring-white' 
+                : 'bg-white text-[#03045E] border-[#03045E]/30 focus-visible:ring-blue-300'
+            }`}
           >
             Next
           </button>
-        </div>
+        </nav>
       )}
 
-      {/* Modals remain the same... */}
+      {/* Modals with Aria support */}
       {confirmWithdraw.isOpen && (
-         // ... (keep your existing withdraw modal here)
-         <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title" tabIndex="-1">
-          <div className="relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 bg-white border-2 border-[#03045E]/30">
-            <div aria-hidden="true" className="h-1.5 sm:h-2 w-full bg-[#03045E]" />
+        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(72, 71, 71, 0.6)' }} role="dialog" aria-modal="true" aria-labelledby="confirm-withdraw-title" tabIndex="-1">
+          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/30 text-white' : 'bg-white border-[#03045E]/30 text-[#03045E]'}`}>
+            <div aria-hidden="true" className={`h-1.5 sm:h-2 w-full ${isDark ? 'bg-red-500' : 'bg-[#03045E]'}`} />
             <div className="relative px-6 pt-6 pb-6 flex flex-col items-center text-center">
-              <div aria-hidden="true" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center bg-transparent text-[#03045E] mb-4 border-4 border-[#03045E]">
+              <div aria-hidden="true" className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 border-4 ${isDark ? 'border-red-500 text-red-500' : 'border-[#03045E] text-[#03045E]'}`}>
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h2 id="confirm-withdraw-title" tabIndex="0" className="text-xl font-black text-[#03045E] mb-2 focus:outline-none">Withdraw Application?</h2>
-              <p tabIndex="0" className="text-xs font-bold text-[#03045E]/70 mb-6 focus:outline-none">
+              <h2 id="confirm-withdraw-title" tabIndex="0" className="text-xl font-black mb-2 focus:outline-none">Withdraw Application?</h2>
+              <p tabIndex="0" className={`text-xs font-bold mb-6 focus:outline-none ${mutedText}`}>
                 Are you sure you want to withdraw? You will be removed from the employer's candidate list for this job.
               </p>
               <div className="flex w-full gap-3">
                 <button 
                   onClick={() => setConfirmWithdraw({ isOpen: false, appId: null, loading: false })} 
                   disabled={confirmWithdraw.loading} 
-                  className="flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent text-[#03045E]/70 border-[#03045E]/30 disabled:opacity-50 hover:bg-[#03045E]/5 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-[#03045E]"
+                  className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 transition-all focus:outline-none focus-visible:ring-4 ${
+                    isDark ? 'text-white/70 border-white/30 hover:bg-white/10 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 hover:bg-[#03045E]/5 focus-visible:ring-[#03045E]'
+                  }`}
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={executeWithdraw} 
                   disabled={confirmWithdraw.loading} 
-                  className="flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent text-[#03045E] border-[#03045E] disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-[#03045E] hover:text-white transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-[#03045E]"
+                  className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${
+                    isDark ? 'text-red-400 border-red-500 hover:bg-red-500 hover:text-white focus-visible:ring-red-500' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white focus-visible:ring-[#03045E]'
+                  }`}
                 >
                   {confirmWithdraw.loading ? 'Processing...' : 'Yes, Withdraw'}
                 </button>
@@ -452,23 +535,24 @@ export default function ApplicantJobTracker({ applications = [], profile, refres
       )}
 
       {sweetAlert.isOpen && (
-        // ... (keep your existing sweetAlert modal here)
-        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }} role="alertdialog" aria-modal="true" aria-labelledby="sweetalert-title" tabIndex="-1">
-          <div className="relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 bg-white border-2 border-[#03045E]/30">
-            <div aria-hidden="true" className="h-1.5 sm:h-2 w-full bg-[#03045E]" />
+        <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(72, 71, 71, 0.6)' }} role="alertdialog" aria-modal="true" aria-labelledby="sweetalert-title" tabIndex="-1">
+          <div className={`relative w-full max-w-sm rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/30 text-white' : 'bg-white border-[#03045E]/30 text-[#03045E]'}`}>
+            <div aria-hidden="true" className={`h-1.5 sm:h-2 w-full ${isDark ? 'bg-white' : 'bg-[#03045E]'}`} />
             <div className="relative px-6 pt-6 pb-6 flex flex-col items-center text-center">
-              <div aria-hidden="true" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center bg-transparent border-4 border-[#03045E] mb-4 text-[#03045E]">
+              <div aria-hidden="true" className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 border-4 ${isDark ? 'border-white text-white' : 'border-[#03045E] text-[#03045E]'}`}>
                 {sweetAlert.type === 'success' ? (
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                 ) : (
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 )}
               </div>
-              <h2 id="sweetalert-title" tabIndex="0" className="text-xl font-black text-[#03045E] mb-2 focus:outline-none">{sweetAlert.title}</h2>
-              <p tabIndex="0" className="text-xs font-bold text-[#03045E]/70 mb-6 focus:outline-none">{sweetAlert.text}</p>
+              <h2 id="sweetalert-title" tabIndex="0" className="text-xl font-black mb-2 focus:outline-none">{sweetAlert.title}</h2>
+              <p tabIndex="0" className={`text-xs font-bold mb-6 focus:outline-none ${mutedText}`}>{sweetAlert.text}</p>
               <button 
                 onClick={closeSweetAlert} 
-                className="w-full py-3 rounded-lg font-black text-xs uppercase tracking-wider bg-transparent border-2 text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-[#03045E]"
+                className={`w-full py-3 rounded-lg font-black text-xs uppercase tracking-wider bg-transparent border-2 transition-all focus:outline-none focus-visible:ring-4 ${
+                  isDark ? 'text-white border-white hover:bg-white hover:text-black focus-visible:ring-white' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white focus-visible:ring-[#03045E]'
+                }`}
               >
                 Got It
               </button>
