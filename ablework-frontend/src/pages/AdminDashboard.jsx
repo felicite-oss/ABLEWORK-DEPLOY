@@ -1235,7 +1235,7 @@ export default function AdminDashboard() {
                     )
                   })}
                 </div>
-                               <div ref={usersListRef} className={`max-h-[500px] overflow-y-auto overflow-x-auto rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} ${cardBg}`}>
+                              <div ref={usersListRef} className={`max-h-[500px] overflow-y-auto overflow-x-auto rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} ${cardBg}`}>
                   {currentUsers.length > 0 ? (
                     <table className="w-full text-left border-collapse min-w-[600px]">
                       <thead className={`sticky top-0 z-10 ${surfaceBg} border-b-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'}`}>
