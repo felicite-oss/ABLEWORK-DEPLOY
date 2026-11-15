@@ -75,8 +75,8 @@ function SiteHeader() {
   const { paletteKey } = useColorPalette();
 
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
+  const isDarkMode = mode && typeof mode === 'string' && mode.toLowerCase().includes('dark'); // <-- ADD THIS LINE
   const isAccessibilityMode = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
-
   return (
     <header className={`w-full ${isContrast ? 'bg-black border-b-2 border-[#2C7FFF]' : 'bg-white border-b-2 border-[#03045E]/15'} fixed top-0 left-0 z-50 transition-all duration-300 shadow-sm`}>
    <div className="w-full h-14 sm:h-16 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 flex items-center justify-between box-border">
@@ -455,125 +455,91 @@ export function Home() {
 
       <div className="flex-1 overflow-y-auto flex flex-col pt-16">
 
-        {/* --- NEW HERO SECTION (MATCHING IMAGE 1) --- */}
-       <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
+         {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
+        <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center">
           
-          {/* Main Card Container */}
-<div className="w-full bg-[#f4f4f4] rounded-[2rem] shadow-[0_20px_50px_rgba(3,4,94,0.1)] overflow-hidden flex flex-col lg:flex-row border border-[#03045e]/10 relative">
-            
-            {/* Left Side: Content */}
-            <div className="w-full lg:w-1/2 p-8 sm:p-12 md:p-16 lg:p-24 flex flex-col justify-center z-10">
-              
-              <div className="mb-6">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-[#2c7fff]/10 text-[#f4f4f4] text-xs font-black uppercase tracking-widest">
-                  Welcome to AbleWork
-                </span>
-              </div>
+          {/* Main Hero Container */}
+          <div className="w-full relative overflow-hidden rounded-[2rem] shadow-xl border border-[#03045e]/10 bg-[#f4f4f4]">
+                      {/* Background Image (Full Width) */}
+            <div 
+              className="absolute inset-0 bg-no-repeat w-full h-full bg-[position:right_center] bg-[size:70%] hero-bg-img"
+              style={{ backgroundImage: `url(${backgroundImg})` }}
+            ></div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#03045e] leading-[1.1] mb-6">
-                Building an Inclusive Workforce for Everyone
-              </h1>
-
-              <p className="text-sm sm:text-base md:text-lg text-[#03045e]/70 leading-relaxed mb-10 max-w-lg font-medium">
-                AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-4 mb-12">
-                <Link
-                  to="/register-select"
-                  className="px-8 py-3.5 rounded-full bg-[#03045e] text-[#f4f4f4] font-bold shadow-lg hover:bg-[#2c7fff] hover:-translate-y-0.5 transition-all"
-                >
-                  Get Started Today
-                </Link>
-                <Link
-                  to="/about"
-                  className="px-8 py-3.5 rounded-full border-2 border-[#03045e]/20 text-[#03045e] font-bold hover:border-[#2c7fff] hover:text-[#2c7fff] transition-all"
-                >
-                  Learn More
-                </Link>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 pt-8 border-t border-[#03045e]/10">
-                <div>
-                  <h4 className="text-2xl sm:text-3xl font-black text-[#2c7fff]">100%</h4>
-                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#03045e]">Accessible</p>
-                </div>
-                <div>
-                  <h4 className="text-2xl sm:text-3xl font-black text-[#2c7fff]">24/7</h4>
-                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#03045e]">Support</p>
-                </div>
-                <div>
-                  <h4 className="text-2xl sm:text-3xl font-black text-[#2c7fff]">Secure</h4>
-                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#03045e]">Platform</p>
-                </div>
-              </div>
-
-            </div>
-            {/* Right Side: Image with Wavy Curve */}
-            <div className="w-full lg:w-1/2 relative min-h-[400px] lg:min-h-full bg-[#f4f4f4]">
-              
-              {/* SVG Mask for the Wavy Cut Effect */}
-              <svg 
-                className="absolute inset-y-0 left-0 h-full w-16 sm:w-24 lg:w-32 z-10 text-[#f4f4f4] fill-current hidden lg:block" 
-                viewBox="0 0 100 100" 
-                preserveAspectRatio="none"
-              >
-                <path d="M0,0 C100,0 20,50 100,100 L0,100 Z" />
-              </svg>
-
-              {/* The Image */}
-              <img
-                src={backgroundImg}
-                alt="Inclusive Workforce"
-                className="absolute inset-0 w-full h-full object-cover object-center"
+            {/* Dynamic Color Overlay Shape - Frosted Glass */}
+            <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <defs>
+                <filter id="glass-blur">
+                  <feGaussianBlur stdDeviation="8" />
+                </filter>
+              </defs>
+                          <path 
+                d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
+                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${palette.colors.primary || palette.colors.accent}B3`)} 
+                fillRule="evenodd" 
+                style={{ backdropFilter: 'blur(16px)' }}
               />
+            </svg>
+            {/* Content Wrapper */}
+            <div className="relative z-20 flex flex-col lg:flex-row items-center justify-between p-8 sm:p-12 lg:p-20 w-full min-h-[500px]">
               
-              {/* New Softer Color Tint & Gradient (Uses brand colors) */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#f4f4f4] via-[#2c7fff]/10 to-transparent"></div>
-              
-              {/* Optional: Adds a nice subtle shadow on the left edge to emphasize the wave */}
-              <div className="absolute inset-y-0 left-0 w-8 sm:w-12 lg:w-16 bg-gradient-to-r from-black/5 to-transparent hidden lg:block"></div>
-            </div>
+              {/* Left Side: Text */}
+              <div className="w-full lg:w-1/2 flex flex-col items-start">
+                
+                <div className="mb-6">
+                  <span className={`welcome-badge inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm ${isDarkMode ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)] text-[var(--color-background)]'}`}>
+                    Welcome to AbleWork
+                  </span>
+                </div>
 
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#f4f4f4] leading-[1.1] mb-6">
+                  Building an Inclusive Workforce for Everyone
+                </h1>
+
+                <p className="text-sm sm:text-base md:text-lg text-[#f4f4f4]/80 leading-relaxed mb-10 max-w-lg font-medium">
+                  AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations.
+                </p>
+
+                              <div className="flex flex-wrap items-center gap-4 mb-12">
+                  <Link
+                    to="/register-select"
+                    className="px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/30 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:text-[#f4f4f4] transition-all"
+                  >
+                    Get Started Today
+                  </Link>
+                  <Link
+                    to="/about"
+                    className="px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/30 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:text-[#f4f4f4] transition-all"
+                  >
+                    Learn More
+                  </Link>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-4 pt-8 border-t border-[#f4f4f4]/20 w-full max-w-md">
+                  <div>
+                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">100%</h4>
+                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Accessible</p>
+                  </div>
+                  <div>
+                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">24/7</h4>
+                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Support</p>
+                  </div>
+                  <div>
+                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">Secure</h4>
+                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Platform</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: Empty space for the image to show through */}
+              <div className="w-full lg:w-1/2 min-h-[300px] lg:min-h-[400px] hidden lg:block">
+              </div>
+
+            </div>
           </div>
 
-          {/* --- Why Choose Section (Moved below for better layout) --- */}
-         <div className="w-full mt-6 lg:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <h3 className="text-[#03045e] font-black text-lg mb-2">Smart Job Matching</h3>
-              <p className="text-[#03045e]/70 text-sm font-medium">Find employment opportunities customized specifically to match your professional skills.</p>
-            </div>
-
-            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <h3 className="text-[#03045e] font-black text-lg mb-2">Inclusive Employment</h3>
-              <p className="text-[#03045e]/70 text-sm font-medium">Directly connect persons with disabilities with certified inclusive and supportive employers.</p>
-            </div>
-
-            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <h3 className="text-[#03045e] font-black text-lg mb-2">Streamlined Application</h3>
-              <p className="text-[#03045e]/70 text-sm font-medium">Search, track, and apply for available jobs easily through one centralized platform.</p>
-            </div>
-
-            <div className="bg-[#f4f4f4] p-6 rounded-2xl border border-[#03045e]/10 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-[#2c7fff]/10 text-[#2c7fff] flex items-center justify-center mb-4">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <h3 className="text-[#03045e] font-black text-lg mb-2">Direct Employer Network</h3>
-              <p className="text-[#03045e]/70 text-sm font-medium">Empower forward-thinking employers to discover your verified qualified profile.</p>
-            </div>
-          </div>
-
-        </div>
+                </div>
 
 <section className="w-full p-3 sm:p-4 md:px-8 md:py-6">
           <div className={`p-5 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border-2 shadow-xl backdrop-blur-sm ${isContrast ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-border)]' : 'bg-[var(--color-surface)]/50 text-[#03045E] border-[#03045E]/20'}`}>
@@ -848,7 +814,7 @@ export function Home() {
               </section>
 
                           {/* --- REDESIGNED DEVICES SHOWCASE SECTION --- */}
-<section className={`w-full relative py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)]' : 'bg-gradient-to-b from-transparent via-[#f8f9fa] to-[#eef2ff]'}`}>
+<section className={`w-full relative py-12 sm:py-16 md:py-20 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)]' : 'bg-gradient-to-b from-transparent via-[#f8f9fa] to-[#eef2ff]'}`}>
                 
                 {/* --- ANIMATION KEYFRAMES --- */}
                 <style>{`
@@ -882,6 +848,7 @@ export function Home() {
                   <div className="absolute top-10 left-10 w-72 h-72 bg-[#2C7FFF]/20 rounded-full blur-[100px]" style={{ animation: 'pulseGlow 8s ease-in-out infinite' }}></div>
                   <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#03045E]/10 rounded-full blur-[120px]" style={{ animation: 'pulseGlow 10s ease-in-out infinite reverse' }}></div>
                 </div>
+
 <div className="w-full flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16 lg:gap-24 relative z-10">
                   
                   {/* Left Side: Devices with 3D Tilt & Motion */}
@@ -951,12 +918,12 @@ export function Home() {
                       </span>
                     </h2>
                     
-<p tabIndex="0" role="text" aria-label="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen..." className={`text-sm sm:text-lg font-semibold leading-relaxed mb-8 text-center md:text-left max-w-lg ${isContrast ? 'text-[var(--color-textMuted)]' : 'text-[#03045E]/70'}`}>
+                    <p tabIndex="0" role="text" aria-label="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere." title="Whether you are browsing on a mobile phone or managing your profile on a laptop, AbleWork adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere." className={`text-sm sm:text-lg font-semibold leading-relaxed mb-8 text-center md:text-left max-w-lg ${isContrast ? 'text-[var(--color-textMuted)]' : 'text-[#03045E]/70'}`}>
                       Whether you are browsing on a mobile phone or managing your profile on a laptop, ABLEWORK adapts to your screen. Experience a unified, fully accessible platform built to connect you with inclusive opportunities and manage your PWD accommodations anywhere.
                     </p>
 
                                     {/* Expanded Feature Grid to fill space */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-2 w-full max-w-lg text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-2 w-full max-w-lg text-left">
                        
                        {/* Item 1: PWD Verification */}
                        <div 
@@ -1036,6 +1003,7 @@ export function Home() {
               </section>
 
 <section className={`relative py-12 sm:py-20 px-3 sm:px-4 md:px-8 my-6 sm:my-8 overflow-hidden ${isContrast ? 'bg-[var(--color-background)] border-y border-[var(--color-border)]' : 'bg-[#f4f4f4] border-y border-[#d1d5db]'}`}>
+          
           {/* Subtle background glow to fill space */}
           <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-accent)]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -2485,7 +2453,7 @@ export default function ApplicantRegister() {
   useEffect(() => {
     const fetchPopularSkills = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/skills/popular`);
+        const response = await fetch('http://localhost:5001/api/skills/popular');
         if (response.ok) {
           const popularSkills = await response.json();
           
@@ -2587,7 +2555,7 @@ export default function ApplicantRegister() {
     formData.append('pwdDocument', pwdFile);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/register/applicant`, {
+      const response = await fetch('http://localhost:5001/api/auth/register/applicant', {
         method: 'POST',
         body: formData,
       });

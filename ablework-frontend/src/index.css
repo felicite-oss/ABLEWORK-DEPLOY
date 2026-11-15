@@ -1102,3 +1102,20 @@ html, body {
 ::-webkit-scrollbar {
   display: none;
 }
+
+/* Force black text on Sign Up, Log In, and Badge in Dark Mode */
+html.dark-mode .signup-btn,
+html.dark-mode .login-btn,
+html.dark-mode .welcome-badge,
+.theme-Dark .signup-btn,
+.theme-Dark .login-btn,
+.theme-Dark .welcome-badge,
+html.dark-mode .signup-btn *,
+html.dark-mode .login-btn *,
+html.dark-mode .welcome-badge *,
+.theme-Dark .signup-btn *,
+.theme-Dark .login-btn *,
+.theme-Dark .welcome-badge * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
