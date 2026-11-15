@@ -146,7 +146,7 @@ const extractRoleOverview = (description) => {
   return description;
 };
 
-const JobCardDescription = ({ description, isExpanded, onToggle }) => {
+const JobCardDescription = ({ description, isExpanded, onToggle, isDarkScreen }) => {
   const textRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
