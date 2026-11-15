@@ -1432,7 +1432,7 @@ const handleAddressType = (e) => {
                   <label htmlFor="resumeFile" tabIndex="0" title="Upload Resume" className="block text-xs sm:text-sm font-bold text-[#03045E] mb-1 focus:outline-none">
                     Base Resume <span className="text-red-500">*</span>
                   </label>
-                                <input
+                                 <input
                     id="resumeFile"
                     type="file"
                     accept=".pdf,.doc,.docx"
@@ -1450,8 +1450,11 @@ const handleAddressType = (e) => {
                       setStatusMessage({ type: '', text: '' });
                       setResumeFile(file);
                     }}
-                   className={`w-full text-xs sm:text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold cursor-pointer`}
-                    style={{ color: isDarkMode || isContrast ? '#ffffff' : primaryColor }}
+                    className={`w-full text-xs sm:text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-2 file:border-[var(--color-border)] file:bg-white file:text-xs file:font-bold cursor-pointer`}
+                    style={{ 
+                      color: (isDarkMode || isContrast) ? '#ffffff' : primaryColor,
+                      '--file-text-color': (isDarkMode || isContrast) ? '#000000' : primaryColor
+                    }}
                     required
                     title="Please upload your Base Resume."
                     aria-label="Resume document upload."
