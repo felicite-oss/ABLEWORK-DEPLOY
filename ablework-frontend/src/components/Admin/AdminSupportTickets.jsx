@@ -203,14 +203,8 @@ export function AdminSupportTickets() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t-2 border-[#03045E]/10 bg-[#f4f4f4] flex justify-end gap-3 mt-auto">
-              <button 
-                onClick={() => setSelectedTicket(null)}
-                className="px-6 py-2.5 bg-white text-[#03045E] border-2 border-[#03045E]/20 text-xs font-black uppercase tracking-wider rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
-              >
-                Close
-              </button>
-              {selectedTicket.status === 'Open' && (
+            {selectedTicket.status === 'Open' && (
+              <div className="p-6 border-t-2 border-[#03045E]/10 bg-[#f4f4f4] flex justify-end gap-3 mt-auto">
                 <button 
                   onClick={() => handleResolve(selectedTicket.id)}
                   className="px-6 py-2.5 bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] text-xs font-black uppercase tracking-wider rounded-xl hover:bg-[#03045E] transition-colors cursor-pointer shadow-sm flex items-center gap-2"
@@ -218,8 +212,8 @@ export function AdminSupportTickets() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   Mark as Resolved
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

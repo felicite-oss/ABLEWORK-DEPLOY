@@ -181,17 +181,17 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     setCurrentPage(1);
   }, [searchQuery, selectedSalary, selectedIndustry, selectedSkills, selectedAccs, activeTab]);
 
-  // --- THE FIX: BULLETPROOF CHECK ---
+   // Robust check for applied jobs
   const checkHasApplied = (jobId) => {
     const targetId = String(jobId).trim();
     
-    // 1. Check Local Cache
+    // 1. Check local storage cache (for instant UI updates)
     const appliedLocally = locallyAppliedJobs.some(id => String(id).trim() === targetId);
 
-    // 2. Check Server Applications (Deep checking for nested objects)
+    // 2. Check server applications (Now works because we added job_id to the server response)
     const appliedOnServer = applications.some(app => {
-      // Sometimes API returns { job_id: 220 }, sometimes { id: 220 }, sometimes { job: { id: 220 } }
-      const appJobId = app.job_id || app.id || app.job?.id || app.jobId; 
+      // Check job_id, id, or nested job.id just to be safe
+      const appJobId = app.job_id || app.id || app.job?.id; 
       return String(appJobId).trim() === targetId;
     });
 

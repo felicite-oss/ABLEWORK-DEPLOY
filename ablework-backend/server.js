@@ -1145,7 +1145,7 @@ app.get('/api/applicant/:id/applications', async (req, res) => {
     try {
         const [applications] = await db.execute(`
             SELECT
-                a.id as application_id, a.status, a.applied_at, a.employer_message,
+                a.id as application_id, a.job_id, a.status, a.applied_at, a.employer_message,
                 j.job_title, j.company_name, j.job_description, j.salary_range, 
                 j.benefits, j.provided_accommodations, j.required_skills
             FROM applications a
