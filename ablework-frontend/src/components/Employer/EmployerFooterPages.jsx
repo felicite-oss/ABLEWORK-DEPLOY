@@ -10,8 +10,7 @@ export function EmployerPolicy({ onBack }) {
   const { mode } = useContext(AccessibilityContext);
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
-  const isDark = isDarkMode || isContrast;
-
+  const isDark = isDarkMode || isContrast;  
   const [openSection, setOpenSection] = useState(null);
   const toggleSection = (id) => setOpenSection(openSection === id ? null : id);
 
@@ -627,6 +626,7 @@ export function EmployerContact({ onBack, profile }) {
   // State for the form
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+    const [proofImage, setProofImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
@@ -757,7 +757,7 @@ export function EmployerContact({ onBack, profile }) {
               type="file"
               accept="image/*,.pdf"
               onChange={(e) => setProofImage(e.target.files[0])}
-              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
+              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer file:text-[#03045E] ${inputBg}`}
               disabled={isSubmitting}
             />
           </div>

@@ -794,12 +794,10 @@ export function ApplicantContact({ onBack, profile }) {
           <div>
             <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
             <input
-              id="ticket-subject"
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder="Subject / Issue Summary"
-              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setProofImage(e.target.files[0])}
+              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer file:text-[#03045E] ${inputBg}`}
               disabled={isSubmitting}
             />
           </div>

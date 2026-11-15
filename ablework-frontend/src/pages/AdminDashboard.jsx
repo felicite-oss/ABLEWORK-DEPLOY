@@ -30,6 +30,10 @@ export default function AdminDashboard() {
   const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false);
   const [ready, setReady] = useState(false);
   
+  // --- ADDED STATE FOR SUPPORT TICKETS COUNT (Replace 0 with actual state) ---
+  const [supportTicketCount, setSupportTicketCount] = useState(0); 
+  // -------------------------------------------------------------------------
+
   const mainRef = useRef(null);
   const usersOverviewRef = useRef(null);
   const usersListRef = useRef(null);
@@ -122,6 +126,8 @@ export default function AdminDashboard() {
       if (chartRes.ok) setChartData(await chartRes.json());
       if (empRes.ok) setEmployers(await empRes.json());
       if (appRes.ok) setApplicants(await appRes.json());
+      
+      // If you fetch support tickets here, you can update setSupportTicketCount(...)
     } catch (error) {
       console.error("Failed to load admin data");
     } finally {
@@ -713,20 +719,19 @@ export default function AdminDashboard() {
         >
           <div className="w-full">
             <nav className={`flex flex-col px-2.5 pt-2.5 pb-2.5 gap-2 sm:px-3 sm:pt-3 sm:pb-3 sm:gap-2.5 ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
-                            {[
+              {[
                 { id: 'Overview', label: 'Overview', desc: 'Dashboard summary', icon: (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                )},
+                ), badge: null },
                 { id: 'Employers', label: 'Employers', desc: 'Manage companies', icon: (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                )},
+                ), badge: stats?.pendingEmployers > 0 ? stats.pendingEmployers : null },
                 { id: 'Applicants', label: 'Applicants', desc: 'Manage job seekers', icon: (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                )},
-
+                ), badge: stats?.pendingApplicants > 0 ? stats.pendingApplicants : null },
                 { id: 'SupportTickets', label: 'Support Tickets', desc: 'User reports', icon: (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                )}
+                ), badge: supportTicketCount > 0 ? supportTicketCount : null }
               ].map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -752,6 +757,12 @@ export default function AdminDashboard() {
                     <div className="flex-1 min-w-0">
                       <span className={`text-[13px] tracking-wide font-black block leading-tight break-words ${isDark ? 'text-white' : 'text-[#03045E]'}`}>{tab.label}</span>
                     </div>
+                    {/* MOBILE NOTIFICATION BADGE */}
+                    {tab.badge && (
+                      <span className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-black min-w-[20px] text-center ${isDark ? 'bg-white text-black' : 'bg-red-500 text-white'}`}>
+                        {tab.badge > 99 ? '99+' : tab.badge}
+                      </span>
+                    )}
                     <svg className={`w-3 h-3 shrink-0 transition-transform duration-300 ${isDark ? 'text-white' : 'text-[#03045E]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
@@ -835,10 +846,10 @@ export default function AdminDashboard() {
           <div className="w-full flex flex-col h-full min-w-0">
         <nav className={`flex-1 flex flex-col space-y-3 w-full pb-4 overflow-y-auto overflow-x-hidden ${showDesktopSidebar ? 'pt-10' : 'pt-16'}`} aria-label="Sidebar navigation links">
               {[
-                { id: 'Overview', label: 'Overview', desc: 'Dashboard summary' },
-                { id: 'Employers', label: 'Employers', desc: 'Manage companies' },
-                { id: 'Applicants', label: 'Applicants', desc: 'Manage job seekers' },
-                { id: 'SupportTickets', label: 'Support Tickets', desc: 'User reports & bans' }
+                { id: 'Overview', label: 'Overview', desc: 'Dashboard summary', badge: null },
+                { id: 'Employers', label: 'Employers', desc: 'Manage companies', badge: stats?.pendingEmployers > 0 ? stats.pendingEmployers : null },
+                { id: 'Applicants', label: 'Applicants', desc: 'Manage job seekers', badge: stats?.pendingApplicants > 0 ? stats.pendingApplicants : null },
+                { id: 'SupportTickets', label: 'Support Tickets', desc: 'User reports & bans', badge: supportTicketCount > 0 ? supportTicketCount : null }
               ].map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -869,6 +880,9 @@ export default function AdminDashboard() {
                       {tab.id === 'Applicants' && (
                         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                       )}
+                      {tab.id === 'SupportTickets' && (
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                      )}
                     </div>
                     <div className={`flex flex-col text-left transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
                       showDesktopSidebar ? 'opacity-100 max-w-[150px] ml-3.5 flex-1' : 'opacity-0 max-w-0 ml-0 flex-none'
@@ -876,6 +890,14 @@ export default function AdminDashboard() {
                       <span className={`text-[15px] tracking-wide font-black truncate block leading-tight ${isDark ? 'text-white' : 'text-[#03045E]'}`}>{tab.label}</span>
                       <span className={`text-[10px] font-bold uppercase tracking-widest block mt-0.5 truncate ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}>{tab.desc}</span>
                     </div>
+
+                    {/* DESKTOP NOTIFICATION BADGE */}
+                    {tab.badge && showDesktopSidebar && (
+                      <span className={`shrink-0 flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-black min-w-[22px] border-2 ${isDark ? 'bg-white text-black border-white' : 'bg-[#DC2626] text-white border-[#DC2626]'}`}>
+                        {tab.badge > 99 ? '99+' : tab.badge}
+                      </span>
+                    )}
+
                     <svg 
                       className={`shrink-0 transition-transform duration-300 ${isDark ? 'text-white' : 'text-[#03045E]'} ${
                         showDesktopSidebar ? 'w-4 h-4 opacity-100 ml-2' : 'w-0 h-0 opacity-0 ml-0'
