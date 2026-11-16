@@ -625,7 +625,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
             <>
               {/* Invisible mobile backdrop to close filters when tapping outside */}
               <div 
-                className="fixed inset-0 z-40 bg-black/20 sm:hidden animate-fadeIn" 
+                className="fixed inset-0 z-40 bg-transparent sm:hidden" 
                 onClick={() => setShowFilters(false)}
                 aria-hidden="true"
               />
@@ -635,17 +635,17 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               aria-label="Job filters panel"
               className="
                 fixed sm:absolute
-                top-[180px] sm:top-full
+                top-[240px] sm:top-full
                 left-4 right-4 sm:left-auto sm:right-0
                 z-50
                 w-auto sm:w-[600px]
-                max-h-[calc(100dvh-200px)] sm:max-h-[75vh]
+                max-h-[calc(100dvh-260px)] sm:max-h-[75vh]
                 overflow-y-auto overflow-x-hidden
                 p-4 pb-24 sm:p-8 sm:pb-8
                 rounded-2xl sm:rounded-3xl
                 bg-white shadow-[0_20px_50px_rgba(3,4,94,0.25)]
                 border-2 border-[#03045E]/20
-                animate-fadeIn flex flex-col gap-4 sm:gap-6 text-left
+                animate-fadeIn flex flex-col gap-4 sm:gap-6 text-left text-[#03045E]
               "
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
