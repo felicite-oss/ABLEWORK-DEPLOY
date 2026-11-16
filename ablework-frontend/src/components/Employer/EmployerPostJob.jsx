@@ -137,11 +137,17 @@ const accommodationSuggestions = [
   };
 
   const addSkill = (skill) => {
-    const trimmed = skill.trim();
-    if (trimmed && !selectedSkills.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
-      setSelectedSkills([...selectedSkills, trimmed]);
-      setCurrentSkill('');
-    }
+    const parts = skill.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length === 0) return;
+
+    const newSkills = [...selectedSkills];
+    parts.forEach(part => {
+      if (!newSkills.some(s => s.toLowerCase() === part.toLowerCase())) {
+        newSkills.push(part);
+      }
+    });
+    setSelectedSkills(newSkills);
+    setCurrentSkill('');
   };
 
   const removeSkill = (skillToRemove) => {
@@ -161,11 +167,17 @@ const accommodationSuggestions = [
   };
 
   const addAccommodation = (acc) => {
-    const trimmed = acc.trim();
-    if (trimmed && !selectedAccommodations.some(a => a.toLowerCase() === trimmed.toLowerCase())) {
-      setSelectedAccommodations([...selectedAccommodations, trimmed]);
-      setCurrentAccommodation('');
-    }
+    const parts = acc.split(',').map(a => a.trim()).filter(Boolean);
+    if (parts.length === 0) return;
+
+    const newAccs = [...selectedAccommodations];
+    parts.forEach(part => {
+      if (!newAccs.some(a => a.toLowerCase() === part.toLowerCase())) {
+        newAccs.push(part);
+      }
+    });
+    setSelectedAccommodations(newAccs);
+    setCurrentAccommodation('');
   };
 
   const removeAccommodation = (accToRemove) => {
@@ -619,7 +631,7 @@ const accommodationSuggestions = [
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Type a skill and press <strong>Enter</strong> to add it.</p>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Type a skill and press <strong>Enter</strong> to add it. You can also add multiple skills separated by commas.</p>
             <input
               type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
               placeholder="e.g. Python, Graphic Design..."

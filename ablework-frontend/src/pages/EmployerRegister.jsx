@@ -59,6 +59,7 @@ export default function EmployerRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [industry, setIndustry] = useState('');
+  const [customIndustry, setCustomIndustry] = useState('');
   const [jobRole, setJobRole] = useState('');
   const [address, setAddress] = useState('');
   const [lat, setLat] = useState(null);
@@ -197,6 +198,10 @@ const handleAddressType = (e) => {
       return;
     }
 
+    if (industry === 'Other' && !customIndustry.trim()) {
+      setStatusMessage({ type: 'error', text: "Please specify your industry type." });
+      return;
+    }
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
         if (!passwordRegex.test(password)) {
           setStatusMessage({ 
@@ -237,7 +242,7 @@ const handleAddressType = (e) => {
     formData.append('email', email);
     formData.append('phone', phone);
     formData.append('password', password);
-    formData.append('industry', industry);
+    formData.append('industry', industry === 'Other' ? customIndustry : industry);
     formData.append('jobRole', jobRole);
     formData.append('address', address);
     
@@ -507,6 +512,19 @@ const handleAddressType = (e) => {
                       </option>
                     ))}
                   </select>
+
+                  {industry === 'Other' && (
+                    <input
+                      id="customIndustry"
+                      type="text"
+                      value={customIndustry}
+                      onChange={(e) => setCustomIndustry(e.target.value)}
+                      placeholder="Please specify your industry"
+                      required
+                      className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E] focus:outline-none focus:border-[#2C7FFF] transition mt-1.5"
+                      aria-label="Custom Industry. Please specify your industry since you selected Other."
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
