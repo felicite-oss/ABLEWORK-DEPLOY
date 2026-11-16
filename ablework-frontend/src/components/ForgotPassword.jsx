@@ -235,7 +235,7 @@ export default function ForgotPassword({ onClose }) {
           <div className="flex items-center gap-3 sm:gap-8">
             <div className="flex items-center flex-shrink-0 py-1">
               <img
-                src={isContrast ? darkLogo : lightLogo}
+               src={(isContrast || isDarkMode) ? darkLogo : lightLogo}
                 alt="AbleWork Logo"
                 title="AbleWork Logo"
                 tabIndex="0"
