@@ -462,7 +462,7 @@ const accommodationSuggestions = [
               Full Job Description <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
 
-            <div className={`w-full max-w-full rounded-lg border-2 flex flex-col transition-all ${
+                        <div className={`w-full max-w-4xl rounded-lg border-2 flex flex-col transition-all ${
               isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'
             } focus-within:border-[#2C7FFF]`}>
               
@@ -474,20 +474,20 @@ const accommodationSuggestions = [
                     <button
                       key={template.label}
                       type="button"
-                      onClick={() => {
+                                          onClick={() => {
                         if (isSelected) {
-                          // 1. Remove from selected state
                           setSelectedTemplates(prev => prev.filter(t => t !== template.label));
                           
-                          // 2. Remove the text from the textarea
-                          setJobDescription(prev => prev.replace(template.prefix, ''));
+                          // Safely remove the template and trailing blank lines
+                          setJobDescription(prev => {
+                            const updated = prev.replace(template.prefix, '');
+                            return updated.trim() === '' ? '' : updated;
+                          });
                         } else {
-                          // 1. Add to selected state
                           setSelectedTemplates(prev => [...prev, template.label]);
                           
-                          // 2. Add text to the textarea
                           const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
-                            ? '\n' + template.prefix 
+                            ? '\n\n' + template.prefix 
                             : template.prefix;
                           setJobDescription(prev => prev + prefix);
                         }
@@ -520,9 +520,9 @@ const accommodationSuggestions = [
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
-                rows="12"
+                rows="10"
                 placeholder="Describe the role responsibilities and expectations..."
-                className={`w-full p-4 sm:p-5 bg-transparent outline-none resize-none text-sm sm:text-base font-semibold leading-normal ${
+                className={`w-full p-4 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold leading-relaxed ${
                   isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
                 }`}
               ></textarea>
