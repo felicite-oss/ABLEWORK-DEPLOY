@@ -732,10 +732,135 @@ const accommodationSuggestions = [
 
         </div>
 
-        <hr className={divider} />
+               {/* 5-ROW SINGLE COLUMN GRID */}
+        <div className="flex flex-col gap-4 sm:gap-6 w-full">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
-          <div className="flex flex-col gap-2 sm:gap-3">
+          {/* Row 1: Maximum Applications Allowed */}
+          <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
+            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              Maximum Applications Allowed
+            </label>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
+              The job will automatically stop accepting resumes once this number is reached (Max: 50).
+            </p>
+            <input 
+              type="number" 
+              min="1" 
+              max="50"
+              value={maxApplications} 
+              onChange={(e) => {
+                let val = parseInt(e.target.value) || 1;
+                if (val > 50) val = 50; 
+                setMaxApplications(val);
+              }} 
+              required
+              className={`${inputCls} w-full`}
+            />
+          </div>
+
+          {/* Row 2: Salary Range */}
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
+            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+              Salary Range <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+            </label>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
+            
+            <div className="flex gap-2 w-full">
+              <select
+                value={currency}
+                onChange={(e) => {
+                  setCurrency(e.target.value);
+                  setSalaryRange(''); 
+                }}
+                className={`w-28 p-2 sm:p-3 border-2 rounded-md font-bold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none text-center ${
+                  isContrast || isDarkMode
+                    ? 'border-white bg-black text-white focus:border-white'
+                    : 'border-gray-200 bg-[#f4f4f4] text-[#03045E] focus:border-gray-200'
+                }`}
+              >
+                <option value="PHP">PHP ₱</option>
+                <option value="USD">USD $</option>
+              </select>
+
+              <select
+                value={salaryRange}
+                onChange={(e) => setSalaryRange(e.target.value)}
+                required
+                className={`flex-1 p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
+                  isContrast || isDarkMode
+                    ? 'border-white bg-black text-white focus:border-white'
+                    : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
+                }`}
+              >
+                <option value="" disabled>Select a salary bracket...</option>
+                {(currency === 'PHP' ? salaryOptionsPHP : salaryOptionsUSD).map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Row 3: Benefits Package */}
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
+            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+              Benefits Package
+            </label>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select DOLE-mandated and company-initiated benefits.</p>
+            
+            <select
+              value=""
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val && !selectedBenefits.includes(val)) {
+                  setSelectedBenefits([...selectedBenefits, val]);
+                }
+              }}
+              className={`w-full p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
+                isContrast || isDarkMode
+                  ? 'border-white bg-black text-white focus:border-white'
+                  : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
+              }`}
+            >
+              <option value="" disabled>+ Add a benefit...</option>
+              
+              <optgroup label="DOLE-Mandated (Labor Code)">
+                {doleMandatedBenefits
+                  .filter(b => !selectedBenefits.includes(b))
+                  .map(benefit => (
+                    <option key={benefit} value={benefit}>{benefit}</option>
+                  ))}
+              </optgroup>
+              
+              <optgroup label="Company Perks">
+                {standardBenefits
+                  .filter(b => !selectedBenefits.includes(b))
+                  .map(benefit => (
+                    <option key={benefit} value={benefit}>{benefit}</option>
+                  ))}
+              </optgroup>
+            </select>
+
+            {selectedBenefits.length > 0 && (
+              <div className={`${chipContainer} w-full`}>
+                {selectedBenefits.map(benefit => (
+                  <span key={benefit} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
+                    {benefit} 
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedBenefits(selectedBenefits.filter(b => b !== benefit))} 
+                      className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Row 4: Required Skills */}
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
@@ -743,7 +868,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
               placeholder="e.g. Python, Graphic Design..."
-              className={inputCls}
+              className={`${inputCls} w-full`}
             />
             {filteredSkills.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
@@ -760,7 +885,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedSkills.length > 0 && (
-              <div className={`${chipContainer} flex-col`}>
+              <div className={`${chipContainer} w-full flex-wrap`}>
                 {selectedSkills.map(skill => (
                   <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -770,7 +895,8 @@ const accommodationSuggestions = [
             )}
           </div>
 
-          <div className="flex flex-col gap-2 sm:gap-3">
+          {/* Row 5: Guaranteed Accommodations */}
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Guaranteed Accommodations
             </label>
@@ -778,7 +904,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
               placeholder="e.g. Wheelchair Access, Screen Reader..."
-              className={inputSmCls}
+              className={`${inputCls} w-full`}
             />
             {filteredAccommodations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
@@ -795,7 +921,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedAccommodations.length > 0 && (
-              <div className={chipContainer}>
+              <div className={`${chipContainer} w-full flex-wrap`}>
                 {selectedAccommodations.map(acc => (
                   <span key={acc} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {acc} <button type="button" onClick={() => removeAccommodation(acc)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -804,6 +930,7 @@ const accommodationSuggestions = [
               </div>
             )}
           </div>
+
         </div>
 
         <hr className={divider} />
