@@ -468,19 +468,24 @@ const accommodationSuggestions = [
               
               <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                                  {descriptionTemplates.map((template) => {
+                                {descriptionTemplates.map((template) => {
                   const isSelected = selectedTemplates.includes(template.label);
                   return (
                     <button
                       key={template.label}
                       type="button"
                       onClick={() => {
-                        // 1. Toggle the selected state
                         if (isSelected) {
+                          // 1. Remove from selected state
                           setSelectedTemplates(prev => prev.filter(t => t !== template.label));
+                          
+                          // 2. Remove the text from the textarea
+                          setJobDescription(prev => prev.replace(template.prefix, ''));
                         } else {
+                          // 1. Add to selected state
                           setSelectedTemplates(prev => [...prev, template.label]);
-                          // 2. Only insert the text if it wasn't already selected
+                          
+                          // 2. Add text to the textarea
                           const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
                             ? '\n' + template.prefix 
                             : template.prefix;
