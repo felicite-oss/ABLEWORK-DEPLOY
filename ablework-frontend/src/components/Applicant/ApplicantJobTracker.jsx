@@ -470,33 +470,33 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
         )}
       </div>
       
-      {/* Total committed hours across all Hired roles */}
-      {(() => {
-        const hired = applications.filter(a => a.status === 'Hired' && a.working_hours_per_week != null);
-        if (hired.length === 0) return null;
-        const totalHours = hired.reduce((sum, a) => sum + Number(a.working_hours_per_week), 0);
-        return (
-          <div
-            role="status"
-            aria-live="polite"
-            aria-label={`Total committed: ${totalHours} hours per week across ${hired.length} hired role${hired.length !== 1 ? 's' : ''}.`}
-            className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-start gap-3 ${
-              isDark ? 'bg-[#111111] border-[#10B981]/50 text-white' : 'bg-green-50 border-[#10B981]/40 text-[#03045E]'
-            }`}
-          >
-            <div aria-hidden="true" className={`p-1.5 sm:p-2 rounded-lg shrink-0 mt-0.5 ${isDark ? 'bg-[#10B981]/20' : 'bg-[#10B981]/15'}`}>
-              <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isDark ? 'text-[#10B981]' : 'text-[#10B981]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] sm:text-sm font-bold leading-snug">
-                <strong className="text-[#10B981]">Total committed:</strong> {totalHours} hrs/week across {hired.length} hired role{hired.length !== 1 ? 's' : ''}.
-              </p>
-            </div>
-          </div>
-        );
-      })()}
+    {/* Total committed hours across all Hired roles */}
+{(() => {
+  const hired = applications.filter(a => a.status === 'Hired' && a.working_hours_per_week != null);
+  if (hired.length === 0) return null;
+  const totalHours = hired.reduce((sum, a) => sum + Number(a.working_hours_per_week), 0);
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-label={`Total committed: ${totalHours} hours per week across ${hired.length} hired role${hired.length !== 1 ? 's' : ''}.`}
+      className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-start gap-3 ${
+        isDark ? 'bg-[#111111] border-[#10B981] text-white' : 'bg-transparent border-[#10B981] text-[#10B981]'
+      }`}
+    >
+      <div aria-hidden="true" className={`p-1.5 sm:p-2 rounded-lg shrink-0 mt-0.5 ${isDark ? 'bg-[#10B981]/20' : 'bg-transparent'}`}>
+        <svg className={`w-4 h-4 sm:w-5 sm:h-5 text-[#10B981]`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`text-[11px] sm:text-sm font-bold leading-snug ${isDark ? 'text-white' : 'text-[#10B981]'}`}>
+          <strong>Total committed:</strong> {totalHours} hrs/week across {hired.length} hired role{hired.length !== 1 ? 's' : ''}.
+        </p>
+      </div>
+    </div>
+  );
+})()}
 
       {/* --- UPDATED PRO-TIP BANNER (Mobile Responsive) --- */}
 <div 
