@@ -462,11 +462,11 @@ const accommodationSuggestions = [
               Full Job Description <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
 
-            <div className={`w-full rounded-lg border-2 flex flex-col transition-all ${
+            <div className={`w-full max-w-full rounded-lg border-2 flex flex-col transition-all ${
               isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'
             } focus-within:border-[#2C7FFF]`}>
               
-              <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
+              <div className={`flex flex-wrap items-center gap-2 px-2 py-1.5 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
                                 {descriptionTemplates.map((template) => {
                   const isSelected = selectedTemplates.includes(template.label);
@@ -516,13 +516,13 @@ const accommodationSuggestions = [
                 })}
               </div>
 
-              <textarea 
+                        <textarea 
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
-                rows="10"
+                rows="12"
                 placeholder="Describe the role responsibilities and expectations..."
-                className={`w-full pl-4 pr-3 py-3 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold leading-relaxed ${
+                className={`w-full p-4 sm:p-5 bg-transparent outline-none resize-none text-sm sm:text-base font-semibold leading-relaxed ${
                   isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
                 }`}
               ></textarea>
