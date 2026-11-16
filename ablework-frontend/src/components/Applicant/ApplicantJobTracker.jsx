@@ -738,7 +738,7 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
   }
   className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${
     isDark 
-      ? 'text-white bg-[#EF4444] border-[#EF4444] hover:bg-red-600 focus-visible:ring-red-500' 
+      ? 'bg-black text-red-500 border-red-500 hover:bg-red-500/10 focus-visible:ring-red-500' 
       : 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500'
   }`}
 >
