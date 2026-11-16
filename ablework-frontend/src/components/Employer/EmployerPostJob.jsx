@@ -527,73 +527,78 @@ const accommodationSuggestions = [
           </div>
         </div>
 
-        {/* --- CLEANED UP 5-ROW SINGLE COLUMN LAYOUT --- */}
+               {/* --- UPDATED LAYOUT --- */}
         <div className="flex flex-col gap-4 sm:gap-6 w-full">
 
-          {/* Row 1: Maximum Applications Allowed */}
-          <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              Maximum Applications Allowed
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
-              The job will automatically stop accepting resumes once this number is reached (Max: 50).
-            </p>
-            <input 
-              type="number" 
-              min="1" 
-              max="50"
-              value={maxApplications} 
-              onChange={(e) => {
-                let val = parseInt(e.target.value) || 1;
-                if (val > 50) val = 50; 
-                setMaxApplications(val);
-              }} 
-              required
-              className={`${inputCls} w-full`}
-            />
-          </div>
+          {/* 2-COLUMN GRID: Maximum Applications & Salary Range */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start w-full">
 
-          {/* Row 2: Salary Range */}
-          <div className="flex flex-col gap-2 sm:gap-3 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
-              Salary Range <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
-            
-            <div className="flex gap-2 w-full">
-              <select
-                value={currency}
+            {/* Row 1: Maximum Applications Allowed */}
+            <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
+              <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+                <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                Maximum Applications Allowed
+              </label>
+              <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
+                The job will automatically stop accepting resumes once this number is reached (Max: 50).
+              </p>
+              <input 
+                type="number" 
+                min="1" 
+                max="50"
+                value={maxApplications} 
                 onChange={(e) => {
-                  setCurrency(e.target.value);
-                  setSalaryRange(''); 
-                }}
-                className={`w-28 p-2 sm:p-3 border-2 rounded-md font-bold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none text-center ${
-                  isContrast || isDarkMode
-                    ? 'border-white bg-black text-white focus:border-white'
-                    : 'border-gray-200 bg-[#f4f4f4] text-[#03045E] focus:border-gray-200'
-                }`}
-              >
-                <option value="PHP">PHP ₱</option>
-                <option value="USD">USD $</option>
-              </select>
-
-              <select
-                value={salaryRange}
-                onChange={(e) => setSalaryRange(e.target.value)}
+                  let val = parseInt(e.target.value) || 1;
+                  if (val > 50) val = 50; 
+                  setMaxApplications(val);
+                }} 
                 required
-                className={`flex-1 p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
-                  isContrast || isDarkMode
-                    ? 'border-white bg-black text-white focus:border-white'
-                    : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
-                }`}
-              >
-                <option value="" disabled>Select a salary bracket...</option>
-                {(currency === 'PHP' ? salaryOptionsPHP : salaryOptionsUSD).map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+                className={`${inputCls} w-full`}
+              />
             </div>
+
+            {/* Row 2: Salary Range */}
+            <div className="flex flex-col gap-2 sm:gap-3 w-full">
+              <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+                Salary Range <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+              </label>
+              <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
+              
+              <div className="flex gap-2 w-full">
+                <select
+                  value={currency}
+                  onChange={(e) => {
+                    setCurrency(e.target.value);
+                    setSalaryRange(''); 
+                  }}
+                  className={`w-28 p-2 sm:p-3 border-2 rounded-md font-bold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none text-center ${
+                    isContrast || isDarkMode
+                      ? 'border-white bg-black text-white focus:border-white'
+                      : 'border-gray-200 bg-[#f4f4f4] text-[#03045E] focus:border-gray-200'
+                  }`}
+                >
+                  <option value="PHP">PHP ₱</option>
+                  <option value="USD">USD $</option>
+                </select>
+
+                <select
+                  value={salaryRange}
+                  onChange={(e) => setSalaryRange(e.target.value)}
+                  required
+                  className={`flex-1 p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
+                    isContrast || isDarkMode
+                      ? 'border-white bg-black text-white focus:border-white'
+                      : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
+                  }`}
+                >
+                  <option value="" disabled>Select a salary bracket...</option>
+                  {(currency === 'PHP' ? salaryOptionsPHP : salaryOptionsUSD).map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
           </div>
 
           {/* Row 3: Benefits Package */}
