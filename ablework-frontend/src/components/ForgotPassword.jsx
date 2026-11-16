@@ -350,7 +350,7 @@ export default function ForgotPassword({ onClose }) {
 >
 <div
   className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-lg'} flex flex-col items-center justify-start gap-4 sm:gap-6 relative z-10
-    ${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-white/90 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl
+${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-[var(--color-surface)]/90 text-[var(--color-text)] border border-[var(--color-border)]'}
     pt-8 px-5 pb-8 sm:pt-12 sm:px-10 sm:pb-14 mr-0 md:mr-4 lg:mr-8`}
 >
           <div className="w-full flex items-center justify-start">
@@ -399,7 +399,7 @@ export default function ForgotPassword({ onClose }) {
           {step === 1 ? (
             <form onSubmit={requestOtp} className="flex flex-col gap-4 sm:gap-5 w-full" autoComplete="off">
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpEmail" title="Email Address" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+<label htmlFor="fpEmail" title="Email Address" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
                   Email Address
                 </label>
                 <div className="relative">
@@ -419,7 +419,7 @@ export default function ForgotPassword({ onClose }) {
                     required
                     autoComplete="off"
                     placeholder="Enter your registered email"
-                    className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
                   />
                 </div>
               </div>
@@ -479,7 +479,7 @@ export default function ForgotPassword({ onClose }) {
                   New Password
                 </label>
                 <div className="relative">
-                  <span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
+<span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-textSubtle)]'}`}>
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
