@@ -499,21 +499,23 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
       })()}
 
       {/* --- UPDATED PRO-TIP BANNER (Mobile Responsive) --- */}
-      <div 
-        role="region" 
-        aria-label="Important information about application wait times and auto-rejection"
-        className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-start gap-3 shadow-sm ${
-          isDark ? 'bg-[#111111] border-[#2C7FFF]/50 text-white' : 'bg-blue-50 border-[#2C7FFF]/30 text-[#03045E]'
-        }`}
-      >
-        <div 
-          aria-hidden="true" 
-          className={`p-1.5 sm:p-2 rounded-lg shrink-0 mt-0.5 ${isDark ? 'bg-[#2C7FFF]/20' : 'bg-[#2C7FFF]/10'}`}
-        >
-          <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isDark ? 'text-[#2C7FFF]' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
+<div 
+  role="region" 
+  aria-label="Important information about application wait times and auto-rejection"
+  className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-start gap-3 shadow-sm ${
+    isDark 
+      ? 'bg-[#111111] border-[var(--color-accent)]/50 text-white' 
+      : 'bg-[var(--color-accentSoft)] border-[var(--color-accent)]/30 text-[var(--color-text)]'
+  }`}
+>
+  <div 
+    aria-hidden="true" 
+    className={`p-1.5 sm:p-2 rounded-lg shrink-0 mt-0.5 ${isDark ? 'bg-[var(--color-accent)]/20' : 'bg-[var(--color-accent)]/10'}`}
+  >
+    <svg className={`w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-accent)]`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  </div>
         
         <div className="flex-1 min-w-0">
           <p 
