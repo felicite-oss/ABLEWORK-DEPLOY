@@ -9,8 +9,7 @@ import API_BASE_URL from '../../config';
 
 export default function ForgotPassword({ onClose }) {
   const { mode } = useContext(AccessibilityContext);
-  const { paletteKey, palette } = useColorPalette();
-const colors = palette?.colors;
+const { paletteKey, palette } = useColorPalette();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
@@ -41,7 +40,7 @@ const colors = palette?.colors;
   const isAPlusPlus = mode === 'A++' || mode === 'Assist' || mode === 'a++' || mode === 'assist';
   const isAPlus = mode === 'A+' || mode === 'a+';
   const isAssist = isAPlusPlus;
-  const textColor = colors?.text || '#03045E';  // <-- ADD THIS LINE HERE
+ const textColor = palette?.colors?.text || '#03045E';  // <-- ADD THIS LINE HERE
 
   const titleSize = isAPlusPlus
     ? 'text-3xl sm:text-5xl font-bold'
@@ -404,7 +403,7 @@ const colors = palette?.colors;
           {step === 1 ? (
             <form onSubmit={requestOtp} className="flex flex-col gap-4 sm:gap-5 w-full" autoComplete="off">
               <div className="flex flex-col gap-1.5 sm:gap-2">
-           <label htmlFor="fpEmail" title="Email Address" tabIndex="0" style={{ color: (isContrast || isDarkMode) ? '#ffffff' : (colors?.text || '#03045E') }} className={`${labelSize}`}>
+         <label htmlFor="fpEmail" title="Email Address" tabIndex="0" style={{ color: (isContrast || isDarkMode) ? '#ffffff' : textColor }} className={`${labelSize}`}>
   Email Address
 </label>
                 <div className="relative">
