@@ -729,17 +729,21 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
 >
   Keep Application
 </button>
-              <button
-                onClick={executeWithdraw}
-                disabled={
-                  confirmWithdraw.loading ||
-                  withdrawReasons.length === 0 ||
-                  (withdrawReasons.includes('other') && !withdrawDetails.trim())
-                }
-                className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500' : 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500'}`}
-              >
-                {confirmWithdraw.loading ? 'Processing...' : (withdrawTargetStatus === 'Hired' ? 'Confirm Withdrawal' : 'Yes, Withdraw')}
-              </button>
+<button
+  onClick={executeWithdraw}
+  disabled={
+    confirmWithdraw.loading ||
+    withdrawReasons.length === 0 ||
+    (withdrawReasons.includes('other') && !withdrawDetails.trim())
+  }
+  className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 disabled:opacity-50 flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-4 ${
+    isDark 
+      ? 'text-white bg-[#EF4444] border-[#EF4444] hover:bg-red-600 focus-visible:ring-red-500' 
+      : 'text-white bg-red-600 border-red-600 hover:bg-red-700 focus-visible:ring-red-500'
+  }`}
+>
+  {confirmWithdraw.loading ? 'Processing...' : (withdrawTargetStatus === 'Hired' ? 'Confirm Withdrawal' : 'Yes, Withdraw')}
+</button>
             </div>
           </div>
         </div>
