@@ -19,16 +19,6 @@ let DefaultIcon = L.icon({
   iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
-const normalizePhAddressQuery = (raw) => {
-  return raw
-    .replace(/\bbrgy\.?\b/gi, 'Barangay')
-    .replace(/\bbgy\.?\b/gi, 'Barangay')
-    .replace(/\bsitio\b/gi, 'Sitio')
-    .replace(/\bpurok\b/gi, '')
-    .replace(/\bstreet\b/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-};
 function MapRecenter({ lat, lng }) {
   const map = useMap();
   useEffect(() => {
@@ -73,9 +63,6 @@ export default function ApplicantRegister() {
   const [address, setAddress] = useState('');
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
-  const [barangay, setBarangay] = useState('');
-  const [barangayCoords, setBarangayCoords] = useState({ lat: null, lng: null });
-  const [isResolvingBarangay, setIsResolvingBarangay] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
   const [radius, setRadius] = useState(10); 
   const [independence, setIndependence] = useState('');
@@ -91,8 +78,6 @@ export default function ApplicantRegister() {
   const typingTimer = useRef(null);
   const cameraInputRef = useRef(null);
   const galleryInputRef = useRef(null);
-  const abortRef = useRef(null);
-  const addressWrapRef = useRef(null);
   const [satelliteView, setSatelliteView] = useState(false);
   const [legendOpen, setLegendOpen] = useState(true);
   const [mapExpanded, setMapExpanded] = useState(false);
@@ -103,16 +88,6 @@ export default function ApplicantRegister() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  useEffect(() => {
-    const onDocMouseDown = (e) => {
-      if (addressWrapRef.current && !addressWrapRef.current.contains(e.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', onDocMouseDown);
-    return () => document.removeEventListener('mousedown', onDocMouseDown);
   }, []);
 
   useEffect(() => {
@@ -312,190 +287,49 @@ useEffect(() => {
 
 const handleAddressType = (e) => {
     const text = e.target.value;
-    const prevLat = lat;
-    const prevLng = lng;
     setAddress(text);
-    setLat(null);
-    setLng(null);
 
-    if (text.trim().length < 3) {
+    if (text.length < 3) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
     }
 
-    if (typingTimer.current) clearTimeout(typingTimer.current);
+    if (typingTimer.current) {
+      clearTimeout(typingTimer.current);
+    }
 
     typingTimer.current = setTimeout(async () => {
-      if (abortRef.current) abortRef.current.abort();
-      const controller = new AbortController();
-      abortRef.current = controller;
-
       try {
-        const normalized = normalizePhAddressQuery(text);
-        const query = encodeURIComponent(normalized);
+        const query = encodeURIComponent(text);
         const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
-
-        // We use 'place' and 'locality' first to lock into the City (e.g., Bacolod City)
-        let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
-          `?country=ph&autocomplete=true&limit=8` +
-          `&types=place,locality,neighborhood,address,poi` +
-          `&language=en&access_token=${mapboxToken}`;
-
-        if (prevLat && prevLng) url += `&proximity=${prevLng},${prevLat}`;
-
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?country=ph&autocomplete=true&limit=5&access_token=${mapboxToken}`);
         const data = await res.json();
-
-        // FILTER: If the user typed a City (e.g., "Bacolod"), only keep results that actually contain that city.
-        // This prevents Mapbox from suggesting "Manila" when you type "Bacolod".
-        const userWords = text.toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
-        let features = data.features || [];
         
-        if (userWords.length > 0) {
-          const filtered = features.filter(f => 
-            userWords.some(word => f.place_name.toLowerCase().includes(word))
-          );
-          // Only apply the filter if it didn't wipe out all results
-          if (filtered.length > 0) features = filtered;
+        if (data.features && data.features.length > 0) {
+          setSuggestions(data.features);
+          setShowDropdown(true);
+        } else {
+          setSuggestions([]);
+          setShowDropdown(false);
         }
-
-        setSuggestions(features);
-        setShowDropdown(features.length > 0);
       } catch (error) {
-        if (error.name === 'AbortError') return;
         console.error("Error fetching Mapbox suggestions:", error);
-        setSuggestions([]);
-        setShowDropdown(false);
       }
-    }, 350);
+    }, 400); // Slightly faster 400ms delay since Mapbox can handle it
   };
 
   const handleSelectSuggestion = (place) => {
-    setAddress(place.place_name);
-
-    if (place.center && place.center.length === 2) {
+    // Mapbox provides a beautifully formatted string automatically
+    setAddress(place.place_name); 
+    
+    // Mapbox returns coordinates as [longitude, latitude]
+    if (place.center) {
       setLng(place.center[0]);
       setLat(place.center[1]);
     }
-
-    setSuggestions([]);
-    setShowDropdown(false);
-  };
-
-  // Handler for when the user selects a Barangay from the dropdown
-  const handleBarangayChange = async (e) => {
-    const selectedBarangay = e.target.value;
-    setBarangay(selectedBarangay);
-
-    if (!selectedBarangay) return;
-
-    setIsResolvingBarangay(true);
-    setLat(null);
-    setLng(null);
-
-    const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
-    // We append the city/municipality from the address to ensure we get the right barangay
-    // (e.g., "Barangay Tuburan, Bacolod City")
-    const cityContext = address.split(',').slice(1).join(', ').trim() || 'Philippines';
-    const query = encodeURIComponent(`${selectedBarangay}, ${cityContext}`);
     
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
-      `?country=ph&autocomplete=false&limit=1&types=locality,neighborhood,place&language=en&access_token=${mapboxToken}`;
-
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const top = data.features && data.features[0];
-
-      if (top && top.center && top.center.length === 2) {
-        const [lngResolved, latResolved] = top.center;
-        setLng(lngResolved);
-        setLat(latResolved);
-        setBarangayCoords({ lat: latResolved, lng: lngResolved });
-        
-        // Optionally, force the map to this exact center
-        setAddress(`${selectedBarangay}, ${cityContext}`);
-      } else {
-        setStatusMessage({ type: 'error', text: "Could not pinpoint the selected Barangay. Please use 'Detect My Location'." });
-      }
-    } catch (err) {
-      console.error("Error resolving barangay:", err);
-    } finally {
-      setIsResolvingBarangay(false);
-    }
-  };
-
-  const handleAddressBlur = () => {
-    // Delay so a click on a suggestion still registers before the list closes
-    setTimeout(() => setShowDropdown(false), 150);
-  };
-
-const handleAddressFocus = () => {
-  // Re-query instead of showing a stale list from a previous keystroke
-  if (address.trim().length >= 3) {
-    setSuggestions([]);
     setShowDropdown(false);
-  }
-};
-
-  // Geocodes a manually typed address if the user didn't pick a suggestion
-  const resolveManualAddress = async () => {
-    // 1. If Barangay is selected, prioritize its coordinates
-    if (barangayCoords.lat && barangayCoords.lng) {
-      return { latitude: barangayCoords.lat, longitude: barangayCoords.lng };
-    }
-
-    // 2. If we already have coords from Mapbox autocomplete or GPS, use them
-    if ((lat && lng) || !address.trim() || address.trim().length < 3) {
-      return { latitude: lat, longitude: lng };
-    }
-    const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
-    const normalized = normalizePhAddressQuery(address);
-
-    try {
-      // 1. Try to get the EXACT address
-      const exactQuery = encodeURIComponent(normalized);
-      const exactUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${exactQuery}.json` +
-        `?country=ph&autocomplete=false&limit=1&types=address,poi&language=en&access_token=${mapboxToken}`;
-
-      const res = await fetch(exactUrl);
-      const data = await res.json();
-      const top = data.features && data.features[0];
-
-      if (top && top.center && top.center.length === 2) {
-        const [lngResolved, latResolved] = top.center;
-        setLat(latResolved);
-        setLng(lngResolved);
-        setAddress(top.place_name);
-        return { latitude: latResolved, longitude: lngResolved };
-      }
-
-      // 2. FALLBACK: If exact address fails (e.g., "Purok Kametal"), grab the CITY coordinates
-      // We assume the city is the last 2 words (e.g., "Bacolod City")
-      const words = normalized.split(' ');
-      const cityGuess = words.slice(-2).join(' '); 
-      const cityQuery = encodeURIComponent(cityGuess);
-      const cityUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${cityQuery}.json` +
-        `?country=ph&autocomplete=false&limit=1&types=place,locality&language=en&access_token=${mapboxToken}`;
-
-      const cityRes = await fetch(cityUrl);
-      const cityData = await cityRes.json();
-      const cityTop = cityData.features && cityData.features[0];
-
-      if (cityTop && cityTop.center && cityTop.center.length === 2) {
-        const [lngResolved, latResolved] = cityTop.center;
-        setLat(latResolved);
-        setLng(lngResolved);
-        // Keep the user's typed address, but center the map on the city
-        return { latitude: latResolved, longitude: lngResolved };
-      }
-
-    } catch (err) {
-      console.error('Could not resolve manual address:', err);
-    }
-
-    return { latitude: lat, longitude: lng };
   };
 
   const handleSubmit = async (e) => {
@@ -548,16 +382,6 @@ const handleAddressFocus = () => {
       }
     }
 
-    // If the user typed an address but never picked a suggestion, resolve it now.
-    const coords = await resolveManualAddress();
-    if (!coords.latitude || !coords.longitude) {
-      setStatusMessage({
-        type: 'error',
-        text: 'We could not pinpoint your address. Please select a suggestion from the dropdown or use "Detect Current Location".'
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     const formData = new FormData();
@@ -569,8 +393,8 @@ const handleAddressFocus = () => {
     formData.append('password', password);
     formData.append('birthdate', birthdate);
     formData.append('address', address);
-    formData.append('latitude', coords.latitude);
-    formData.append('longitude', coords.longitude);
+    formData.append('latitude', lat);
+    formData.append('longitude', lng);
     formData.append('radius', radius);
     formData.append('independence', independence);
     formData.append('disabilities', JSON.stringify(selectedDisabilities));
@@ -1012,85 +836,48 @@ const handleAddressFocus = () => {
                 </button>
 
               
-              <div className="relative flex flex-col gap-1.5 w-full" ref={addressWrapRef}>
-                <div className="relative w-full mt-2">
-                  <input
-                    id="address"
-                    type="text"
-                    value={address}
-                    onChange={handleAddressType}
-                    onFocus={handleAddressFocus}
-                    onBlur={() => {
-                      handleAddressBlur();
-                      if (address.trim().length >= 3 && (!lat || !lng)) {
-                        resolveManualAddress();
-                      }
-                    }}
-                    placeholder="Enter your Address (e.g. Brgy Tuburan, Bacolod City)"
-                    required
-                    autoComplete="off"
-                    aria-label="Address autocomplete"
-                    aria-autocomplete="list"
-                    aria-controls="address-suggestions"
-                    aria-expanded={showDropdown && suggestions.length > 0}
-                    role="combobox"
-                    className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E] focus:outline-none focus:border-[#2C7FFF] transition"
-                  />
+                <div className="relative flex flex-col gap-1.5 w-full">
+                  <div className="relative w-full mt-2">
+                    <input
+                      id="address"
+                      type="text"
+                      value={address}
+                      onChange={handleAddressType}
+                      placeholder="Enter your Address (e.g. Bacolod City)"
+                      required
+                      aria-label="Address autocomplete"
+                      aria-autocomplete="list"
+                      aria-controls="address-suggestions"
+                      aria-expanded={showDropdown && suggestions.length > 0}
+                      role="combobox"
+                      className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E] focus:outline-none focus:border-[#2C7FFF] transition"
+                    />
 
-                  {showDropdown && suggestions.length > 0 && (
-                    <ul
-                      id="address-suggestions"
-                      role="listbox"
-                      aria-label="Address suggestions list"
-                      className="absolute z-[60] top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
-                    >
-                      {suggestions.map((place) => (
-                        <li
-                          key={place.id}
-                          role="option"
-                          aria-selected={false}
-                          title={place.place_name}
-                          aria-label={place.place_name}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => handleSelectSuggestion(place)}
-                          className="p-3 cursor-pointer hover:bg-gray-100 text-[#03045E] text-sm border-b last:border-b-0"
-                        >
-                          {place.place_name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                    {showDropdown && suggestions.length > 0 && (
+                      <ul
+                        id="address-suggestions"
+                        role="listbox"
+                        aria-label="Address suggestions list"
+                        className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                      >
+                        {suggestions.map((place, index) => (
+                          <li
+                            key={index}
+                            role="option"
+                            aria-selected="false"
+                            tabIndex="0"
+                            title={place.place_name}
+                            aria-label={place.place_name}
+                            onClick={() => handleSelectSuggestion(place)}
+                            className="p-3 cursor-pointer hover:bg-gray-100 text-[#03045E] text-sm border-b last:border-b-0"
+                          >
+                            {place.place_name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
-                
-                {/* --- BARANGAY DROPDOWN --- */}
-                <div className="flex flex-col gap-1.5 mt-2">
-                  <label htmlFor="barangay" className="text-xs sm:text-sm font-semibold text-[#03045E]">
-                    Barangay (Required for accuracy)
-                  </label>
-                  <select
-                    id="barangay"
-                    value={barangay}
-                    onChange={handleBarangayChange}
-                    className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E] focus:outline-none focus:border-[#2C7FFF] transition cursor-pointer appearance-none"
-                  >
-                    <option value="">Select your Barangay...</option>
-                    {/* Note: Replace these with your actual PSGC dataset mapped out */}
-                    <option value="Barangay Taculing">Barangay Taculing</option>
-                    <option value="Barangay Tangub">Barangay Tangub</option>
-                    <option value="Barangay Villamonte">Barangay Villamonte</option>
-                    <option value="Barangay Mandalagan">Barangay Mandalagan</option>
-                    <option value="Barangay Bata">Barangay Bata</option>
-                    <option value="Barangay Estefania">Barangay Estefania</option>
-                    <option value="Barangay Alijis">Barangay Alijis</option>
-                    <option value="Barangay Pahanocoy">Barangay Pahanocoy</option>
-                    {/* Add more here based on user's selected city... */}
-                  </select>
-                  {isResolvingBarangay && (
-                    <p className="text-[10px] text-[#2C7FFF] font-bold animate-pulse">Resolving barangay coordinates...</p>
-                  )}
-                </div>
-                
-              </div>
 
                 <div className="mt-4 flex flex-col gap-2">
                   <div className="flex justify-between items-center">
