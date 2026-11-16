@@ -455,7 +455,7 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
               <input type="password" name="fakepasswordremembered" autoComplete="new-password" style={{ display: 'none' }} tabIndex={-1} />
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpOtp" title="6-Digit Recovery Code" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+<label htmlFor="fpOtp" title="6-Digit Recovery Code" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
                   6-Digit Recovery Code
                 </label>
                 <input
@@ -470,12 +470,12 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
                   required
                   autoComplete="off"
                   placeholder="000000"
-                  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
-                />
+                  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
+/>
               </div>
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpNewPass" title="New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+<label htmlFor="fpNewPass" title="New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
                   New Password
                 </label>
                 <div className="relative">
@@ -495,14 +495,14 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
                     required
                     autoComplete="new-password"
                     placeholder="Enter new password"
-                    className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                  />
-                  <button
-                    type="button"
-                    title="Show password"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? 'text-white hover:text-white' : (isContrast || isDarkMode) ? 'text-white/60 hover:text-white' : 'text-[#03045E]/50 hover:text-[#2C7FFF]'}`}
-                  >
+className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+/>
+<button
+  type="button"
+  title="Show password"
+  onClick={() => setShowPassword(!showPassword)}
+  className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? 'text-white hover:text-white' : (isContrast || isDarkMode) ? 'text-white/60 hover:text-white' : 'text-[var(--color-textSubtle)] hover:text-[var(--color-accent)]'}`}
+>
                     {showPassword ? (
                       <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -518,11 +518,11 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
               </div>
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpConfirmPass" title="Confirm New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+<label htmlFor="fpConfirmPass" title="Confirm New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
                   Confirm New Password
                 </label>
                 <div className="relative">
-                  <span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
+<span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-textSubtle)]'}`}> 
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
@@ -538,13 +538,13 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
                     required
                     autoComplete="new-password"
                     placeholder="Confirm new password"
-                    className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                  />
+ className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+/>
                   <button
                     type="button"
                     title="Show confirm password"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? 'text-white hover:text-white' : (isContrast || isDarkMode) ? 'text-white/60 hover:text-white' : 'text-[#03045E]/50 hover:text-[#2C7FFF]'}`}
+className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? 'text-white hover:text-white' : (isContrast || isDarkMode) ? 'text-white/60 hover:text-white' : 'text-[var(--color-textSubtle)] hover:text-[var(--color-accent)]'}`}
                   >
                     {showConfirmPassword ? (
                       <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
