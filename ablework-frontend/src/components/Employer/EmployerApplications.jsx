@@ -607,16 +607,19 @@ export default function EmployerApplications({ profile, refreshStats }) {
                 aria-label="Applicant withdrawal reason"
                 className={`mb-6 p-4 rounded-xl border-2 ${
                   isHighContrastOrDarkComfort
-                    ? 'bg-black border-red-500 text-white'
+                    ? 'bg-black border-white text-white'
                     : isDark
-                      ? 'bg-[#1A1A1A] border-red-400/50 text-white'
-                      : 'bg-red-50 border-red-300 text-[#03045E]'
+                      ? 'bg-[#1A1A1A] border-white/20 text-white'
+                      : 'bg-[#f8fafc] border-gray-300 text-[#03045E]'
                 }`}
               >
-                <h4 className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-2 text-red-500">
+                <h4 className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
+                  <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
                   Withdrawn by Applicant
                   {selectedApp.withdrawn_at && (
-                    <span className="normal-case font-semibold ml-1 opacity-70">
+                    <span className={`normal-case font-semibold ml-1 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>
                       on {new Date(selectedApp.withdrawn_at).toLocaleDateString()}
                     </span>
                   )}
@@ -629,7 +632,7 @@ export default function EmployerApplications({ profile, refreshStats }) {
                   ))}
                 </ul>
                 {selectedApp.withdrawal_details && (
-                  <p className={`mt-3 text-xs sm:text-sm italic font-medium border-t pt-2 ${isDark ? 'border-white/10 opacity-90' : 'border-red-200 opacity-80'}`}>
+                  <p className={`mt-3 text-xs sm:text-sm italic font-medium border-t pt-2 ${isDark ? 'border-white/10 text-white/80' : 'border-gray-300 text-[#03045E]/80'}`}>
                     "{selectedApp.withdrawal_details}"
                   </p>
                 )}
