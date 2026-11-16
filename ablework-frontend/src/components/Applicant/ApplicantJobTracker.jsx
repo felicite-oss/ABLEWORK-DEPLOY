@@ -188,18 +188,17 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
     }
   };
 
-  // --- JOB DETAILS MODAL (TalkBack Friendly) ---
   const JobDetailsModal = ({ role, onClose, isDark }) => {
-    if (!role) return null;
+  if (!role) return null;
 
-    return (
-      <div 
-        className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200"
-        style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="job-details-title"
-      >
+  return (
+    <div 
+      className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
+      style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="job-details-title"
+    >
         <div className={`relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
           
           {/* Header */}
@@ -617,16 +616,15 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
       {/* JOB DETAILS MODAL */}
       <JobDetailsModal role={viewingDetails} onClose={() => setViewingDetails(null)} isDark={isDark} />
 
-      {/* Withdraw Confirmation Modal — with reason checklist */}
-      {confirmWithdraw.isOpen && (
-        <div
-          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200"
-          style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)' }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="confirm-withdraw-title"
-          aria-describedby="confirm-withdraw-desc"
-        >
+     {confirmWithdraw.isOpen && (
+  <div
+    className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
+    style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirm-withdraw-title"
+    aria-describedby="confirm-withdraw-desc"
+  >
           <div className={`relative w-full max-w-md max-h-[90vh] flex flex-col rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border-2 ${isDark ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
             <div aria-hidden="true" className="h-1.5 sm:h-2 w-full bg-red-500 shrink-0" />
 
