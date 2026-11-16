@@ -468,52 +468,49 @@ const accommodationSuggestions = [
               
               <div className={`flex flex-wrap items-center gap-2 px-2 py-1.5 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                                {descriptionTemplates.map((template) => {
-                  const isSelected = selectedTemplates.includes(template.label);
-                  return (
-                    <button
-                      key={template.label}
-                      type="button"
-                                          onClick={() => {
-                        if (isSelected) {
-                          setSelectedTemplates(prev => prev.filter(t => t !== template.label));
-                          
-                          // Safely remove the template and trailing blank lines
-                          setJobDescription(prev => {
-                            const updated = prev.replace(template.prefix, '');
-                            return updated.trim() === '' ? '' : updated;
-                          });
-                        } else {
-                          setSelectedTemplates(prev => [...prev, template.label]);
-                          
-                          const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
-                            ? '\n\n' + template.prefix 
-                            : template.prefix;
-                          setJobDescription(prev => prev + prefix);
-                        }
-                      }}
-                      style={{ color: isSelected ? '#ffffff' : (isDark ? '#ffffff' : '#03045E') }}
-                      className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'bg-[#2C7FFF] border-[#2C7FFF]'
-                          : isDark 
-                            ? 'bg-black border-white' 
-                            : 'bg-white border-gray-400'
-                      }`}
-                    >
-                      {isSelected ? (
-                        <>
-                          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                          {template.label}
-                        </>
-                      ) : (
-                        <>+ {template.label}</>
-                      )}
-                    </button>
-                  );
-                })}
+                          {descriptionTemplates.map((template) => {
+  const isSelected = selectedTemplates.includes(template.label);
+  return (
+    <button
+      key={template.label}
+      type="button"
+      onClick={() => {
+        if (isSelected) {
+          setSelectedTemplates(prev => prev.filter(t => t !== template.label));
+          
+          // Safely remove the template and trailing blank lines
+          setJobDescription(prev => {
+            const updated = prev.replace(template.prefix, '');
+            return updated.trim() === '' ? '' : updated;
+          });
+        } else {
+          setSelectedTemplates(prev => [...prev, template.label]);
+          
+          const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
+            ? '\n\n' + template.prefix 
+            : template.prefix;
+          setJobDescription(prev => prev + prefix);
+        }
+      }}
+      className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm flex items-center gap-1.5 ${
+        isSelected
+          ? 'bg-[var(--color-accent)] border-[var(--color-accent)] text-[var(--color-background)]'
+          : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-accent)]'
+      }`}
+    >
+      {isSelected ? (
+        <>
+          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          {template.label}
+        </>
+      ) : (
+        <>+ {template.label}</>
+      )}
+    </button>
+  );
+})}
               </div>
 
               <textarea 
