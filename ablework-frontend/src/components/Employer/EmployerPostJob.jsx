@@ -734,8 +734,10 @@ const accommodationSuggestions = [
 
         <hr className={divider} />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
-          <div className="flex flex-col gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
+          
+          {/* Required Skills */}
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
@@ -743,7 +745,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
               placeholder="e.g. Python, Graphic Design..."
-              className={inputCls}
+              className={`${inputCls} w-full`}
             />
             {filteredSkills.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
@@ -760,7 +762,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedSkills.length > 0 && (
-              <div className={`${chipContainer} flex-col`}>
+              <div className={`${chipContainer} w-full flex-col`}>
                 {selectedSkills.map(skill => (
                   <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -770,7 +772,8 @@ const accommodationSuggestions = [
             )}
           </div>
 
-          <div className="flex flex-col gap-2 sm:gap-3">
+          {/* Guaranteed Accommodations */}
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Guaranteed Accommodations
             </label>
@@ -778,7 +781,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
               placeholder="e.g. Wheelchair Access, Screen Reader..."
-              className={inputSmCls}
+              className={`${inputCls} w-full`}
             />
             {filteredAccommodations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
@@ -795,7 +798,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedAccommodations.length > 0 && (
-              <div className={chipContainer}>
+              <div className={`${chipContainer} w-full`}>
                 {selectedAccommodations.map(acc => (
                   <span key={acc} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {acc} <button type="button" onClick={() => removeAccommodation(acc)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
