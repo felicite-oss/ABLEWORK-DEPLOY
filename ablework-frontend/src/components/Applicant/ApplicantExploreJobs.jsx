@@ -559,10 +559,10 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               <div
                 tabIndex="0"
                 aria-label={`${filteredJobs.length} matches found.`}
-                className="flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-[#f4f4f4] border-2 border-[#03045E]/30 shrink-0 cursor-pointer hover:border-[#2C7FFF] transition-all group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2"
+className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full shrink-0 cursor-pointer transition-all group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 ${isContrast ? 'bg-black border-2 border-[#2C7FFF]' : isDarkScreen ? 'bg-black border-2 border-white/30' : 'bg-white border-2 border-[#03045E]/15 hover:border-[#2C7FFF]'}`}
               >
                 <span aria-hidden="true" className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#10B981]" />
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-[#03045E] group-hover:text-[#2C7FFF] transition-all">
+<span className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-widest transition-all group-hover:text-[#2C7FFF] ${isContrast ? 'text-white' : isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
                   {filteredJobs.length} match{filteredJobs.length !== 1 ? 'es' : ''}
                 </span>
               </div>
@@ -572,11 +572,15 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               aria-expanded={showFilters}
               aria-controls="explore-jobs-filters"
               aria-label={showFilters ? 'Close Filters' : 'Filter Matches'}
-              className={`px-3.5 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-sm border-2 shrink-0 ${
-                showFilters
-                  ? 'bg-black text-white border-white'
-                  : 'bg-white border-[#03045E] text-[#03045E]'
-              }`}
+          className={`px-3.5 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl font-extrabold text-[11px] sm:text-sm transition-all duration-200 flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-sm border-2 shrink-0 ${
+  showFilters
+    ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
+    : isContrast
+      ? 'bg-black text-white border-white hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+      : isDarkScreen
+        ? 'bg-black text-white border-white/30 hover:border-white'
+        : 'bg-white border-[#03045E]/15 text-[#03045E] hover:bg-[#2C7FFF] hover:text-white hover:border-[#2C7FFF]'
+}`}
             >
               {showFilters ? (
                 <>
@@ -592,30 +596,40 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
             </button>
           </div>
           
-          <div className="flex gap-1 p-1 bg-[#f4f4f4] rounded-xl border-2 border-[#03045E]/15 w-full sm:w-fit">
+<div className={`flex gap-1 p-1 rounded-xl border-2 w-full sm:w-fit ${isContrast ? 'bg-black border-[#2C7FFF]' : isDarkScreen ? 'bg-black border-white/20' : 'bg-white border-[#03045E]/15'}`}>
             <button
                 onClick={() => { setActiveTab('available'); setCurrentPage(1); }}
-                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-extrabold text-[11px] sm:text-sm transition-all whitespace-nowrap flex items-center justify-center ${
-                    activeTab === 'available'
-                    ? 'bg-[#03045E] text-white shadow-md'
-                    : 'text-[#03045E]/70 hover:bg-white hover:text-[#03045E]'
-                }`}
+className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-extrabold text-[11px] sm:text-sm transition-all whitespace-nowrap flex items-center justify-center cursor-pointer ${
+  activeTab === 'available'
+  ? 'bg-[#2C7FFF] text-white shadow-md'
+  : isContrast
+    ? 'text-white hover:bg-[#2C7FFF] hover:text-white'
+    : isDarkScreen
+      ? 'text-white/70 hover:bg-white/10 hover:text-white'
+      : 'text-[#03045E]/70 hover:bg-[#2C7FFF]/10 hover:text-[#03045E]'
+}`}
             >
                 Available Jobs
             </button>
             <button
                 onClick={() => { setActiveTab('applied'); setCurrentPage(1); }}
-                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-extrabold text-[11px] sm:text-sm transition-all whitespace-nowrap flex items-center justify-center gap-1.5 ${
-                    activeTab === 'applied'
-                    ? 'bg-[#03045E] text-white shadow-md'
-                    : 'text-[#03045E]/70 hover:bg-white hover:text-[#03045E]'
-                }`}
+                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-extrabold text-[11px] sm:text-sm transition-all whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer ${
+  activeTab === 'applied'
+  ? 'bg-[#2C7FFF] text-white shadow-md'
+  : isContrast
+    ? 'text-white hover:bg-[#2C7FFF] hover:text-white'
+    : isDarkScreen
+      ? 'text-white/70 hover:bg-white/10 hover:text-white'
+      : 'text-[#03045E]/70 hover:bg-[#2C7FFF]/10 hover:text-[#03045E]'
+}`}
             >
                 Already Applied
                 {appliedCount > 0 && (
-                    <span className={`min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-black shrink-0 ${
-                        activeTab === 'applied' ? 'bg-white text-[#03045E]' : 'bg-[#03045E]/10 text-[#03045E]'
-                    }`}>
+<span className={`min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-black shrink-0 ${
+  activeTab === 'applied'
+    ? 'bg-white text-[#2C7FFF]'
+    : isDarkScreen ? 'bg-white/15 text-white' : 'bg-[#03045E]/10 text-[#03045E]'
+}`}>
                         {appliedCount}
                     </span>
                 )}
@@ -626,7 +640,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               id="explore-jobs-filters"
               role="region"
               aria-label="Job filters panel"
-              className="absolute top-full right-0 mt-3 z-50 w-[95vw] sm:w-[600px] max-w-[calc(100vw-2rem)] max-h-[75vh] overflow-y-auto p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white shadow-[0_20px_50px_rgba(3,4,94,0.25)] border-2 border-[#03045E]/20 animate-fadeIn flex flex-col gap-4 sm:gap-6 text-left"
+             className={`absolute top-full right-0 mt-3 z-50 w-[95vw] sm:w-[600px] max-w-[calc(100vw-2rem)] max-h-[75vh] overflow-y-auto p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_rgba(3,4,94,0.25)] border-2 animate-fadeIn flex flex-col gap-4 sm:gap-6 text-left ${isContrast ? 'bg-black border-[#2C7FFF]' : isDarkScreen ? 'bg-black border-white/20' : 'bg-white border-[#03045E]/15'}`}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 <div className="flex flex-col gap-1 sm:gap-1.5">
@@ -639,7 +653,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                     placeholder="e.g. Data Entry, TechNova..."
                     aria-label="Search jobs by title or company. Example: Data Entry, TechNova."
                     title="Search jobs by title or company. Example: Data Entry, TechNova."
-                    className={`p-3 sm:p-3.5 border-2 border-[#03045E]/25 rounded-xl sm:rounded-2xl bg-white font-bold focus:border-[#2C7FFF] outline-none transition text-xs sm:text-sm text-[#03045E] placeholder:text-gray-400`}
+                  className={`p-3 sm:p-3.5 border-2 rounded-xl sm:rounded-2xl font-bold outline-none transition text-xs sm:text-sm focus:border-[#2C7FFF] ${
+  isDarkScreen
+    ? 'bg-black border-white/30 text-white placeholder:text-white/40'
+    : 'bg-white border-[#03045E]/25 text-[#03045E] placeholder:text-gray-400'
+}`}
                   />
                   {searchSuggestions.length > 0 && (
                     <div role="list" aria-label="Search suggestions" className="grid grid-cols-2 gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 animate-fadeIn">
@@ -670,7 +688,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                       aria-label="Filter by Salary Range"
                       value={selectedSalary}
                       onChange={(e) => setSelectedSalary(e.target.value)}
-                      className={`w-full p-3 border-2 border-[#03045E]/25 rounded-xl bg-white font-bold outline-none cursor-pointer appearance-none text-xs sm:text-sm text-[#03045E] focus:border-[#2C7FFF]`}
+                     className={`w-full p-3 border-2 rounded-xl font-bold outline-none cursor-pointer appearance-none text-xs sm:text-sm focus:border-[#2C7FFF] ${
+  isDarkScreen
+    ? 'bg-black border-white/30 text-white'
+    : 'bg-white border-[#03045E]/25 text-[#03045E]'
+}`}
                     >
                       <option value="Any">All Salaries</option>
                       {availableSalaries.map(salary => (
@@ -688,7 +710,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                       aria-label="Filter by Industry"
                       value={selectedIndustry}
                       onChange={(e) => setSelectedIndustry(e.target.value)}
-                      className={`w-full p-3 border-2 border-[#03045E]/25 rounded-xl bg-white font-bold outline-none cursor-pointer appearance-none text-xs sm:text-sm text-[#03045E] focus:border-[#2C7FFF]`}
+className={`w-full p-3 border-2 rounded-xl font-bold outline-none cursor-pointer appearance-none text-xs sm:text-sm focus:border-[#2C7FFF] ${
+  isDarkScreen
+    ? 'bg-black border-white/30 text-white'
+    : 'bg-white border-[#03045E]/25 text-[#03045E]'
+}`}
                     >
                       <option value="Any">All Industries</option>
                       {availableIndustries.map(industry => (
@@ -700,21 +726,23 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                 </div>
               </div>
 
-              <hr aria-hidden="true" className="border-[#03045E]/15" />
+            <hr aria-hidden="true" className={isDarkScreen ? 'border-white/15' : 'border-[#03045E]/15'} />
 
               <div role="group" aria-label="Filter by skills">
-                <span aria-hidden="true" className={`text-[10px] sm:text-xs font-extrabold text-[#03045E] uppercase tracking-widest mb-2 sm:mb-3 block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded`} tabIndex="0">Filter by Skills</span>
+<span aria-hidden="true" className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-widest mb-2 sm:mb-3 block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`} tabIndex="0">Filter by Skills</span>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {availableSkills.map(skill => (
                     <button 
                       key={skill} onClick={() => toggleSkill(skill)}
                       aria-label={`Filter by skill ${skill}`}
                       aria-pressed={selectedSkills.includes(skill)}
-                      className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-xs font-extrabold rounded-lg border-2 transition-all cursor-pointer inline-flex items-center gap-1 ${
-                        selectedSkills.includes(skill)
-                          ? `bg-[#2C7FFF] ${isDarkScreen ? '!text-black' : '!text-white'} border-[#2C7FFF]`
-                          : 'bg-white text-[#03045E] border-[#03045E]/25 hover:border-[#2C7FFF]'
-                      }`}
+className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-xs font-extrabold rounded-lg border-2 transition-all cursor-pointer inline-flex items-center gap-1 ${
+  selectedAccs.includes(acc)
+    ? `bg-[#2C7FFF] ${isDarkScreen ? '!text-black' : '!text-white'} border-[#2C7FFF]`
+    : isDarkScreen
+      ? 'bg-black text-white border-white/30 hover:border-[#2C7FFF]'
+      : 'bg-white text-[#03045E] border-[#03045E]/25 hover:border-[#2C7FFF]'
+}`}
                     >
                       {selectedSkills.includes(skill) && (
                         <svg aria-hidden="true" className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
@@ -726,18 +754,20 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               </div>
 
               <div role="group" aria-label="Filter by accommodations">
-                <span aria-hidden="true" className={`text-[10px] sm:text-xs font-extrabold text-[#03045E] uppercase tracking-widest mb-2 sm:mb-3 block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded`} tabIndex="0">Filter by Accommodations</span>
+               <span aria-hidden="true" className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-widest mb-2 sm:mb-3 block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`} tabIndex="0">Filter by Accommodations</span>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {availableAccs.map(acc => (
                     <button 
                       key={acc} onClick={() => toggleAcc(acc)}
                       aria-label={`Filter by accommodation ${acc}`}
                       aria-pressed={selectedAccs.includes(acc)}
-                      className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-xs font-extrabold rounded-lg border-2 transition-all cursor-pointer inline-flex items-center gap-1 ${
-                        selectedAccs.includes(acc)
-                          ? `bg-[#2C7FFF] ${isDarkScreen ? '!text-black' : '!text-white'} border-[#2C7FFF]`
-                          : 'bg-white text-[#03045E] border-[#03045E]/25 hover:border-[#2C7FFF]'
-                      }`}
+className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-xs font-extrabold rounded-lg border-2 transition-all cursor-pointer inline-flex items-center gap-1 ${
+  selectedSkills.includes(skill)
+    ? `bg-[#2C7FFF] ${isDarkScreen ? '!text-black' : '!text-white'} border-[#2C7FFF]`
+    : isDarkScreen
+      ? 'bg-black text-white border-white/30 hover:border-[#2C7FFF]'
+      : 'bg-white text-[#03045E] border-[#03045E]/25 hover:border-[#2C7FFF]'
+}`}
                     >
                       {selectedAccs.includes(acc) && (
                         <svg aria-hidden="true" className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
@@ -759,7 +789,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                       setSelectedAccs([]);
                     }}
                     aria-label="Clear All Filters"
-                    className={`text-[11px] sm:text-sm font-extrabold hover:underline cursor-pointer transition ${isDarkScreen ? '!text-black hover:!text-black' : 'text-[#2C7FFF] hover:text-[#03045E]'}`}
+className={`text-[11px] sm:text-sm font-extrabold hover:underline cursor-pointer transition ${isDarkScreen ? 'text-white hover:text-[#2C7FFF]' : 'text-[#2C7FFF] hover:text-[#03045E]'}`}
                   >
                     Clear All Filters
                   </button>
@@ -832,17 +862,17 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                             {job.match_percentage || 0}% MATCH
                           </span>
                         </div>
-                        <div 
+                                             <div 
                           tabIndex="0"
-                          aria-label={`Distance: ${job.distance_km || '0.0'} kilometers away.`}
-                          className={`flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${getDistanceBadgeStyles(job.distance_km, isDarkScreen)}`}
+                          aria-label={`Overall match score: ${job.match_percentage || 0} percent.`}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${getMatchColor(job.match_percentage || 0, isDarkScreen)}`}
                         >
                           <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <circle cx="12" cy="12" r="10" />
+                            <circle cx="12" cy="12" r="3" />
                           </svg>
                           <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest whitespace-nowrap">
-                            {job.distance_km || '0.0'} KM AWAY
+                            {job.match_percentage || 0}% MATCH
                           </span>
                         </div>
                       </div>
@@ -1381,14 +1411,14 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                         </label>
                       </div>
 
-                                          {/* Show file input only if uploading a new one */}
+                      {/* Show file input only if uploading a new one */}
                       {!useExistingResume && (
                         <input 
                           type="file" 
                           accept=".pdf,.doc,.docx"
                           required={!useExistingResume}
                           onChange={(e) => setResumeFile(e.target.files[0])}
-                          className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-2 file:border-[#03045E]/20 file:bg-[#03045E] file:font-black file:text-white hover:file:bg-[#2C7FFF] hover:file:border-[#2C7FFF] file:transition-colors cursor-pointer text-[#03045E]"
+                          className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-[#03045E] file:text-white hover:file:bg-[#2C7FFF] cursor-pointer ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}
                         />
                       )}
                     </div>
@@ -1397,11 +1427,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                     <div className={`p-4 rounded-xl border-2 ${isDarkScreen ? 'border-white/10 bg-black' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
                       <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${isDarkScreen ? 'text-white/70' : 'text-[#03045E]/70'}`}>Training Certificate (Optional)</label>
                       <p className={`text-[10px] font-semibold mb-3 ${isDarkScreen ? 'text-white/60' : 'text-[#03045E]/60'}`}>Upload any relevant certificates or licenses for this role.</p>
-                                            <input 
+                      <input 
                         type="file" 
                         accept=".pdf,.jpg,.jpeg,.png"
                         onChange={(e) => setCertificateDoc(e.target.files[0])}
-                        className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-2 file:border-[#03045E]/20 file:bg-[#03045E] file:font-black file:text-white hover:file:bg-[#2C7FFF] hover:file:border-[#2C7FFF] file:transition-colors cursor-pointer text-[#03045E]"
+                        className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black hover:file:bg-gray-200 cursor-pointer ${isDarkScreen ? 'text-white file:bg-white/20 file:text-white' : 'text-[#03045E] file:bg-white file:text-[#03045E]'}`}
                       />
                     </div>
                   </div>
