@@ -223,6 +223,8 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
       job_title: editingJob.job_title,
       job_description: editingJob.job_description,
       job_type: editingJob.job_type || 'Full-time',
+      working_hours_per_week: editingJob.working_hours_per_week,
+      work_schedule: editingJob.work_schedule || null,
       required_skills: editingJob.parsedSkills,
       provided_accommodations: editingJob.parsedAccoms,
       accepted_disabilities: editingJob.parsedDisabilities,
@@ -428,6 +430,8 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                                   setEditingJob({
                                     ...job, 
                                     job_type: job.job_type || 'Full-time',
+                                    working_hours_per_week: job.working_hours_per_week ?? '',
+                                    work_schedule: job.work_schedule ?? '',
                                     parsedSkills: parseToArray(job.required_skills), 
                                     parsedAccoms: parseToArray(job.provided_accommodations),
                                     parsedBenefits: parseToArray(job.benefits),
@@ -530,6 +534,39 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                   <option value="Temporary">Temporary</option>
                   <option value="Volunteer">Volunteer</option>
                 </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs sm:text-sm font-bold text-[#03045E]">Working Hours / Week</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="1"
+                    placeholder="e.g. 40"
+                    value={editingJob.working_hours_per_week ?? ''}
+                    onChange={e => setEditingJob({
+                      ...editingJob,
+                      working_hours_per_week: e.target.value === '' ? null : Number(e.target.value)
+                    })}
+                    className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`}
+                  />
+                  <p className={`text-[10px] sm:text-xs font-semibold ${subtle}`}>
+                    Optional. Helps applicants compare full-time vs. part-time combinations.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs sm:text-sm font-bold text-[#03045E]">Work Schedule (optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Mon–Fri, 9am–6pm"
+                    value={editingJob.work_schedule ?? ''}
+                    onChange={e => setEditingJob({ ...editingJob, work_schedule: e.target.value })}
+                    className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`}
+                  />
+                </div>
               </div>
 
               <hr className={`my-1 border-t-2 ${divider}`} />

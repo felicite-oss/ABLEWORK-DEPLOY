@@ -13,7 +13,7 @@
 
 export const WITHDRAWAL_REASON_OPTIONS = [
   { key: 'accepted_other_offer',  label: 'I accepted a job offer elsewhere' },
-  { key: 'double_hired',          label: 'I was hired for another role on AbleWork' },
+  { key: 'double_hired',          label: 'I was hired for another role' },
   { key: 'personal_reasons',      label: 'Personal or health reasons' },
   { key: 'relocation',            label: 'Relocating to a different area' },
   { key: 'role_mismatch',         label: 'The role was not what I expected' },

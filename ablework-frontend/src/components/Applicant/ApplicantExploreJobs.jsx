@@ -228,6 +228,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
   const jobsPerPage = 12;
   const [expandedJobs, setExpandedJobs] = useState([]);
   const [activeTab, setActiveTab] = useState('available'); 
+  const [weeklyUsage, setWeeklyUsage] = useState({ used: 0, softCap: 25, hardCap: 40 });
   
   // Cache applied jobs locally to bypass slow server refreshes
   const [locallyAppliedJobs, setLocallyAppliedJobs] = useState(() => {
@@ -248,6 +249,14 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
       localStorage.setItem('applicantLocallyAppliedJobs', JSON.stringify(locallyAppliedJobs));
     } catch {}
   }, [locallyAppliedJobs]);
+
+  useEffect(() => {
+    if (!profile?.user_id) return;
+    fetch(`${API_BASE_URL}/api/applicant/${profile.user_id}/application-usage`)
+      .then(r => r.json())
+      .then(setWeeklyUsage)
+      .catch(() => {});
+  }, [profile?.user_id]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -476,6 +485,8 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
           localStorage.setItem('applicantLocallyAppliedJobs', JSON.stringify(updated));
           return updated;
         });
+
+        if (data.weeklyUsage) setWeeklyUsage(data.weeklyUsage);
         
         setSweetAlert({
           isOpen: true,
@@ -811,6 +822,26 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
         </div>
       </section>
 
+        {weeklyUsage.used > 0 && (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label={`You have used ${weeklyUsage.used} of ${weeklyUsage.hardCap} applications this week.`}
+        className={`p-3 sm:p-4 rounded-xl border-2 text-xs sm:text-sm font-bold ${
+          weeklyUsage.used >= weeklyUsage.hardCap
+            ? 'bg-red-50 border-red-500 text-red-700'
+            : weeklyUsage.used >= weeklyUsage.softCap
+              ? 'bg-amber-50 border-amber-500 text-amber-700'
+              : (isDarkScreen ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]')
+        }`}
+      >
+        Applications this week: <strong>{weeklyUsage.used} / {weeklyUsage.hardCap}</strong>
+        {weeklyUsage.used >= weeklyUsage.hardCap && ' — weekly limit reached. Your allowance resets next Monday.'}
+        {weeklyUsage.used >= weeklyUsage.softCap && weeklyUsage.used < weeklyUsage.hardCap &&
+          ' — consider focusing on your top Smart Matches.'}
+      </div>
+    )}
+
     <section role="region" aria-label="Job listings" className="flex flex-col gap-4 sm:gap-8">
       {filteredJobs.length > 0 ? (
         <div className="flex flex-col gap-6 w-full">
@@ -881,6 +912,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                           </h2>
                           <p aria-hidden="true" className="text-xs sm:text-sm font-bold text-[#2C7FFF] truncate">
                             {job.company_name}
+                          </p>
+                          <p aria-hidden="true" className={`text-[10px] sm:text-xs font-bold mt-0.5 truncate ${isDarkScreen ? 'text-white/70' : 'text-[#03045E]/70'}`}>
+                            {job.job_type || 'Full-time'}
+                            {job.working_hours_per_week != null && ` · ${job.working_hours_per_week} hrs/week`}
+                            {job.work_schedule && ` · ${job.work_schedule}`}
                           </p>
                         </div>
                       </div>
@@ -1054,7 +1090,12 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                     />
                     <div className="min-w-0 flex-1">
                       <h2 id="job-modal-title" className="text-lg sm:text-3xl font-black text-[#03045E] break-words transition-all group-hover:text-[#03045e]">{selectedJob.job_title}</h2>
-                      <p className="text-sm sm:text-xl font-black text-[#2C7FFF] mt-0.5 sm:mt-1 break-words transition-all group-hover:text-[#2C7FFF]">{selectedJob.company_name}</p>
+                     <p className="text-sm sm:text-xl font-black text-[#2C7FFF] mt-0.5 sm:mt-1 break-words transition-all group-hover:text-[#2C7FFF]">{selectedJob.company_name}</p>
+                      <p className={`text-[11px] sm:text-sm font-bold mt-1 ${isDarkScreen ? 'text-white/80' : 'text-[#03045E]/80'}`}>
+                        {selectedJob.job_type || 'Full-time'}
+                        {selectedJob.working_hours_per_week != null && ` · ${selectedJob.working_hours_per_week} hrs/week`}
+                        {selectedJob.work_schedule && ` · ${selectedJob.work_schedule}`}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1359,7 +1400,12 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                   Back to Job Details
                 </button>
                 <h2 tabIndex="0" role="heading" aria-level="2" aria-label="Submit Application" title="Submit Application" className="text-lg sm:text-3xl font-black text-[#03045E] mb-1 sm:mb-2 focus:outline-none">Submit Application</h2>
-                               <p tabIndex="0" role="text" aria-label={`Applying for ${selectedJob.job_title} at ${selectedJob.company_name}`} title={`Applying for ${selectedJob.job_title} at ${selectedJob.company_name}`} className="text-xs sm:text-base text-[#03045E] mb-6 sm:mb-8 font-bold focus:outline-none">Applying for <span className="font-black text-[#2C7FFF]">{selectedJob.job_title}</span> at {selectedJob.company_name}</p>
+                                             <p tabIndex="0" role="text" aria-label={`Applying for ${selectedJob.job_title} at ${selectedJob.company_name}`} title={`Applying for ${selectedJob.job_title} at ${selectedJob.company_name}`} className="text-xs sm:text-base text-[#03045E] mb-2 font-bold focus:outline-none">Applying for <span className="font-black text-[#2C7FFF]">{selectedJob.job_title}</span> at {selectedJob.company_name}</p>
+                <p className="text-[11px] sm:text-sm font-bold mb-6 sm:mb-8 text-[#03045E]/80">
+                  {selectedJob.job_type || 'Full-time'}
+                  {selectedJob.working_hours_per_week != null && ` · ${selectedJob.working_hours_per_week} hrs/week`}
+                  {selectedJob.work_schedule && ` · ${selectedJob.work_schedule}`}
+                </p>
                 <form onSubmit={submitApplication} className="flex flex-col gap-4 sm:gap-6">
                   <div className="flex flex-col gap-4 w-full">
                     {/* Resume Section */}

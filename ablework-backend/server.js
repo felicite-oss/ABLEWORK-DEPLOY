@@ -11,6 +11,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const { pipeline } = require('@huggingface/transformers');
 require('dotenv').config();
 
+const APPLICATION_WEEKLY_SOFT_CAP = 25;
+const APPLICATION_WEEKLY_HARD_CAP = 40;
+const MAX_WORKING_HOURS = 60;
+
 const isValidPassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     return passwordRegex.test(password);
@@ -732,11 +736,20 @@ function safeParseArray(data) {
         try { parsed = JSON.parse(parsed); } catch (e) { break; }
     }
     if (Array.isArray(parsed)) return parsed;
-    if (typeof parsed === 'string') {
+        if (typeof parsed === 'string') {
         const cleaned = parsed.replace(/[\[\]"\\]/g, '');
         return cleaned.split(',').map(item => item.trim()).filter(item => item);
     }
     return [];
+}
+
+// Returns the Monday (YYYY-MM-DD) of the calendar week containing `date`.
+function getWeekStart(date = new Date()) {
+    const d = new Date(date);
+    const day = d.getDay();                  // 0 = Sunday
+    const diff = (day === 0 ? -6 : 1 - day); // shift to Monday
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().slice(0, 10);
 }
 
 // =========================================================
@@ -982,6 +995,7 @@ app.get('/api/applicant/:id/matches', async (req, res) => {
 
         const [jobs] = await db.execute(`
             SELECT jp.id, jp.employer_id, jp.job_title, jp.company_name, jp.job_description,
+                   jp.job_type, jp.working_hours_per_week, jp.work_schedule,
                    jp.required_skills, jp.provided_accommodations, jp.accepted_disabilities,
                    jp.salary_range, jp.benefits, jp.latitude, jp.longitude, jp.max_applications,
                    u.email AS contact_email, u.phone AS contact_number, e.workplace_address, e.industry, 
@@ -1075,11 +1089,24 @@ app.post('/api/applications/apply', upload.fields([
             }
         }
 
+                // ---- Weekly application cap ----
+        const weekStart = getWeekStart(new Date());
+        const [weeklyCountRows] = await db.execute(
+            `SELECT COUNT(*) AS total FROM applications WHERE applicant_id = ? AND applied_week_start = ?`,
+            [applicant_id, weekStart]
+        );
+        const weeklyCount = weeklyCountRows[0].total || 0;
+
+        if (weeklyCount >= APPLICATION_WEEKLY_HARD_CAP) {
+            return res.status(429).json({
+                message: `Weekly limit reached: you've submitted ${weeklyCount} of ${APPLICATION_WEEKLY_HARD_CAP} applications this week. Your allowance resets next Monday. Focus on your top Smart Matches in the meantime.`
+            });
+        }
+
         const [jobCheck] = await db.execute('SELECT max_applications FROM job_postings WHERE id = ?', [job_id]);
         if (jobCheck.length === 0) {
             return res.status(404).json({ message: "Job not found." });
         }
-
         const dynamicLimit = jobCheck[0].max_applications || 50;
 
         const [appCount] = await db.execute("SELECT COUNT(*) as total FROM applications WHERE job_id = ? AND status != 'Rejected'", [job_id]);
@@ -1088,8 +1115,8 @@ app.post('/api/applications/apply', upload.fields([
         }
 
         await db.execute(
-            'INSERT INTO applications (applicant_id, job_id, status, resume_path, certificate_path, cover_letter) VALUES (?, ?, ?, ?, ?, ?)',
-            [applicant_id, job_id, 'Received', resumePath, certificatePath, cover_letter || null]
+            'INSERT INTO applications (applicant_id, job_id, status, resume_path, certificate_path, cover_letter, applied_week_start) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [applicant_id, job_id, 'Received', resumePath, certificatePath, cover_letter || null, weekStart]
         );
 
         const [jobRows] = await db.execute(
@@ -1113,12 +1140,21 @@ app.post('/api/applications/apply', upload.fields([
             await sendNotification(employerId, alertTitle, alertMessage, 'application');
         }
 
-        res.status(201).json({ message: "Application submitted successfully!" });
-    } catch (error) {
-        console.error("Application Submission Error:", error.message);
-        res.status(500).json({ message: "Failed to submit application." });
-    }
-});
+                        res.status(201).json({
+                    message: "Application submitted successfully!",
+                    weeklyUsage: {
+                        used: weeklyCount + 1,
+                        softCap: APPLICATION_WEEKLY_SOFT_CAP,
+                        hardCap: APPLICATION_WEEKLY_HARD_CAP,
+                        weekStart,
+                        isSoftCapped: weeklyCount + 1 >= APPLICATION_WEEKLY_SOFT_CAP
+                    }
+                });
+            } catch (error) {
+                console.error("Application Submission Error:", error.message);
+                res.status(500).json({ message: "Failed to submit application." });
+            }
+        });
 
 app.put('/api/applications/:id/view', async (req, res) => {
     const applicationId = req.params.id;
@@ -1163,18 +1199,38 @@ app.get('/api/applicant/:id/applications', async (req, res) => {
             SELECT
                 a.id as application_id, a.job_id, a.status, a.applied_at, a.employer_message,
                 a.withdrawal_reasons, a.withdrawal_details, a.withdrawn_at,
-                j.job_title, j.company_name, j.job_type, j.job_description, j.salary_range, 
-                j.benefits, j.provided_accommodations, j.required_skills
+                j.job_title, j.company_name, j.job_type, j.working_hours_per_week, j.work_schedule,
+                j.job_description, j.salary_range, j.benefits, j.provided_accommodations, j.required_skills
             FROM applications a
             JOIN job_postings j ON a.job_id = j.id
             WHERE a.applicant_id = ?
             ORDER BY a.applied_at DESC
         `, [userId]);
 
-        res.status(200).json(applications);
+                res.status(200).json(applications);
     } catch (error) {
         console.error("Tracker Fetch Error:", error.message);
         res.status(500).json({ message: "Failed to fetch applications." });
+    }
+});
+
+app.get('/api/applicant/:id/application-usage', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const weekStart = getWeekStart(new Date());
+        const [rows] = await db.execute(
+            `SELECT COUNT(*) AS total FROM applications WHERE applicant_id = ? AND applied_week_start = ?`,
+            [userId, weekStart]
+        );
+        res.status(200).json({
+            weekStart,
+            used: rows[0].total || 0,
+            softCap: APPLICATION_WEEKLY_SOFT_CAP,
+            hardCap: APPLICATION_WEEKLY_HARD_CAP
+        });
+    } catch (error) {
+        console.error("Application Usage Error:", error.message);
+        res.status(500).json({ message: "Failed to fetch application usage." });
     }
 });
 
@@ -1366,7 +1422,7 @@ app.post('/api/jobs/create', async (req, res) => {
 
     const {
         employer_id, job_title, company_name, job_description,
-        job_type,
+        job_type, working_hours_per_week, work_schedule,
         required_skills, provided_accommodations, accepted_disabilities,
         salary_range, benefits, latitude, longitude,
         max_applications
@@ -1383,16 +1439,27 @@ app.post('/api/jobs/create', async (req, res) => {
             return res.status(403).json({ message: "Your account is deactivated. Please reactivate your account in Settings to post new jobs." });
         }
 
+        let hoursToSave = null;
+        if (working_hours_per_week !== undefined && working_hours_per_week !== null && working_hours_per_week !== '') {
+            const n = Number(working_hours_per_week);
+            if (!Number.isFinite(n) || n < 0 || n > MAX_WORKING_HOURS) {
+                return res.status(400).json({ message: `Working hours per week must be between 0 and ${MAX_WORKING_HOURS}.` });
+            }
+            hoursToSave = Math.round(n);
+        }
+
         const [result] = await db.execute(
             `INSERT INTO job_postings
-             (employer_id, job_title, company_name, job_description, job_type, required_skills, provided_accommodations, accepted_disabilities, salary_range, benefits, latitude, longitude, max_applications, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
+             (employer_id, job_title, company_name, job_description, job_type, working_hours_per_week, work_schedule, required_skills, provided_accommodations, accepted_disabilities, salary_range, benefits, latitude, longitude, max_applications, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
             [
                 employer_id ?? null,
                 job_title ?? null,
                 company_name ?? null,
                 job_description ?? null,
                 job_type || 'Full-time',
+                hoursToSave,
+                work_schedule || null,
                 required_skills ? JSON.stringify(required_skills) : '[]',
                 provided_accommodations ? JSON.stringify(provided_accommodations) : '[]',
                 accepted_disabilities ? JSON.stringify(accepted_disabilities) : '[]',
@@ -1448,20 +1515,35 @@ app.post('/api/jobs/create', async (req, res) => {
 app.put('/api/jobs/:id', async (req, res) => {
     const jobId = req.params.id;
     const {
-        job_title, job_description, job_type, required_skills,
-        provided_accommodations, accepted_disabilities,
+        job_title, job_description, job_type,
+        working_hours_per_week, work_schedule,
+        required_skills, provided_accommodations, accepted_disabilities,
         salary_range, benefits
     } = req.body;
+
+    let hoursToSave = null;
+    if (working_hours_per_week !== undefined && working_hours_per_week !== null && working_hours_per_week !== '') {
+        const n = Number(working_hours_per_week);
+        if (!Number.isFinite(n) || n < 0 || n > MAX_WORKING_HOURS) {
+            return res.status(400).json({ message: `Working hours per week must be between 0 and ${MAX_WORKING_HOURS}.` });
+        }
+        hoursToSave = Math.round(n);
+    }
 
     try {
         await db.execute(
             `UPDATE job_postings
-             SET job_title = ?, job_description = ?, job_type = ?, required_skills = ?, provided_accommodations = ?, accepted_disabilities = ?, salary_range = ?, benefits = ?
+             SET job_title = ?, job_description = ?, job_type = ?,
+                 working_hours_per_week = ?, work_schedule = ?,
+                 required_skills = ?, provided_accommodations = ?, accepted_disabilities = ?,
+                 salary_range = ?, benefits = ?
              WHERE id = ?`,
             [
                 job_title,
                 job_description,
                 job_type || 'Full-time',
+                hoursToSave,
+                work_schedule || null,
                 JSON.stringify(required_skills || []),
                 JSON.stringify(provided_accommodations || []),
                 JSON.stringify(accepted_disabilities || []),
