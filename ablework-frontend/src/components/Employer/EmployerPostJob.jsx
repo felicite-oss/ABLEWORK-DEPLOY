@@ -554,17 +554,18 @@ const accommodationSuggestions = [
           />
         </div>
 
-        <hr className={divider} />
+               <hr className={divider} />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        <div className="flex flex-col gap-6 sm:gap-8">
           
+          {/* Salary Range */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Salary Range <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
             <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-w-2xl">
               <select
                 value={currency}
                 onChange={(e) => {
@@ -599,6 +600,7 @@ const accommodationSuggestions = [
             </div>
           </div>
 
+          {/* Benefits Package */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Benefits Package
@@ -613,7 +615,7 @@ const accommodationSuggestions = [
                   setSelectedBenefits([...selectedBenefits, val]);
                 }
               }}
-              className={`w-full p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
+              className={`w-full max-w-2xl p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
                 isContrast || isDarkMode
                   ? 'border-white bg-black text-white focus:border-white'
                   : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
@@ -639,7 +641,7 @@ const accommodationSuggestions = [
             </select>
 
             {selectedBenefits.length > 0 && (
-              <div className={chipContainer}>
+              <div className={`${chipContainer} max-w-2xl`}>
                 {selectedBenefits.map(benefit => (
                   <span key={benefit} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {benefit} 
@@ -655,6 +657,79 @@ const accommodationSuggestions = [
               </div>
             )}
           </div>
+
+          {/* Required Skills */}
+          <div className="flex flex-col gap-2 sm:gap-3">
+            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+              Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+            </label>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Type a skill and press <strong>Enter</strong> to add it. You can also add multiple skills separated by commas.</p>
+            <input
+              type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
+              placeholder="e.g. Python, Graphic Design..."
+              className={`${inputSmCls} max-w-2xl`}
+            />
+            {filteredSkills.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1 max-w-2xl">
+                {filteredSkills.map(suggestion => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => addSkill(suggestion)}
+                    className={suggestionBtn}
+                  >
+                    + {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+            {selectedSkills.length > 0 && (
+              <div className={`${chipContainer} flex-col max-w-2xl`}>
+                {selectedSkills.map(skill => (
+                  <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
+                    {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Guaranteed Accommodations */}
+          <div className="flex flex-col gap-2 sm:gap-3">
+            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+              Guaranteed Accommodations
+            </label>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Type an accommodation and press <strong>Enter</strong> to add it.</p>
+            <input
+              type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
+              placeholder="e.g. Wheelchair Access, Screen Reader..."
+              className={`${inputSmCls} max-w-2xl`}
+            />
+            {filteredAccommodations.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1 max-w-2xl">
+                {filteredAccommodations.map(suggestion => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => addAccommodation(suggestion)}
+                    className={suggestionBtn}
+                  >
+                    + {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+            {selectedAccommodations.length > 0 && (
+              <div className={`${chipContainer} max-w-2xl`}>
+                {selectedAccommodations.map(acc => (
+                  <span key={acc} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
+                    {acc} <button type="button" onClick={() => removeAccommodation(acc)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
 
         <hr className={divider} />
