@@ -667,7 +667,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
               placeholder="e.g. Python, Graphic Design..."
-              className={`${inputSmCls} max-w-2xl`}
+              className={`${inputCls} max-w-2xl`}
             />
             {filteredSkills.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1 max-w-2xl">
@@ -703,7 +703,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
               placeholder="e.g. Wheelchair Access, Screen Reader..."
-              className={`${inputSmCls} max-w-2xl`}
+              className={`${inputCls} max-w-2xl`}
             />
             {filteredAccommodations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1 max-w-2xl">
@@ -743,7 +743,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
               placeholder="e.g. Python, Graphic Design..."
-              className={inputSmCls}
+              className={inputCls}
             />
             {filteredSkills.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
@@ -778,7 +778,7 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
               placeholder="e.g. Wheelchair Access, Screen Reader..."
-              className={inputSmCls}
+              className={inputCls}
             />
             {filteredAccommodations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
