@@ -59,17 +59,17 @@ export default function ForgotPassword({ onClose }) {
       ? 'text-base sm:text-lg font-bold'
       : 'text-xs sm:text-sm font-bold';
 
-   const inputSize = isAPlusPlus
-    ? 'p-4 sm:p-5 text-lg sm:text-xl font-medium'
+  const inputSize = isAPlusPlus
+    ? 'p-5 sm:p-6 text-xl sm:text-2xl font-medium'
     : isAPlus
-      ? 'p-3 sm:p-4 text-base sm:text-lg font-medium'
-      : 'p-2.5 sm:p-3 text-sm sm:text-base font-semibold';
+      ? 'p-4 sm:p-5 text-lg sm:text-xl font-medium'
+      : 'p-3 sm:p-3.5 text-sm sm:text-base font-semibold';
 
   const buttonSize = isAPlusPlus
-    ? 'py-4 sm:py-5 px-5 sm:px-6 text-lg sm:text-xl font-black'
+    ? 'py-5 sm:py-6 px-6 sm:px-8 text-xl sm:text-2xl font-black'
     : isAPlus
-      ? 'py-3 sm:py-4 px-4 sm:px-5 text-base sm:text-lg font-black'
-      : 'py-3 sm:py-3.5 px-4 sm:px-5 text-sm sm:text-base font-black';
+      ? 'py-4 px-5 sm:px-6 text-lg sm:text-xl font-black'
+      : 'py-3.5 px-5 sm:px-6 text-sm sm:text-base font-black';
 
   const requestOtp = async (e) => {
     e.preventDefault();
@@ -345,13 +345,13 @@ export default function ForgotPassword({ onClose }) {
         </div>
       </header>
 <div
-  className="flex-grow pt-24 sm:pt-28 pb-6 flex flex-col items-center md:items-end justify-center p-3 sm:p-4 md:p-8 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[100vh] transition-all duration-300"
+  className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300"
   style={{ backgroundImage: `url(${backgroundImg})` }}
 >
 <div
- className={`w-full ${isAssist ? 'max-w-[440px] sm:max-w-lg' : 'max-w-[380px] sm:max-w-md'} flex flex-col items-center justify-start gap-3 sm:gap-4 relative z-10
-    ${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-white/90 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-md rounded-2xl shadow-2xl
-    pt-6 px-4 pb-6 sm:pt-8 sm:px-8 sm:pb-8 mr-0 md:mr-4 lg:mr-8`}
+ className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-lg'} flex flex-col items-center justify-start gap-4 sm:gap-6 relative z-10
+    ${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-white/90 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl
+    pt-8 px-5 pb-8 sm:pt-12 sm:px-10 sm:pb-14 mr-0 md:mr-4 lg:mr-8`}
 >
           <div className="w-full flex items-center justify-start">
             <div className="flex items-center gap-2">
@@ -450,7 +450,7 @@ export default function ForgotPassword({ onClose }) {
 </button>
             </form>
           ) : (
-           <form onSubmit={resetPassword} className="flex flex-col gap-3 sm:gap-4 w-full" autoComplete="off">
+            <form onSubmit={resetPassword} className="flex flex-col gap-4 sm:gap-5 w-full" autoComplete="off">
               <input type="text" name="fakeusernameremembered" autoComplete="username" style={{ display: 'none' }} tabIndex={-1} />
               <input type="password" name="fakepasswordremembered" autoComplete="new-password" style={{ display: 'none' }} tabIndex={-1} />
 
@@ -479,7 +479,7 @@ export default function ForgotPassword({ onClose }) {
                   New Password
                 </label>
                 <div className="relative">
-                  <span className={`absolute left-3 top-1/2 -translate-y-1/2${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
+                  <span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
