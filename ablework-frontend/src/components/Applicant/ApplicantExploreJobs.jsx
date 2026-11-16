@@ -55,10 +55,9 @@ const getMatchColor = (percentage, isDarkScreen) => {
 
 const MatchBreakdown = ({ job, isDarkScreen, colorUI }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const distanceScore = Math.max(0, 60 - (parseFloat(job.distance_km) / 5) * 60); 
+  const totalDist = Math.round(job.distance_score || 0); 
   const semanticScore = (parseFloat(job.semantic_similarity_raw) || 0) * 40;
   const totalSemantic = Math.round(semanticScore);
-  const totalDist = Math.round(distanceScore);
 
   return (
     <div className={`mt-2 mb-4 border-t pt-3 ${isDarkScreen ? 'border-white/15' : 'border-[#03045E]/15'}`}>

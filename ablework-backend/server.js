@@ -951,6 +951,7 @@ async function calculateMatches(applicant, jobs) {
             matched.push({
                 ...job,
                 match_percentage: overallMatchPercentage,
+                distance_score: Math.round(job.distance_score),
                 semantic_similarity_raw: scored.semanticRaw.toFixed(2),
                 skills_similarity: scored.skillsSim.toFixed(2),
                 description_similarity: scored.descSim.toFixed(2)

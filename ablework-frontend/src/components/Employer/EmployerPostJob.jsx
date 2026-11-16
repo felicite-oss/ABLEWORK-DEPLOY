@@ -516,13 +516,13 @@ const accommodationSuggestions = [
                 })}
               </div>
 
-                        <textarea 
+              <textarea 
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
                 rows="12"
                 placeholder="Describe the role responsibilities and expectations..."
-                className={`w-full p-4 sm:p-5 bg-transparent outline-none resize-none text-sm sm:text-base font-semibold leading-relaxed ${
+                className={`w-full p-4 sm:p-5 bg-transparent outline-none resize-none text-sm sm:text-base font-semibold leading-normal ${
                   isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
                 }`}
               ></textarea>
