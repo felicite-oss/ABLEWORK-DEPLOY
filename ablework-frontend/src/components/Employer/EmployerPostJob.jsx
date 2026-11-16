@@ -384,48 +384,48 @@ const accommodationSuggestions = [
           </button>
         </div>
       ) : (
-      <form onSubmit={handleSubmit} className={`p-4 sm:p-8 rounded-2xl shadow-sm border-2 flex flex-col gap-6 sm:gap-8 ${cardBg}`}>
+          <form onSubmit={handleSubmit} className={`p-4 sm:p-8 rounded-2xl shadow-sm border-2 flex flex-col gap-6 sm:gap-8 ${cardBg}`}>
         
-     <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
   
-  {/* JOB TITLE & JOB TYPE (2 columns) */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-    
-    {/* JOB TITLE */}
-    <div className="flex flex-col gap-1.5 sm:gap-2">
-      <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-        <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-        Job Title <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
-      </label>
-      <input 
-        type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required
-        placeholder="e.g. Remote Data Specialist"
-        className={inputCls}
-      />
-    </div>
+          {/* JOB TITLE & JOB TYPE (2 columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            
+            {/* JOB TITLE */}
+            <div className="flex flex-col gap-1.5 sm:gap-2">
+              <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+                <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                Job Title <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+              </label>
+              <input 
+                type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required
+                placeholder="e.g. Remote Data Specialist"
+                className={inputCls}
+              />
+            </div>
 
-    {/* JOB TYPE */}
-    <div className="flex flex-col gap-1.5 sm:gap-2">
-      <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-        <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        Job Type
-      </label>
-      <select
-        value={jobType}
-        onChange={(e) => setJobType(e.target.value)}
-        className={inputCls}
-      >
-        <option value="Full-Time">Full-Time</option>
-        <option value="Part-Time">Part-Time</option>
-        <option value="Contractual">Contractual</option>
-        <option value="Freelance">Freelance</option>
-        <option value="Internship">Internship</option>
-        <option value="Shift-based">Shift-based</option>
-      </select>
-    </div>
-  </div>
+            {/* JOB TYPE */}
+            <div className="flex flex-col gap-1.5 sm:gap-2">
+              <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+                <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Job Type
+              </label>
+              <select
+                value={jobType}
+                onChange={(e) => setJobType(e.target.value)}
+                className={inputCls}
+              >
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contractual">Contractual</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Internship">Internship</option>
+                <option value="Shift-based">Shift-based</option>
+              </select>
+            </div>
+          </div>
 
-  {/* NEW: WORKING HOURS & WORK SCHEDULE */}
+          {/* WORKING HOURS & WORK SCHEDULE */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5 sm:gap-2">
               <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
@@ -466,55 +466,49 @@ const accommodationSuggestions = [
               Full Job Description <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
 
-                                             <div className={`w-full max-w-4xl rounded-lg border-2 flex flex-col transition-all ${
-              isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'
-            }`}>
-              
+            <div className={`w-full max-w-4xl rounded-lg border-2 flex flex-col transition-all ${isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'}`}>
               <div className={`flex flex-wrap items-center gap-2 px-2 py-1.5 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                          {descriptionTemplates.map((template) => {
-  const isSelected = selectedTemplates.includes(template.label);
-  return (
-    <button
-      key={template.label}
-      type="button"
-      onClick={() => {
-        if (isSelected) {
-          setSelectedTemplates(prev => prev.filter(t => t !== template.label));
-          
-          // Safely remove the template and trailing blank lines
-          setJobDescription(prev => {
-            const updated = prev.replace(template.prefix, '');
-            return updated.trim() === '' ? '' : updated;
-          });
-        } else {
-          setSelectedTemplates(prev => [...prev, template.label]);
-          
-          const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
-            ? '\n\n' + template.prefix 
-            : template.prefix;
-          setJobDescription(prev => prev + prefix);
-        }
-      }}
-      className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm flex items-center gap-1.5 ${
-        isSelected
-          ? 'bg-[var(--color-accent)] border-[var(--color-accent)] text-[var(--color-background)]'
-          : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-accent)]'
-      }`}
-    >
-      {isSelected ? (
-        <>
-          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          {template.label}
-        </>
-      ) : (
-        <>+ {template.label}</>
-      )}
-    </button>
-  );
-})}
+                {descriptionTemplates.map((template) => {
+                  const isSelected = selectedTemplates.includes(template.label);
+                  return (
+                    <button
+                      key={template.label}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedTemplates(prev => prev.filter(t => t !== template.label));
+                          setJobDescription(prev => {
+                            const updated = prev.replace(template.prefix, '');
+                            return updated.trim() === '' ? '' : updated;
+                          });
+                        } else {
+                          setSelectedTemplates(prev => [...prev, template.label]);
+                          const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
+                            ? '\n\n' + template.prefix 
+                            : template.prefix;
+                          setJobDescription(prev => prev + prefix);
+                        }
+                      }}
+                      className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-[var(--color-accent)] border-[var(--color-accent)] text-[var(--color-background)]'
+                          : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-accent)]'
+                      }`}
+                    >
+                      {isSelected ? (
+                        <>
+                          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          {template.label}
+                        </>
+                      ) : (
+                        <>+ {template.label}</>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               <textarea 
@@ -531,208 +525,7 @@ const accommodationSuggestions = [
           </div>
         </div>
 
-                  {/* 2-COLUMN GRID FOR MAX APPLICATIONS & SALARY */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
-          
-          {/* Maximum Applications Allowed */}
-          <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              Maximum Applications Allowed
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
-              The job will automatically stop accepting resumes once this number is reached (Max: 50).
-            </p>
-            <input 
-              type="number" 
-              min="1" 
-              max="50"
-              value={maxApplications} 
-              onChange={(e) => {
-                let val = parseInt(e.target.value) || 1;
-                if (val > 50) val = 50; 
-                setMaxApplications(val);
-              }} 
-              required
-              className={`${inputCls} w-full`}
-            />
-          </div>
-
-          {/* Salary Range */}
-          <div className="flex flex-col gap-2 sm:gap-3 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
-              Salary Range <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
-            
-            <div className="flex gap-2 w-full">
-              <select
-                value={currency}
-                onChange={(e) => {
-                  setCurrency(e.target.value);
-                  setSalaryRange(''); 
-                }}
-                className={`w-24 p-2 sm:p-3 border-2 rounded-md font-bold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none text-center ${
-                  isContrast || isDarkMode
-                    ? 'border-white bg-black text-white focus:border-white'
-                    : 'border-gray-200 bg-[#f4f4f4] text-[#03045E] focus:border-gray-200'
-                }`}
-              >
-                <option value="PHP">PHP ₱</option>
-                <option value="USD">USD $</option>
-              </select>
-
-              <select
-                value={salaryRange}
-                onChange={(e) => setSalaryRange(e.target.value)}
-                required
-                className={`flex-1 p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
-                  isContrast || isDarkMode
-                    ? 'border-white bg-black text-white focus:border-white'
-                    : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
-                }`}
-              >
-                <option value="" disabled>Select a salary bracket...</option>
-                {(currency === 'PHP' ? salaryOptionsPHP : salaryOptionsUSD).map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Benefits Package */}
-          <div className="flex flex-col gap-2 sm:gap-3 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
-              Benefits Package
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select DOLE-mandated and company-initiated benefits.</p>
-            
-            <select
-              value=""
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val && !selectedBenefits.includes(val)) {
-                  setSelectedBenefits([...selectedBenefits, val]);
-                }
-              }}
-              className={`w-full p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
-                isContrast || isDarkMode
-                  ? 'border-white bg-black text-white focus:border-white'
-                  : 'border-gray-200 bg-white text-[#03045E] focus:border-gray-200'
-              }`}
-            >
-              <option value="" disabled>+ Add a benefit...</option>
-              
-              <optgroup label="DOLE-Mandated (Labor Code)">
-                {doleMandatedBenefits
-                  .filter(b => !selectedBenefits.includes(b))
-                  .map(benefit => (
-                    <option key={benefit} value={benefit}>{benefit}</option>
-                  ))}
-              </optgroup>
-              
-              <optgroup label="Company Perks">
-                {standardBenefits
-                  .filter(b => !selectedBenefits.includes(b))
-                  .map(benefit => (
-                    <option key={benefit} value={benefit}>{benefit}</option>
-                  ))}
-              </optgroup>
-            </select>
-
-            {selectedBenefits.length > 0 && (
-              <div className={`${chipContainer} w-full`}>
-                {selectedBenefits.map(benefit => (
-                  <span key={benefit} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
-                    {benefit} 
-                    <button 
-                      type="button" 
-                      onClick={() => setSelectedBenefits(selectedBenefits.filter(b => b !== benefit))} 
-                      className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Required Skills */}
-          <div className="flex flex-col gap-2 sm:gap-3 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
-              Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Type a skill and press <strong>Enter</strong> to add it. You can also add multiple skills separated by commas.</p>
-            <input
-              type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
-              placeholder="e.g. Python, Graphic Design..."
-              className={`${inputCls} w-full`}
-            />
-            {filteredSkills.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
-                {filteredSkills.map(suggestion => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => addSkill(suggestion)}
-                    className={suggestionBtn}
-                  >
-                    + {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
-            {selectedSkills.length > 0 && (
-              <div className={`${chipContainer} w-full flex-col`}>
-                {selectedSkills.map(skill => (
-                  <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
-                    {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Guaranteed Accommodations */}
-          <div className="flex flex-col gap-2 sm:gap-3 w-full">
-            <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
-              Guaranteed Accommodations
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Type an accommodation and press <strong>Enter</strong> to add it.</p>
-            <input
-              type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
-              placeholder="e.g. Wheelchair Access, Screen Reader..."
-              className={`${inputCls} w-full`}
-            />
-            {filteredAccommodations.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
-                {filteredAccommodations.map(suggestion => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => addAccommodation(suggestion)}
-                    className={suggestionBtn}
-                  >
-                    + {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
-            {selectedAccommodations.length > 0 && (
-              <div className={`${chipContainer} w-full`}>
-                {selectedAccommodations.map(acc => (
-                  <span key={acc} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
-                    {acc} <button type="button" onClick={() => removeAccommodation(acc)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div>
-
-               {/* 5-ROW SINGLE COLUMN GRID */}
+        {/* --- CLEANED UP 5-ROW SINGLE COLUMN LAYOUT --- */}
         <div className="flex flex-col gap-4 sm:gap-6 w-full">
 
           {/* Row 1: Maximum Applications Allowed */}
@@ -823,21 +616,15 @@ const accommodationSuggestions = [
               }`}
             >
               <option value="" disabled>+ Add a benefit...</option>
-              
               <optgroup label="DOLE-Mandated (Labor Code)">
-                {doleMandatedBenefits
-                  .filter(b => !selectedBenefits.includes(b))
-                  .map(benefit => (
-                    <option key={benefit} value={benefit}>{benefit}</option>
-                  ))}
+                {doleMandatedBenefits.filter(b => !selectedBenefits.includes(b)).map(benefit => (
+                  <option key={benefit} value={benefit}>{benefit}</option>
+                ))}
               </optgroup>
-              
               <optgroup label="Company Perks">
-                {standardBenefits
-                  .filter(b => !selectedBenefits.includes(b))
-                  .map(benefit => (
-                    <option key={benefit} value={benefit}>{benefit}</option>
-                  ))}
+                {standardBenefits.filter(b => !selectedBenefits.includes(b)).map(benefit => (
+                  <option key={benefit} value={benefit}>{benefit}</option>
+                ))}
               </optgroup>
             </select>
 
@@ -846,13 +633,7 @@ const accommodationSuggestions = [
                 {selectedBenefits.map(benefit => (
                   <span key={benefit} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {benefit} 
-                    <button 
-                      type="button" 
-                      onClick={() => setSelectedBenefits(selectedBenefits.filter(b => b !== benefit))} 
-                      className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}
-                    >
-                      ✕
-                    </button>
+                    <button type="button" onClick={() => setSelectedBenefits(selectedBenefits.filter(b => b !== benefit))} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
                   </span>
                 ))}
               </div>
@@ -873,19 +654,14 @@ const accommodationSuggestions = [
             {filteredSkills.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
                 {filteredSkills.map(suggestion => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => addSkill(suggestion)}
-                    className={suggestionBtn}
-                  >
+                  <button key={suggestion} type="button" onClick={() => addSkill(suggestion)} className={suggestionBtn}>
                     + {suggestion}
                   </button>
                 ))}
               </div>
             )}
             {selectedSkills.length > 0 && (
-              <div className={`${chipContainer} w-full flex-wrap`}>
+              <div className={`${chipContainer} w-full`}>
                 {selectedSkills.map(skill => (
                   <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -909,19 +685,14 @@ const accommodationSuggestions = [
             {filteredAccommodations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
                 {filteredAccommodations.map(suggestion => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => addAccommodation(suggestion)}
-                    className={suggestionBtn}
-                  >
+                  <button key={suggestion} type="button" onClick={() => addAccommodation(suggestion)} className={suggestionBtn}>
                     + {suggestion}
                   </button>
                 ))}
               </div>
             )}
             {selectedAccommodations.length > 0 && (
-              <div className={`${chipContainer} w-full flex-wrap`}>
+              <div className={`${chipContainer} w-full`}>
                 {selectedAccommodations.map(acc => (
                   <span key={acc} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {acc} <button type="button" onClick={() => removeAccommodation(acc)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -936,6 +707,7 @@ const accommodationSuggestions = [
         <hr className={divider} />
 
         <div className={`flex flex-col gap-3 sm:gap-4 p-3 sm:p-5 rounded-xl border-2 ${softBg}`}>
+          {/* ... Keep your Accepted Disabilities section exactly the same ... */}
           <div>
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -971,14 +743,7 @@ const accommodationSuggestions = [
                   }`}
                 >
                   {category} 
-                  <svg 
-                    className={`w-3 h-3 shrink-0 transition-transform duration-300 ${isActive ? 'rotate-0' : '-rotate-90'}`} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="3" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
+                  <svg className={`w-3 h-3 shrink-0 transition-transform duration-300 ${isActive ? 'rotate-0' : '-rotate-90'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
