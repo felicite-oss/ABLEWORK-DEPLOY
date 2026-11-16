@@ -455,36 +455,53 @@ export function Home() {
 
       <div className="flex-1 overflow-y-auto flex flex-col pt-16">
 
-         {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
+                       {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
         <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center">
           
           {/* Main Hero Container */}
           <div className="w-full relative overflow-hidden rounded-[2rem] shadow-xl border border-[#03045e]/10 bg-[#f4f4f4]">
-                      {/* Background Image (Full Width) */}
+            
+            {/* Background Image - Centered/Left aligned and fit for mobile, original for desktop */}
             <div 
-              className="absolute inset-0 bg-no-repeat w-full h-full bg-[position:right_center] bg-[size:70%] hero-bg-img"
+              className="absolute inset-0 bg-no-repeat w-full h-full bg-[left_center] bg-[size:100%] sm:bg-[position:right_center] sm:bg-[size:70%] hero-bg-img"
               style={{ backgroundImage: `url(${backgroundImg})` }}
             ></div>
 
-            {/* Dynamic Color Overlay Shape - Frosted Glass */}
-            <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+            {/* --- MOBILE ONLY CURVE OVERLAY --- */}
+            <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none block sm:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <defs>
+                <filter id="glass-blur-mobile">
+                  <feGaussianBlur stdDeviation="8" />
+                </filter>
+              </defs>
+              <path 
+                d="M0,0 L100,0 L100,100 L0,100 Z M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100 L100,100 L100,0 Z" 
+                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${palette.colors.primary || palette.colors.accent}B3`)} 
+                fillRule="evenodd" 
+                style={{ backdropFilter: 'blur(16px)' }}
+              />
+            </svg>
+
+            {/* --- DESKTOP ONLY CURVE OVERLAY (Original untouched) --- */}
+            <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden sm:block" preserveAspectRatio="none" viewBox="0 0 100 100">
               <defs>
                 <filter id="glass-blur">
                   <feGaussianBlur stdDeviation="8" />
                 </filter>
               </defs>
-                          <path 
+              <path 
                 d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
                 fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${palette.colors.primary || palette.colors.accent}B3`)} 
                 fillRule="evenodd" 
                 style={{ backdropFilter: 'blur(16px)' }}
               />
             </svg>
+
             {/* Content Wrapper */}
-            <div className="relative z-20 flex flex-col lg:flex-row items-center justify-between p-8 sm:p-12 lg:p-20 w-full min-h-[500px]">
+            <div className="relative z-20 flex flex-col lg:flex-row items-center justify-between p-6 sm:p-12 lg:p-20 w-full min-h-[500px]">
               
               {/* Left Side: Text */}
-              <div className="w-full lg:w-1/2 flex flex-col items-start">
+              <div className="w-full lg:w-1/2 flex flex-col items-start z-20 pr-12 sm:pr-0">
                 
                 <div className="mb-6">
                   <span className={`welcome-badge inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm ${isDarkMode ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)] text-[var(--color-background)]'}`}>
@@ -492,15 +509,17 @@ export function Home() {
                   </span>
                 </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#f4f4f4] leading-[1.1] mb-6">
+                {/* Text Width restricted on mobile to fit inside the curve */}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#f4f4f4] leading-[1.1] mb-6 max-w-[85%] sm:max-w-full">
                   Building an Inclusive Workforce for Everyone
                 </h1>
 
-                <p className="text-sm sm:text-base md:text-lg text-[#f4f4f4]/80 leading-relaxed mb-10 max-w-lg font-medium">
+                {/* Text Width restricted on mobile to fit inside the curve */}
+                <p className="text-sm sm:text-base md:text-lg text-[#f4f4f4]/80 leading-relaxed mb-10 max-w-[80%] sm:max-w-lg font-medium">
                   AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations.
                 </p>
 
-                              <div className="flex flex-wrap items-center gap-4 mb-12">
+                <div className="flex flex-wrap items-center gap-4 mb-12">
                   <Link
                     to="/register-select"
                     className="px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/30 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:text-[#f4f4f4] transition-all"
@@ -516,18 +535,18 @@ export function Home() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 pt-8 border-t border-[#f4f4f4]/20 w-full max-w-md">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-8 border-t border-[#f4f4f4]/20 w-full max-w-[95%] sm:max-w-md pr-4 sm:pr-0">
                   <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">100%</h4>
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Accessible</p>
+                    <h4 className="text-lg sm:text-3xl font-black text-[#f4f4f4]">100%</h4>
+                    <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Accessible</p>
                   </div>
                   <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">24/7</h4>
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Support</p>
+                    <h4 className="text-lg sm:text-3xl font-black text-[#f4f4f4]">24/7</h4>
+                    <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Support</p>
                   </div>
                   <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">Secure</h4>
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Platform</p>
+                    <h4 className="text-lg sm:text-3xl font-black text-[#f4f4f4]">Secure</h4>
+                    <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Platform</p>
                   </div>
                 </div>
               </div>
@@ -539,7 +558,7 @@ export function Home() {
             </div>
           </div>
 
-                </div>
+        </div>
 
 <section className="w-full p-3 sm:p-4 md:px-8 md:py-6">
           <div className={`p-5 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border-2 shadow-xl backdrop-blur-sm ${isContrast ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-border)]' : 'bg-[var(--color-surface)]/50 text-[#03045E] border-[#03045E]/20'}`}>
