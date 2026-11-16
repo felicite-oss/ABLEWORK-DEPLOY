@@ -24,7 +24,8 @@ const normalizePhAddressQuery = (raw) => {
     .replace(/\bbrgy\.?\b/gi, 'Barangay')
     .replace(/\bbgy\.?\b/gi, 'Barangay')
     .replace(/\bsitio\b/gi, 'Sitio')
-    .replace(/\bpurok\b/gi, 'Purok')
+    .replace(/\bpurok\b/gi, '')
+    .replace(/\bstreet\b/gi, '')
     .replace(/\s+/g, ' ')
     .trim();
 };
@@ -332,18 +333,30 @@ const handleAddressType = (e) => {
         const query = encodeURIComponent(normalized);
         const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
+        // We use 'place' and 'locality' first to lock into the City (e.g., Bacolod City)
         let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
           `?country=ph&autocomplete=true&limit=8` +
-          `&types=address,poi,place,locality,neighborhood` +
+          `&types=place,locality,neighborhood,address,poi` +
           `&language=en&access_token=${mapboxToken}`;
 
-        // Bias results toward the current viewport if we have one
         if (prevLat && prevLng) url += `&proximity=${prevLng},${prevLat}`;
 
         const res = await fetch(url, { signal: controller.signal });
         const data = await res.json();
 
-        const features = data.features || [];
+        // FILTER: If the user typed a City (e.g., "Bacolod"), only keep results that actually contain that city.
+        // This prevents Mapbox from suggesting "Manila" when you type "Bacolod".
+        const userWords = text.toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
+        let features = data.features || [];
+        
+        if (userWords.length > 0) {
+          const filtered = features.filter(f => 
+            userWords.some(word => f.place_name.toLowerCase().includes(word))
+          );
+          // Only apply the filter if it didn't wipe out all results
+          if (filtered.length > 0) features = filtered;
+        }
+
         setSuggestions(features);
         setShowDropdown(features.length > 0);
       } catch (error) {
@@ -387,16 +400,18 @@ const handleAddressFocus = () => {
     }
 
     const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
-    const query = encodeURIComponent(normalizePhAddressQuery(address));
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
-      `?country=ph&autocomplete=false&limit=1` +
-      `&types=address,poi,place,locality,neighborhood` +
-      `&language=en&access_token=${mapboxToken}`;
+    const normalized = normalizePhAddressQuery(address);
 
     try {
-      const res = await fetch(url);
+      // 1. Try to get the EXACT address
+      const exactQuery = encodeURIComponent(normalized);
+      const exactUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${exactQuery}.json` +
+        `?country=ph&autocomplete=false&limit=1&types=address,poi&language=en&access_token=${mapboxToken}`;
+
+      const res = await fetch(exactUrl);
       const data = await res.json();
       const top = data.features && data.features[0];
+
       if (top && top.center && top.center.length === 2) {
         const [lngResolved, latResolved] = top.center;
         setLat(latResolved);
@@ -404,6 +419,27 @@ const handleAddressFocus = () => {
         setAddress(top.place_name);
         return { latitude: latResolved, longitude: lngResolved };
       }
+
+      // 2. FALLBACK: If exact address fails (e.g., "Purok Kametal"), grab the CITY coordinates
+      // We assume the city is the last 2 words (e.g., "Bacolod City")
+      const words = normalized.split(' ');
+      const cityGuess = words.slice(-2).join(' '); 
+      const cityQuery = encodeURIComponent(cityGuess);
+      const cityUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${cityQuery}.json` +
+        `?country=ph&autocomplete=false&limit=1&types=place,locality&language=en&access_token=${mapboxToken}`;
+
+      const cityRes = await fetch(cityUrl);
+      const cityData = await cityRes.json();
+      const cityTop = cityData.features && cityData.features[0];
+
+      if (cityTop && cityTop.center && cityTop.center.length === 2) {
+        const [lngResolved, latResolved] = cityTop.center;
+        setLat(latResolved);
+        setLng(lngResolved);
+        // Keep the user's typed address, but center the map on the city
+        return { latitude: latResolved, longitude: lngResolved };
+      }
+
     } catch (err) {
       console.error('Could not resolve manual address:', err);
     }
