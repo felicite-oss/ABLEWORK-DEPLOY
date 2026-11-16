@@ -195,7 +195,10 @@ async function getUserLiveContext(userId, role) {
     try {
         if (role === 'employer') {
             const [profile] = await db.execute(
-                `SELECT company_name, industry FROM employer_profiles WHERE user_id = ?`,
+                `SELECT e.company_name, e.industry, u.account_status 
+                 FROM employer_profiles e 
+                 JOIN users u ON e.user_id = u.id 
+                 WHERE e.user_id = ?`,
                 [userId]
             );
             const [jobs] = await db.execute(
@@ -214,6 +217,8 @@ async function getUserLiveContext(userId, role) {
 
             const activeJobs = jobs.filter(j => j.status === 'Active');
             contextSummary.company = profile[0]?.company_name || 'Your Company';
+            contextSummary.industry = profile[0]?.industry || 'Not specified';
+            contextSummary.accountStatus = profile[0]?.account_status || 'Active';
             contextSummary.totalJobs = jobs.length;
             contextSummary.activeJobsCount = activeJobs.length;
             contextSummary.activeJobTitles = activeJobs.map(j => j.job_title);
@@ -221,7 +226,8 @@ async function getUserLiveContext(userId, role) {
 
         } else if (role === 'applicant') {
             const [profile] = await db.execute(
-                `SELECT a.firstname, a.lastname, a.skills, a.accommodations_needed, u.verification_status, u.rejection_reason
+                `SELECT a.firstname, a.lastname, a.skills, a.accommodations_needed, 
+                        u.verification_status, u.rejection_reason, u.account_status
                  FROM applicant_profiles a
                  JOIN users u ON a.user_id = u.id
                  WHERE a.user_id = ?`,
@@ -236,12 +242,21 @@ async function getUserLiveContext(userId, role) {
                 [userId]
             );
 
+            // Calculate weekly usage for applicants
+            const weekStart = getWeekStart(new Date());
+            const [weeklyCountRows] = await db.execute(
+                `SELECT COUNT(*) AS total FROM applications WHERE applicant_id = ? AND applied_week_start = ?`,
+                [userId, weekStart]
+            );
+
             contextSummary.name = profile[0]?.firstname || 'Job Seeker';
             contextSummary.skills = JSON.parse(profile[0]?.skills || '[]');
             contextSummary.accommodations = JSON.parse(profile[0]?.accommodations_needed || '[]');
             contextSummary.verificationStatus = profile[0]?.verification_status;
             contextSummary.rejectionReason = profile[0]?.rejection_reason;
+            contextSummary.accountStatus = profile[0]?.account_status || 'Active';
             contextSummary.recentApplications = apps;
+            contextSummary.weeklyApplicationUsage = weeklyCountRows[0].total || 0;
         }
     } catch (err) {
         console.error("Error fetching live context for ABBY:", err.message);
@@ -284,15 +299,15 @@ ROLE & TONE:
 CURRENT LIVE DATABASE STATE FOR THIS USER:
 ${userContextString}
 
-PLATFORM PROCESSES & BUSINESS LOGIC:
+PLATFORM PROCESSES, BUSINESS LOGIC, & HARDCODED LIMITS:
 
 1. REGISTRATION & VERIFICATION:
 - Applicants must upload a valid PWD ID. Employers must upload Business Registration (DTI/SEC/Permit).
 - Accounts are 'Pending' after registration until an Admin reviews and approves the documents.
-- Users cannot apply for jobs or post jobs until their account status is 'Approved'.
+- Users cannot apply for jobs or post jobs until their verification status is 'Approved'.
 
 2. VERIFICATION REJECTIONS & SECURITY COOLDOWNS:
-- If an Admin rejects a verification document (e.g., blurry ID, expired permit), the user's account is locked.
+- If an Admin rejects a verification document, the user's account is locked.
 - A strict 7-day security cooldown is enforced. The user cannot resubmit a new document until the 7 days expire.
 - Once the countdown reaches 0, the user can upload a new document from their profile, resetting their status to 'Pending'.
 
@@ -309,6 +324,7 @@ PLATFORM PROCESSES & BUSINESS LOGIC:
 5. APPLYING & TRACKING (For Applicants):
 - To apply, the applicant MUST click on a specific job from their 'Explore Jobs' tab, upload a resume, and submit.
 - Applications start as 'Received'. Employers can manually change the status to 'Under Review', 'Shortlisted', 'Hired', or 'Rejected' and leave custom feedback messages.
+- WEEKLY CAPS: Applicants have a soft cap of 25 applications per week, and a hard cap of 40 applications per week.
 
 6. AUTOMATED GHOSTING PREVENTION (14-DAY RULE):
 - To protect applicants from being ignored, the system automatically monitors application wait times.
@@ -319,6 +335,10 @@ PLATFORM PROCESSES & BUSINESS LOGIC:
 7. PLATFORM ACCESSIBILITY FEATURES:
 - Accessibility Toolbar (floating blue icon at bottom left) offers 'High Contrast' theme and Font Size adjustments up to 'A++'.
 
+8. FILE UPLOAD CONSTRAINTS:
+- Maximum file size is 10 MB.
+- Allowed file formats are JPG, JPEG, PNG, PDF, DOC, and DOCX.
+
 STRICT RULES FOR ANSWERING:
 1. DOMAIN LOCK: You MUST NOT answer questions unrelated to AbleWork, job searching, platform navigation, or accessibility. Reply EXACTLY: "I am Abby, the AbleWork assistant. I can only answer questions related to the AbleWork platform."
 2. GUEST USERS: If the CURRENT LIVE DATABASE STATE says "GUEST USER - NOT LOGGED IN", greet them as "there" or "Guest". Never invent data.
@@ -327,6 +347,7 @@ STRICT RULES FOR ANSWERING:
 5. ACTION REFUSALS: You are informational only. You cannot perform actions (like applying, archiving, or changing settings) on the user's behalf. If asked to perform an action, reply: "I am informational only. I cannot perform actions on your behalf."
 6. FORMATTING: Use numbered step-by-step lists for "how to" questions. Keep answers under 3 paragraphs.
 7. NO HALLUCINATION: If the user asks a question where the answer is not explicitly stated in the PLATFORM PROCESSES or LIVE DATABASE STATE, do not guess. Use the fallback response in Rule 3.
+8. POLICY GROUNDING: You MUST use the rules in PLATFORM PROCESSES to answer general questions. For example, if asked about account status, read the "accountStatus" field from the LIVE DATABASE STATE. If asked about weekly limits, read the hardcoded caps in Section 5.
 `;
 
         const model = genAI.getGenerativeModel({
