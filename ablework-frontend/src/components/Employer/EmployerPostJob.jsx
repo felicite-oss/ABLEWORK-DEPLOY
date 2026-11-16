@@ -386,42 +386,46 @@ const accommodationSuggestions = [
       ) : (
       <form onSubmit={handleSubmit} className={`p-4 sm:p-8 rounded-2xl shadow-sm border-2 flex flex-col gap-6 sm:gap-8 ${cardBg}`}>
         
-        <div className="flex flex-col gap-3 sm:gap-4">
-          
-          {/* JOB TITLE */}
-          <div className="flex flex-col gap-1.5 sm:gap-2">
-            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-              Job Title <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
-            </label>
-            <input 
-              type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required
-              placeholder="e.g. Remote Data Specialist"
-              className={inputCls}
-            />
-          </div>
+     <div className="flex flex-col gap-3 sm:gap-4">
+  
+  {/* JOB TITLE & JOB TYPE (2 columns) */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+    
+    {/* JOB TITLE */}
+    <div className="flex flex-col gap-1.5 sm:gap-2">
+      <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+        <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        Job Title <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+      </label>
+      <input 
+        type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required
+        placeholder="e.g. Remote Data Specialist"
+        className={inputCls}
+      />
+    </div>
 
-          {/* JOB TYPE */}
-          <div className="flex flex-col gap-1.5 sm:gap-2">
-            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              Job Type
-            </label>
-            <select
-              value={jobType}
-              onChange={(e) => setJobType(e.target.value)}
-              className={inputCls}
-            >
-              <option value="Full-Time">Full-Time</option>
-              <option value="Part-Time">Part-Time</option>
-              <option value="Contractual">Contractual</option>
-              <option value="Freelance">Freelance</option>
-              <option value="Internship">Internship</option>
-              <option value="Shift-based">Shift-based</option>
-            </select>
-          </div>
+    {/* JOB TYPE */}
+    <div className="flex flex-col gap-1.5 sm:gap-2">
+      <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+        <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Job Type
+      </label>
+      <select
+        value={jobType}
+        onChange={(e) => setJobType(e.target.value)}
+        className={inputCls}
+      >
+        <option value="Full-Time">Full-Time</option>
+        <option value="Part-Time">Part-Time</option>
+        <option value="Contractual">Contractual</option>
+        <option value="Freelance">Freelance</option>
+        <option value="Internship">Internship</option>
+        <option value="Shift-based">Shift-based</option>
+      </select>
+    </div>
+  </div>
 
-          {/* NEW: WORKING HOURS & WORK SCHEDULE */}
+  {/* NEW: WORKING HOURS & WORK SCHEDULE */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5 sm:gap-2">
               <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
