@@ -622,18 +622,26 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
             </button>
           </div>
           {showFilters && (
-            <section
+            <>
+              {/* Invisible mobile backdrop to close filters when tapping outside */}
+              <div 
+                className="fixed inset-0 z-40 bg-black/20 sm:hidden animate-fadeIn" 
+                onClick={() => setShowFilters(false)}
+                aria-hidden="true"
+              />
+              <section
               id="explore-jobs-filters"
               role="region"
               aria-label="Job filters panel"
               className="
                 fixed sm:absolute
-                top-24 left-4 right-4 sm:top-full sm:left-auto sm:right-0
+                top-[180px] sm:top-full
+                left-4 right-4 sm:left-auto sm:right-0
                 z-50
                 w-auto sm:w-[600px]
-                max-h-[calc(100vh-8rem)] sm:max-h-[75vh]
+                max-h-[calc(100dvh-200px)] sm:max-h-[75vh]
                 overflow-y-auto overflow-x-hidden
-                p-4 pb-24 sm:p-8
+                p-4 pb-24 sm:p-8 sm:pb-8
                 rounded-2xl sm:rounded-3xl
                 bg-white shadow-[0_20px_50px_rgba(3,4,94,0.25)]
                 border-2 border-[#03045E]/20
@@ -778,6 +786,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                 </div>
               )}
             </section>
+            </>
           )}
         </div>
       </section>
