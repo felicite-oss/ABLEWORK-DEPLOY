@@ -292,23 +292,22 @@ const accommodationSuggestions = [
     }
   };
 
-  const pageText = isDark ? 'text-white' : 'text-[#03045E]';
+   const pageText = isDark ? 'text-white' : 'text-[var(--color-text)]';
   const muted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   const cardBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
   const softBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
   
-  const inputCls = isContrast
+   const inputCls = isContrast
     ? 'w-full p-2.5 sm:p-4 border-2 border-white rounded-lg bg-black text-white font-semibold placeholder:text-gray-400 focus:outline-none focus:border-white transition-all text-sm sm:text-base'
     : isDarkMode
       ? 'w-full p-2.5 sm:p-4 border-2 border-white rounded-lg bg-black text-white font-semibold placeholder:text-gray-400 focus:outline-none focus:border-white transition-all text-sm sm:text-base'
-      : 'w-full p-2.5 sm:p-4 border-2 border-gray-200 rounded-lg bg-white text-[#03045E] font-semibold placeholder:text-gray-400 focus:outline-none focus:border-gray-200 transition-all text-sm sm:text-base';
+      : 'w-full p-2.5 sm:p-4 border-2 border-[var(--color-border)] rounded-lg bg-[var(--color-surface)] text-[var(--color-text)] font-semibold placeholder:text-[var(--color-textMuted)] focus:outline-none focus:border-[var(--color-accent)] transition-all text-sm sm:text-base';
       
   const inputSmCls = isContrast
     ? 'w-full p-2 sm:p-3 border-2 border-white rounded-md bg-black text-white font-semibold placeholder:text-gray-400 focus:outline-none focus:border-white transition-all text-xs sm:text-sm'
     : isDarkMode
       ? 'w-full p-2 sm:p-3 border-2 border-white rounded-md bg-black text-white font-semibold placeholder:text-gray-400 focus:outline-none focus:border-white transition-all text-xs sm:text-sm'
-      : 'w-full p-2 sm:p-3 border-2 border-gray-200 rounded-md bg-white text-[#03045E] font-semibold placeholder:text-gray-400 focus:outline-none focus:border-gray-200 transition-all text-xs sm:text-sm';
-      
+      : 'w-full p-2 sm:p-3 border-2 border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] font-semibold placeholder:text-[var(--color-textMuted)] focus:outline-none focus:border-[var(--color-accent)] transition-all text-xs sm:text-sm'; 
   const chipContainer = isDark
     ? 'flex flex-wrap gap-1.5 sm:gap-2 mt-2 p-2 sm:p-3 bg-black rounded-lg border-2 border-white'
     : 'flex flex-wrap gap-1.5 sm:gap-2 mt-2 p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200';
