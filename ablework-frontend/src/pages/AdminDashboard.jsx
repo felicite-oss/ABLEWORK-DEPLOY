@@ -1235,81 +1235,58 @@ export default function AdminDashboard() {
                     )
                   })}
                 </div>
-                               <div ref={usersListRef} className={`max-h-[500px] overflow-y-auto overflow-x-auto rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} ${cardBg}`}>
+                <div ref={usersListRef} className="flex flex-col gap-2.5 sm:gap-3 max-h-[500px] overflow-y-auto pr-1">
                   {currentUsers.length > 0 ? (
-                    <table className="w-full text-left border-collapse min-w-[700px]">
-                      <thead className={`sticky top-0 z-10 ${surfaceBg} border-b-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'}`}>
-                        <tr>
-                          <th className={`px-4 py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider ${txtMain}`}>Name / Company</th>
-                          <th className={`px-4 py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider ${txtMain}`}>Email</th>
-                          <th className={`px-4 py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider ${txtMain}`}>Role</th>
-                          <th className={`px-4 py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider ${txtMain}`}>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className={`divide-y-2 ${isDark ? 'divide-white/10' : 'divide-[#03045E]/10'}`}>
-                        {currentUsers.map((user) => (
-                          <tr key={user.user_id} className={`transition-colors ${user.account_status === 'Disabled' ? 'opacity-60' : ''} ${isDark ? 'hover:bg-white/5' : 'hover:bg-[#03045E]/5'}`}>
-                            
-                            {/* Name / Company Column */}
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2.5">
-                                <div className={`w-8 h-8 rounded-md ${isDark ? 'bg-white text-black' : 'bg-[#03045E] text-white'} flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm`}>
-                                  {user.userType === 'Employer' ? (user.company_name?.[0] || 'E') : (user.firstname?.[0] || 'A')}
-                                </div>
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-1.5">
-                                    <h4 className={`text-xs sm:text-sm font-black truncate ${txtMain}`}>
-                                      {user.userType === 'Employer' ? user.company_name : `${user.firstname} ${user.lastname}`}
-                                    </h4>
-                                    {user.reverification_attempts > 0 && (
-                                      <span className={`px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded border shadow-sm ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-amber-100 text-amber-700 border-amber-300'}`}>
-                                        Resub
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
+                    currentUsers.map((user) => (
+                      <div key={user.user_id} className={`p-3 sm:p-5 rounded-lg sm:rounded-xl ${surfaceBg} border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 transition-all ${user.account_status === 'Disabled' ? 'opacity-70' : ''}`}>
 
-                            {/* Email Column */}
-                            <td className="px-4 py-3">
-                              <p className={`text-xs font-bold truncate max-w-[200px] ${txtMuted}`}>{user.email}</p>
-                            </td>
+                        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 w-full sm:w-auto">
+                          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${isDark ? 'bg-white text-black' : 'bg-[#03045E] text-white'} flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-sm`}>
+                            {user.userType === 'Employer' ? (user.company_name?.[0] || 'E') : (user.firstname?.[0] || 'A')}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className={`text-xs sm:text-sm font-black truncate ${txtMain}`}>
+                                {user.userType === 'Employer' ? user.company_name : `${user.firstname} ${user.lastname}`}
+                              </h4>
+                              {user.reverification_attempts > 0 && (
+                                <span className={`px-2 py-0.5 text-[8px] sm:text-[9px] font-black uppercase tracking-wider rounded-md border shadow-sm ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-amber-100 text-amber-700 border-amber-300'}`}>
+                                  Resubmitted
+                                </span>
+                              )}
+                            </div>
+                            <p className={`text-[10px] sm:text-xs font-bold truncate ${txtMuted}`}>{user.email}</p>
+                          </div>
+                        </div>
 
-                            {/* Role Column */}
-                            <td className="px-4 py-3">
-                              <span className={`px-2 py-1 rounded text-[9px] font-black tracking-wider uppercase border ${isDark ? 'bg-white/10 text-white border-white/20' : 'bg-[#03045E]/10 text-[#03045E] border-[#03045E]/20'}`}>
-                                {user.userType}
-                              </span>
-                            </td>
-
-                            {/* Status Column */}
-                            <td className="px-4 py-3">
-                              <span
-                                className={`px-2 py-1 rounded text-[9px] font-black tracking-wider uppercase border whitespace-nowrap`}
-                                style={{
-                                  backgroundColor: user.account_status === 'Disabled' ? 'rgba(220,38,38,0.1)' :
-                                    user.verification_status === 'Approved' ? 'rgba(16,185,129,0.1)' :
-                                    user.verification_status === 'Rejected' ? 'rgba(220,38,38,0.1)' :
-                                    'rgba(245,158,11,0.1)',
-                                  color: user.account_status === 'Disabled' ? '#f87171' :
-                                    user.verification_status === 'Approved' ? '#34d399' :
-                                    user.verification_status === 'Rejected' ? '#f87171' :
-                                    '#fbbf24',
-                                  borderColor: user.account_status === 'Disabled' ? '#dc2626' :
-                                    user.verification_status === 'Approved' ? '#10b981' :
-                                    user.verification_status === 'Rejected' ? '#dc2626' :
-                                    '#f59e0b'
-                                }}
-                              >
-                                {user.account_status === 'Disabled' ? 'Disabled' : (user.verification_status || 'Pending')}
-                              </span>
-                            </td>
-
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 w-full sm:w-auto justify-start sm:justify-end flex-wrap">
+                          <span
+                            className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-sm sm:rounded-md text-[8px] sm:text-[10px] font-black tracking-wider uppercase border ${isDark ? 'bg-white/10 text-white border-white/20' : 'bg-[#03045E]/10 text-[#03045E] border-[#03045E]/20'}`}
+                          >
+                            {user.userType}
+                          </span>
+                          <span
+                            className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-sm sm:rounded-md text-[8px] sm:text-[10px] font-black tracking-wider uppercase border`}
+                            style={{
+backgroundColor: user.account_status === 'Disabled' ? 'rgba(220,38,38,0.1)' :
+  user.verification_status === 'Approved' ? 'rgba(16,185,129,0.1)' :
+  user.verification_status === 'Rejected' ? 'rgba(220,38,38,0.1)' :
+  'rgba(245,158,11,0.1)',
+color: user.account_status === 'Disabled' ? '#f87171' :
+  user.verification_status === 'Approved' ? '#34d399' :
+  user.verification_status === 'Rejected' ? '#f87171' :
+  '#fbbf24',
+borderColor: user.account_status === 'Disabled' ? '#dc2626' :
+  user.verification_status === 'Approved' ? '#10b981' :
+  user.verification_status === 'Rejected' ? '#dc2626' :
+  '#f59e0b'
+}}
+                          >
+                            {user.account_status === 'Disabled' ? 'Disabled' : (user.verification_status || 'Pending')}
+                          </span>
+                        </div>
+                      </div>
+                    ))
                   ) : (
                     <div className={`p-8 text-center text-xs font-bold ${txtMuted}`}>No {overviewFilter.toLowerCase()} users found.</div>
                   )}

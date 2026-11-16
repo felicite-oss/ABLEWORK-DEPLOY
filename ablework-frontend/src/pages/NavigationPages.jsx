@@ -455,14 +455,15 @@ export function Home() {
 
       <div className="flex-1 overflow-y-auto flex flex-col pt-16">
 
-         {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
+               {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
         <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center">
           
           {/* Main Hero Container */}
           <div className="w-full relative overflow-hidden rounded-[2rem] shadow-xl border border-[#03045e]/10 bg-[#f4f4f4]">
-                      {/* Background Image (Full Width) */}
+            
+            {/* Background Image (Full Width) - Adjusted for Mobile */}
             <div 
-              className="absolute inset-0 bg-no-repeat w-full h-full bg-[position:right_center] bg-[size:70%] hero-bg-img"
+              className="absolute inset-0 bg-no-repeat w-full h-full bg-[position:right_bottom] bg-[size:100%] sm:bg-[position:right_center] sm:bg-[size:70%] hero-bg-img opacity-20 sm:opacity-100"
               style={{ backgroundImage: `url(${backgroundImg})` }}
             ></div>
 
@@ -473,73 +474,74 @@ export function Home() {
                   <feGaussianBlur stdDeviation="8" />
                 </filter>
               </defs>
-                          <path 
+              {/* Adjusted path to cover more of the left side on mobile so text is readable */}
+              <path 
                 d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
-                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${palette.colors.primary || palette.colors.accent}B3`)} 
+                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.85)" : `${palette.colors.primary || palette.colors.accent}E6`)} 
                 fillRule="evenodd" 
                 style={{ backdropFilter: 'blur(16px)' }}
               />
             </svg>
+
             {/* Content Wrapper */}
-            <div className="relative z-20 flex flex-col lg:flex-row items-center justify-between p-8 sm:p-12 lg:p-20 w-full min-h-[500px]">
+            <div className="relative z-20 flex flex-col lg:flex-row items-center justify-between p-6 sm:p-12 lg:p-20 w-full min-h-[500px]">
               
               {/* Left Side: Text */}
-              <div className="w-full lg:w-1/2 flex flex-col items-start">
+              <div className="w-full lg:w-1/2 flex flex-col items-start z-20">
                 
-                <div className="mb-6">
-                  <span className={`welcome-badge inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm ${isDarkMode ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)] text-[var(--color-background)]'}`}>
+                <div className="mb-4 sm:mb-6">
+                  <span className={`welcome-badge inline-block px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-sm ${isDarkMode ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)] text-[var(--color-background)]'}`}>
                     Welcome to AbleWork
                   </span>
                 </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#f4f4f4] leading-[1.1] mb-6">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#f4f4f4] leading-[1.1] mb-4 sm:mb-6 drop-shadow-lg">
                   Building an Inclusive Workforce for Everyone
                 </h1>
 
-                <p className="text-sm sm:text-base md:text-lg text-[#f4f4f4]/80 leading-relaxed mb-10 max-w-lg font-medium">
+                <p className="text-xs sm:text-base md:text-lg text-[#f4f4f4]/90 leading-relaxed mb-8 max-w-lg font-medium drop-shadow-md">
                   AbleWork helps persons with disabilities find suitable employment opportunities based on their unique skills, qualifications, and preferred locations.
                 </p>
 
-                              <div className="flex flex-wrap items-center gap-4 mb-12">
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-10 w-full sm:w-auto">
                   <Link
                     to="/register-select"
-                    className="px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/30 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:text-[#f4f4f4] transition-all"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/50 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:bg-[#f4f4f4] hover:text-[#03045E] transition-all text-center"
                   >
                     Get Started Today
                   </Link>
                   <Link
                     to="/about"
-                    className="px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/30 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:text-[#f4f4f4] transition-all"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-full border-2 border-[#f4f4f4]/50 text-[#f4f4f4] font-bold hover:border-[#f4f4f4] hover:bg-[#f4f4f4] hover:text-[#03045E] transition-all text-center"
                   >
                     Learn More
                   </Link>
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 pt-8 border-t border-[#f4f4f4]/20 w-full max-w-md">
+                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#f4f4f4]/30 w-full max-w-md">
                   <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">100%</h4>
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Accessible</p>
+                    <h4 className="text-xl sm:text-3xl font-black text-[#f4f4f4]">100%</h4>
+                    <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/80">Accessible</p>
                   </div>
                   <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">24/7</h4>
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Support</p>
+                    <h4 className="text-xl sm:text-3xl font-black text-[#f4f4f4]">24/7</h4>
+                    <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/80">Support</p>
                   </div>
                   <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-[#f4f4f4]">Secure</h4>
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/70">Platform</p>
+                    <h4 className="text-xl sm:text-3xl font-black text-[#f4f4f4]">Secure</h4>
+                    <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-[#f4f4f4]/80">Platform</p>
                   </div>
                 </div>
               </div>
 
               {/* Right Side: Empty space for the image to show through */}
-              <div className="w-full lg:w-1/2 min-h-[300px] lg:min-h-[400px] hidden lg:block">
+              <div className="w-full lg:w-1/2 min-h-[200px] lg:min-h-[400px] hidden lg:block">
               </div>
 
             </div>
           </div>
-
-                </div>
+        </div>
 
 <section className="w-full p-3 sm:p-4 md:px-8 md:py-6">
           <div className={`p-5 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border-2 shadow-xl backdrop-blur-sm ${isContrast ? 'bg-[var(--color-surface)]/50 text-[var(--color-text)] border-[var(--color-border)]' : 'bg-[var(--color-surface)]/50 text-[#03045E] border-[#03045E]/20'}`}>
