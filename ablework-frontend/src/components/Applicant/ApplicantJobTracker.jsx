@@ -717,18 +717,18 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
 
             <div className={`px-5 sm:px-6 py-4 border-t-2 flex flex-col-reverse sm:flex-row gap-2 shrink-0 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
               <button
-                onClick={() => {
-                  setConfirmWithdraw({ isOpen: false, appId: null, loading: false });
-                  setWithdrawReasons([]);
-                  setWithdrawDetails('');
-                  setWithdrawError('');
-                  setWithdrawTargetStatus(null);
-                }}
-                disabled={confirmWithdraw.loading}
-                className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 transition-all focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white/70 border-white/30 hover:bg-white/10 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 hover:bg-[#03045E]/5 focus-visible:ring-[#03045E]'}`}
-              >
-                Keep Application
-              </button>
+  onClick={() => {
+    setConfirmWithdraw({ isOpen: false, appId: null, loading: false });
+    setWithdrawReasons([]);
+    setWithdrawDetails('');
+    setWithdrawError('');
+    setWithdrawTargetStatus(null);
+  }}
+  disabled={confirmWithdraw.loading}
+  className={`flex-1 py-3 rounded-lg font-black text-xs uppercase tracking-wider border-2 bg-transparent disabled:opacity-50 focus:outline-none focus-visible:ring-4 ${isDark ? 'text-white/70 border-white/30 focus-visible:ring-white' : 'text-[#03045E]/70 border-[#03045E]/30 focus-visible:ring-[#03045E]'}`}
+>
+  Keep Application
+</button>
               <button
                 onClick={executeWithdraw}
                 disabled={
