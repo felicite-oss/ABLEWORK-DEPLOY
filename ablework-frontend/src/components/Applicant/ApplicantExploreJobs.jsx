@@ -628,12 +628,12 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               aria-label="Job filters panel"
               className="
                 fixed sm:absolute
-                top-24 bottom-4 left-4 right-4 sm:top-full sm:bottom-auto sm:left-auto sm:right-0
+                top-24 left-4 right-4 sm:top-full sm:left-auto sm:right-0
                 z-50
                 w-auto sm:w-[600px]
                 max-h-[calc(100vh-8rem)] sm:max-h-[75vh]
                 overflow-y-auto overflow-x-hidden
-                p-4 sm:p-8
+                p-4 pb-24 sm:p-8
                 rounded-2xl sm:rounded-3xl
                 bg-white shadow-[0_20px_50px_rgba(3,4,94,0.25)]
                 border-2 border-[#03045E]/20
