@@ -651,10 +651,10 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
                 </legend>
                 <div className="flex flex-col gap-0.5">
                   {WITHDRAWAL_REASON_OPTIONS.map(reason => (
-                    <label
-                      key={reason.key}
-                      className={`flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors focus-within:ring-2 ${isDark ? 'hover:bg-white/10 focus-within:ring-white' : 'hover:bg-[#03045E]/5 focus-within:ring-[#2C7FFF]'}`}
-                    >
+                   <label
+  key={reason.key}
+  className={`flex items-start gap-3 p-2 rounded-lg cursor-pointer focus-within:ring-2 ${isDark ? 'focus-within:ring-white' : 'focus-within:ring-[#2C7FFF]'}`}
+>
                       <input
                         type="checkbox"
                         checked={withdrawReasons.includes(reason.key)}
