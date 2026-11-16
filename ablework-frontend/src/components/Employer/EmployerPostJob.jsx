@@ -471,12 +471,18 @@ const accommodationSuggestions = [
                   <button
                     key={template.label}
                     type="button"
-                    onClick={() => setJobDescription(prev => prev + template.prefix)}
+                    onClick={() => {
+                      // Add a newline before the template if the textarea isn't empty and doesn't already end with a newline
+                      const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
+                        ? '\n' + template.prefix 
+                        : template.prefix;
+                      setJobDescription(prev => prev + prefix);
+                    }}
                     style={{ color: isDark ? '#ffffff' : '#03045E' }}
                     className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm ${
                       isDark 
-                        ? 'bg-[#2C7FFF] border-[#2C7FFF] hover:bg-white hover:text-black' 
-                        : 'bg-white border-gray-400 hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+                        ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
+                        : 'bg-white border-gray-400'
                     }`}
                   >
                     + {template.label}
@@ -488,9 +494,9 @@ const accommodationSuggestions = [
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
-                rows="8"
+                rows="12"
                 placeholder="Describe the role responsibilities and expectations..."
-                className={`w-full p-3 sm:p-4 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold ${
+                className={`w-full p-4 sm:p-5 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold leading-relaxed ${
                   isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
                 }`}
               ></textarea>
