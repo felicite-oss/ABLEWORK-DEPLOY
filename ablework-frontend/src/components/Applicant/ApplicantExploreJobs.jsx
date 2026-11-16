@@ -1381,14 +1381,14 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                         </label>
                       </div>
 
-                      {/* Show file input only if uploading a new one */}
+                                          {/* Show file input only if uploading a new one */}
                       {!useExistingResume && (
                         <input 
                           type="file" 
                           accept=".pdf,.doc,.docx"
                           required={!useExistingResume}
                           onChange={(e) => setResumeFile(e.target.files[0])}
-                          className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-[#03045E] file:text-white hover:file:bg-[#2C7FFF] cursor-pointer ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}
+                          className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-2 file:border-[#03045E]/20 file:bg-[#03045E] file:font-black file:text-white hover:file:bg-[#2C7FFF] hover:file:border-[#2C7FFF] file:transition-colors cursor-pointer text-[#03045E]"
                         />
                       )}
                     </div>
@@ -1397,11 +1397,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                     <div className={`p-4 rounded-xl border-2 ${isDarkScreen ? 'border-white/10 bg-black' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
                       <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${isDarkScreen ? 'text-white/70' : 'text-[#03045E]/70'}`}>Training Certificate (Optional)</label>
                       <p className={`text-[10px] font-semibold mb-3 ${isDarkScreen ? 'text-white/60' : 'text-[#03045E]/60'}`}>Upload any relevant certificates or licenses for this role.</p>
-                      <input 
+                                            <input 
                         type="file" 
                         accept=".pdf,.jpg,.jpeg,.png"
                         onChange={(e) => setCertificateDoc(e.target.files[0])}
-                        className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black hover:file:bg-gray-200 cursor-pointer ${isDarkScreen ? 'text-white file:bg-white/20 file:text-white' : 'text-[#03045E] file:bg-white file:text-[#03045E]'}`}
+                        className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-2 file:border-[#03045E]/20 file:bg-[#03045E] file:font-black file:text-white hover:file:bg-[#2C7FFF] hover:file:border-[#2C7FFF] file:transition-colors cursor-pointer text-[#03045E]"
                       />
                     </div>
                   </div>
