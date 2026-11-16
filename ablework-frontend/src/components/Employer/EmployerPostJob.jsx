@@ -85,11 +85,11 @@ const accommodationSuggestions = [
     'Large Print Documents', 'Step-Free Access', 'Travel Assistant', 'Walking Assistant', 'Accessible Parking'
   ];
 
-  const descriptionTemplates = [
+   const descriptionTemplates = [
     { label: 'Role Overview', prefix: '\n\nRole Overview:\n' },
-    { label: 'Key Responsibilities', prefix: '\n\nKey Responsibilities:\n- ' },
-    { label: 'Qualifications & Skills', prefix: '\n\nWhat You Will Need (Qualifications & Skills):\n- ' },
-    { label: 'Workplace Accommodations', prefix: '\n\nWorkplace Accommodations & Inclusivity:\n- ' }
+    { label: 'Key Responsibilities', prefix: '\n\nKey Responsibilities:\n• ' },
+    { label: 'Qualifications & Skills', prefix: '\n\nWhat You Will Need (Qualifications & Skills):\n• ' },
+    { label: 'Workplace Accommodations', prefix: '\n\nWorkplace Accommodations & Inclusivity:\n• ' }
   ];
 
   const salaryOptionsPHP = [
@@ -454,7 +454,7 @@ const accommodationSuggestions = [
             </div>
           </div>
 
-          {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
+                 {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
@@ -467,12 +467,12 @@ const accommodationSuggestions = [
               
               <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                {descriptionTemplates.map((template) => (
+                               {descriptionTemplates.map((template) => (
                   <button
                     key={template.label}
                     type="button"
                     onClick={() => {
-                      // Add a newline before the template if the textarea isn't empty and doesn't already end with a newline
+                      // Add a newline before the template if the textarea isn't empty
                       const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
                         ? '\n' + template.prefix 
                         : template.prefix;
@@ -490,7 +490,7 @@ const accommodationSuggestions = [
                 ))}
               </div>
 
-              <textarea 
+                           <textarea 
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
