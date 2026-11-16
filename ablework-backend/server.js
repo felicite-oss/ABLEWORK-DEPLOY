@@ -125,16 +125,42 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Files that Cloudinary must treat as "raw" (not image/video).
+// DOCX/DOC/PDF are NOT images — with resource_type:'auto' Cloudinary
+// tries to parse them as images and rejects them.
+const RAW_EXTENSIONS = new Set(['pdf', 'doc', 'docx']);
+
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'ablework_uploads',
-        resource_type: 'auto',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']
+    params: async (req, file) => {
+        const ext = (file.originalname.split('.').pop() || '').toLowerCase();
+        const isRaw = RAW_EXTENSIONS.has(ext);
+
+        return {
+            folder: 'ablework_uploads',
+            // Images -> 'auto'; documents -> 'raw' (REQUIRED for docx)
+            resource_type: isRaw ? 'raw' : 'auto',
+            // Do NOT set allowed_formats here — it breaks raw docs.
+            public_id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            // Preserve the real extension so the URL ends in .docx/.pdf
+            format: ext || undefined
+        };
     }
 });
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; 
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+// Validate MIME + extension ourselves (Cloudinary won't do it reliably for raw).
+const ALLOWED_MIMES = new Set([
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'application/pdf',
+    'application/msword',                                                       // .doc
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   // .docx
+]);
+
+const ALLOWED_EXTS = new Set(['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']);
 
 const upload = multer({
     storage: storage,
@@ -142,6 +168,13 @@ const upload = multer({
         fileSize: MAX_FILE_SIZE,
         files: 2,
         fields: 20
+    },
+    fileFilter: (req, file, cb) => {
+        const ext = (file.originalname.split('.').pop() || '').toLowerCase();
+        if (!ALLOWED_EXTS.has(ext) || !ALLOWED_MIMES.has(file.mimetype)) {
+            return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname));
+        }
+        cb(null, true);
     }
 });
 
@@ -2593,6 +2626,13 @@ setInterval(autoRejectStaleApplications, 24 * 60 * 60 * 1000);
 // before app.listen, and MUST have exactly 4 arguments.
 // =========================================================
 app.use((err, req, res, next) => {
+    console.error('[UPLOAD ERROR]', {
+        name: err?.name,
+        code: err?.code,
+        message: err?.message,
+        field: err?.field
+    });
+
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(413).json({
@@ -2601,14 +2641,20 @@ app.use((err, req, res, next) => {
         }
         if (err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_UNEXPECTED_FILE') {
             return res.status(400).json({
-                message: 'Too many files uploaded, or an unexpected file field was sent.'
+                message: 'Unsupported file type or too many files. Allowed: JPG, PNG, PDF, DOC, DOCX.'
             });
         }
         return res.status(400).json({ message: `Upload error: ${err.code}` });
     }
 
+    // Cloudinary rejections — surface as 400, not 500.
+    if (err && /cloudinary|unsupported|invalid|format/i.test(err.message || '')) {
+        return res.status(400).json({
+            message: 'File could not be processed. Please upload a valid JPG, PNG, PDF, DOC, or DOCX file under 10 MB.'
+        });
+    }
+
     if (err) {
-        console.error('Unhandled request error:', err.message);
         return res.status(500).json({ message: 'Server error processing request.' });
     }
 

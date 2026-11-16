@@ -1476,7 +1476,7 @@ const handleAddressType = (e) => {
   <input
     ref={galleryInputRef}
     type="file"
-    accept="image/*"
+    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
     onChange={(e) => {
       const file = e.target.files[0] || null;
       if (file && file.size > MAX_UPLOAD_BYTES) {
