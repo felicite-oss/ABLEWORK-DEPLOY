@@ -9,7 +9,7 @@ import API_BASE_URL from '../../config';
 
 export default function ForgotPassword({ onClose }) {
   const { mode } = useContext(AccessibilityContext);
-  const { paletteKey } = useColorPalette();
+  const { paletteKey, colors } = useColorPalette();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
@@ -40,6 +40,7 @@ export default function ForgotPassword({ onClose }) {
   const isAPlusPlus = mode === 'A++' || mode === 'Assist' || mode === 'a++' || mode === 'assist';
   const isAPlus = mode === 'A+' || mode === 'a+';
   const isAssist = isAPlusPlus;
+  const textColor = colors?.text || '#03045E';  // <-- ADD THIS LINE HERE
 
   const titleSize = isAPlusPlus
     ? 'text-3xl sm:text-5xl font-bold'
@@ -402,9 +403,9 @@ export default function ForgotPassword({ onClose }) {
           {step === 1 ? (
             <form onSubmit={requestOtp} className="flex flex-col gap-4 sm:gap-5 w-full" autoComplete="off">
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpEmail" title="Email Address" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
-                  Email Address
-                </label>
+           <label htmlFor="fpEmail" title="Email Address" tabIndex="0" style={{ color: (isContrast || isDarkMode) ? '#ffffff' : (colors?.text || '#03045E') }} className={`${labelSize}`}>
+  Email Address
+</label>
                 <div className="relative">
                   <span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -458,7 +459,13 @@ export default function ForgotPassword({ onClose }) {
               <input type="password" name="fakepasswordremembered" autoComplete="new-password" style={{ display: 'none' }} tabIndex={-1} />
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpOtp" title="6-Digit Recovery Code" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+               <label 
+  htmlFor="fpOtp" 
+  title="6-Digit Recovery Code" 
+  tabIndex="0" 
+  style={{ color: (isContrast || isDarkMode) ? '#ffffff' : textColor }} 
+  className={`${labelSize}`}
+>
                   6-Digit Recovery Code
                 </label>
                 <input
@@ -478,7 +485,13 @@ export default function ForgotPassword({ onClose }) {
               </div>
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpNewPass" title="New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+              <label 
+  htmlFor="fpNewPass" 
+  title="New Password" 
+  tabIndex="0" 
+  style={{ color: (isContrast || isDarkMode) ? '#ffffff' : textColor }} 
+  className={`${labelSize}`}
+>
                   New Password
                 </label>
                 <div className="relative">
@@ -521,7 +534,13 @@ export default function ForgotPassword({ onClose }) {
               </div>
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-                <label htmlFor="fpConfirmPass" title="Confirm New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
+              <label 
+  htmlFor="fpConfirmPass" 
+  title="Confirm New Password" 
+  tabIndex="0" 
+  style={{ color: (isContrast || isDarkMode) ? '#ffffff' : textColor }} 
+  className={`${labelSize}`}
+>
                   Confirm New Password
                 </label>
                 <div className="relative">
