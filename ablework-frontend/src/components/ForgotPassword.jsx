@@ -349,10 +349,12 @@ export default function ForgotPassword({ onClose }) {
   style={{ backgroundImage: `url(${backgroundImg})` }}
 >
 <div
- className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${isAssist ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'} relative z-10
-    ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
-    ${isAssist ? 'pt-10 px-8 pb-12 sm:pt-12 sm:px-10 sm:pb-16 lg:pt-14 lg:px-12 lg:pb-18' : 'p-5 sm:pt-10 sm:px-10 sm:pb-14 lg:pt-12 lg:px-12 lg:pb-16'}
-    ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} mr-0 md:mr-4 lg:mr-8`}
+ className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start gap-4 sm:gap-6 relative z-10
+    ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900/90 text-white border-2 border-blue-500/50' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
+    ${isAssist
+      ? 'pt-10 px-8 pb-12 sm:pt-12 sm:px-10 sm:pb-16 lg:pt-14 lg:px-12 lg:pb-18'
+      : 'p-5 sm:pt-10 sm:px-10 sm:pb-14 lg:pt-12 lg:px-12 lg:pb-16'}
+    ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} md:mt-15 md:mr-2 lg:mr-6`}
 >
           <div className="w-full flex items-center justify-start">
             <div className="flex items-center gap-2">
