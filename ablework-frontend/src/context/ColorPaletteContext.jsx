@@ -212,7 +212,7 @@ export function ColorPaletteProvider({ children }) {
   }, [paletteKey, palette]);
 
   return (
-    <ColorPaletteContext.Provider value={{ paletteKey, palette, setPaletteKey, palettes: COLOR_PALETTES }}>
+    <ColorPaletteContext.Provider value={{ paletteKey, palette, colors: palette.colors, setPaletteKey, palettes: COLOR_PALETTES }}>
       {children}
     </ColorPaletteContext.Provider>
   );

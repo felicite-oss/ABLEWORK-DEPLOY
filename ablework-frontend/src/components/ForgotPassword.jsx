@@ -9,7 +9,8 @@ import API_BASE_URL from '../../config';
 
 export default function ForgotPassword({ onClose }) {
   const { mode } = useContext(AccessibilityContext);
-  const { paletteKey, colors } = useColorPalette();
+  const { paletteKey, palette } = useColorPalette();
+const colors = palette?.colors;
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
