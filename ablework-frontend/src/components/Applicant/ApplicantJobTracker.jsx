@@ -109,13 +109,13 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
     }
   };
 
-  const getStatusStyle = (status) => {
+    const getStatusStyle = (status) => {
     if (isHighContrastOrDarkComfort) {
       switch (status) {
         case 'Received': return 'bg-white text-black border-white';
         case 'Under Review': return 'bg-white text-black border-white';
         case 'Shortlisted': return 'bg-white text-black border-white';
-        case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
+        case 'Hired': return 'bg-white text-black border-white'; // Changed from blue
         case 'Withdrawn': return 'bg-black text-white border-white';
         case 'Rejected': return 'bg-black text-blue-400 border-blue-400';
         default: return 'bg-white text-black border-white';
@@ -126,7 +126,7 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
         case 'Received': return 'bg-[#1A1A1A] text-white border-white/30';
         case 'Under Review': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
         case 'Shortlisted': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
-        case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
+        case 'Hired': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50'; // Changed to match Under Review/Shortlisted
         case 'Withdrawn': return 'bg-[#1A1A1A] text-gray-400 border-gray-600';
         case 'Rejected': return 'bg-[#1A1A1A] text-blue-400 border-blue-500/50';
         default: return 'bg-[#1A1A1A] text-white border-white/30';
@@ -136,7 +136,7 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
       case 'Received': return 'bg-gray-100 text-gray-700 border-gray-300';
       case 'Under Review': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       case 'Shortlisted': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
-      case 'Hired': return 'bg-[#2C7FFF] text-white border-[#2C7FFF]';
+      case 'Hired': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30'; // Changed to match Under Review/Shortlisted
       case 'Withdrawn': return 'bg-gray-100 text-gray-600 border-gray-300';
       case 'Rejected': return 'bg-[#2C7FFF]/10 text-[#2C7FFF] border-[#2C7FFF]/30';
       default: return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
