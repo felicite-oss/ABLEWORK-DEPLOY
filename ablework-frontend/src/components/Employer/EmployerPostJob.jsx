@@ -11,7 +11,8 @@ export default function EmployerPostJob({ profile, refreshData, setActiveTab }) 
   const isDark = isContrast || isDarkMode;
   const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
   const [jobTitle, setJobTitle] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
+   const [jobDescription, setJobDescription] = useState('');
+  const [selectedTemplates, setSelectedTemplates] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [currentSkill, setCurrentSkill] = useState(''); 
   const [selectedAccommodations, setSelectedAccommodations] = useState([]);
@@ -467,21 +468,47 @@ const accommodationSuggestions = [
               
               <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                               {descriptionTemplates.map((template) => (
-                  <button
-                    key={template.label}
-                    type="button"
-                    onClick={() => setJobDescription(prev => prev + template.prefix)}
-                    style={{ color: isDark ? '#ffffff' : '#03045E' }}
-                    className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm ${
-                      isDark 
-                        ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
-                        : 'bg-white border-gray-400'
-                    }`}
-                  >
-                    + {template.label}
-                  </button>
-                ))}
+                                  {descriptionTemplates.map((template) => {
+                  const isSelected = selectedTemplates.includes(template.label);
+                  return (
+                    <button
+                      key={template.label}
+                      type="button"
+                      onClick={() => {
+                        // 1. Toggle the selected state
+                        if (isSelected) {
+                          setSelectedTemplates(prev => prev.filter(t => t !== template.label));
+                        } else {
+                          setSelectedTemplates(prev => [...prev, template.label]);
+                          // 2. Only insert the text if it wasn't already selected
+                          const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
+                            ? '\n' + template.prefix 
+                            : template.prefix;
+                          setJobDescription(prev => prev + prefix);
+                        }
+                      }}
+                      style={{ color: isSelected ? '#ffffff' : (isDark ? '#ffffff' : '#03045E') }}
+                      className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-[#2C7FFF] border-[#2C7FFF]'
+                          : isDark 
+                            ? 'bg-black border-white' 
+                            : 'bg-white border-gray-400'
+                      }`}
+                    >
+                      {isSelected ? (
+                        <>
+                          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          {template.label}
+                        </>
+                      ) : (
+                        <>+ {template.label}</>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               <textarea 

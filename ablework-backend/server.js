@@ -130,7 +130,7 @@ const storage = new CloudinaryStorage({
     params: {
         folder: 'ablework_uploads',
         resource_type: 'auto',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf']
+        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']
     }
 });
 
