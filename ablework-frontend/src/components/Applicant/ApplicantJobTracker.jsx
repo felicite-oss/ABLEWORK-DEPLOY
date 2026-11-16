@@ -245,16 +245,25 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
               </div>
             )}
 
-            {parseSafeArray(role.provided_accommodations).length > 0 && (
-              <div>
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Provided Accommodations</span>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {parseSafeArray(role.provided_accommodations).map((acc, i) => (
-                    <span key={i} className={`px-3 py-1 text-xs font-semibold rounded-lg border ${isDark ? 'bg-blue-900/30 border-blue-700 text-blue-300' : 'bg-blue-50 border-blue-200 text-[#2C7FFF]'}`}>{acc}</span>
-                  ))}
-                </div>
-              </div>
-            )}
+{parseSafeArray(role.provided_accommodations).length > 0 && (
+  <div>
+    <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Provided Accommodations</span>
+    <div className="flex flex-wrap gap-2 mt-2">
+      {parseSafeArray(role.provided_accommodations).map((acc, i) => (
+        <span 
+          key={i} 
+          className={`px-3 py-1 text-xs font-semibold rounded-lg border ${
+            isDark 
+              ? 'bg-[var(--color-accent)]/20 border-[var(--color-accent)]/50 text-[var(--color-accent)]' 
+              : 'bg-[var(--color-accentSoft)] border-[var(--color-accent)]/30 text-[var(--color-accent)]'
+          }`}
+        >
+          {acc}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
 
             {role.job_description && (
               <div>
