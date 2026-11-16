@@ -467,7 +467,7 @@ const accommodationSuggestions = [
               
               <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                {descriptionTemplates.map((template) => (
+                               {descriptionTemplates.map((template) => (
                   <button
                     key={template.label}
                     type="button"
@@ -475,8 +475,8 @@ const accommodationSuggestions = [
                     style={{ color: isDark ? '#ffffff' : '#03045E' }}
                     className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm ${
                       isDark 
-                        ? 'bg-[#2C7FFF] border-[#2C7FFF] hover:bg-white hover:text-black' 
-                        : 'bg-white border-gray-400 hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+                        ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
+                        : 'bg-white border-gray-400'
                     }`}
                   >
                     + {template.label}
@@ -488,9 +488,9 @@ const accommodationSuggestions = [
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
-                rows="8"
+                rows="10"
                 placeholder="Describe the role responsibilities and expectations..."
-                className={`w-full p-3 sm:p-4 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold ${
+                className={`w-full pl-4 pr-3 py-3 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold leading-relaxed ${
                   isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
                 }`}
               ></textarea>
