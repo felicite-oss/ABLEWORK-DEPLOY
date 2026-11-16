@@ -1388,7 +1388,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     accept=".pdf,.doc,.docx"
     required={!useExistingResume}
     onChange={(e) => setResumeFile(e.target.files[0])}
-    className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-[#03045E] file:text-white hover:file:bg-[#2C7FFF] cursor-pointer ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}
+    className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-[#f4f4f4] file:text-[#03045E] hover:file:bg-[#f4f4f4] cursor-pointer ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}
   />
 )}
                     </div>
