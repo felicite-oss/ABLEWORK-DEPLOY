@@ -19,15 +19,6 @@ let DefaultIcon = L.icon({
   iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
-const normalizePhAddressQuery = (raw) => {
-  return raw
-    .replace(/\bbrgy\.?\b/gi, 'Barangay')
-    .replace(/\bbgy\.?\b/gi, 'Barangay')
-    .replace(/\bsitio\b/gi, 'Sitio')
-    .replace(/\bpurok\b/gi, 'Purok')
-    .replace(/\s+/g, ' ')
-    .trim();
-};
 
 function MapRecenter({ lat, lng }) {
   const map = useMap();
@@ -68,7 +59,6 @@ export default function EmployerRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [industry, setIndustry] = useState('');
-  const [customIndustry, setCustomIndustry] = useState('');
   const [jobRole, setJobRole] = useState('');
   const [address, setAddress] = useState('');
   const [lat, setLat] = useState(null);
@@ -81,11 +71,9 @@ export default function EmployerRegister() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
+   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const typingTimer = useRef(null);
-  const abortRef = useRef(null);
-  const addressWrapRef = useRef(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [satelliteView, setSatelliteView] = useState(false);
   const [legendOpen, setLegendOpen] = useState(true);
@@ -111,16 +99,6 @@ export default function EmployerRegister() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  useEffect(() => {
-    const onDocMouseDown = (e) => {
-      if (addressWrapRef.current && !addressWrapRef.current.contains(e.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', onDocMouseDown);
-    return () => document.removeEventListener('mousedown', onDocMouseDown);
   }, []);
 
   useEffect(() => {
@@ -169,105 +147,45 @@ export default function EmployerRegister() {
 
 const handleAddressType = (e) => {
     const text = e.target.value;
-    const prevLat = lat;
-    const prevLng = lng;
     setAddress(text);
-    setLat(null);
-    setLng(null);
 
-    if (text.trim().length < 3) {
+    if (text.length < 3) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
     }
 
-    if (typingTimer.current) clearTimeout(typingTimer.current);
+    if (typingTimer.current) {
+      clearTimeout(typingTimer.current);
+    }
 
     typingTimer.current = setTimeout(async () => {
-      if (abortRef.current) abortRef.current.abort();
-      const controller = new AbortController();
-      abortRef.current = controller;
-
       try {
-        const normalized = normalizePhAddressQuery(text);
-        const query = encodeURIComponent(normalized);
+        const query = encodeURIComponent(text);
         const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
-
-        let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
-          `?country=ph&autocomplete=true&limit=8` +
-          `&types=address,poi,place,locality,neighborhood` +
-          `&language=en&access_token=${mapboxToken}`;
-
-        // Bias results toward the current viewport if we have one
-        if (prevLat && prevLng) url += `&proximity=${prevLng},${prevLat}`;
-
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?country=ph&autocomplete=true&limit=5&access_token=${mapboxToken}`);
         const data = await res.json();
-
-        const features = data.features || [];
-        setSuggestions(features);
-        setShowDropdown(features.length > 0);
+        
+        if (data.features && data.features.length > 0) {
+          setSuggestions(data.features);
+          setShowDropdown(true);
+        } else {
+          setSuggestions([]);
+          setShowDropdown(false);
+        }
       } catch (error) {
-        if (error.name === 'AbortError') return;
         console.error("Error fetching Mapbox suggestions:", error);
-        setSuggestions([]);
-        setShowDropdown(false);
       }
-    }, 350);
+    }, 400); 
   };
 
   const handleSelectSuggestion = (place) => {
-    setAddress(place.place_name);
-
-    if (place.center && place.center.length === 2) {
+    setAddress(place.place_name); 
+    if (place.center) {
       setLng(place.center[0]);
       setLat(place.center[1]);
     }
-
-    setSuggestions([]);
     setShowDropdown(false);
-  };
-
-  const handleAddressBlur = () => {
-    setTimeout(() => setShowDropdown(false), 150);
-  };
-
-  const handleAddressFocus = () => {
-    if (address.trim().length >= 3) {
-      setSuggestions([]);
-      setShowDropdown(false);
-    }
-  };
-
-  // Geocodes a manually typed address if the user didn't pick a suggestion
-  const resolveManualAddress = async () => {
-    if ((lat && lng) || !address.trim() || address.trim().length < 3) {
-      return { latitude: lat, longitude: lng };
-    }
-
-    const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
-    const query = encodeURIComponent(normalizePhAddressQuery(address));
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
-      `?country=ph&autocomplete=false&limit=1` +
-      `&types=address,poi,place,locality,neighborhood` +
-      `&language=en&access_token=${mapboxToken}`;
-
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const top = data.features && data.features[0];
-      if (top && top.center && top.center.length === 2) {
-        const [lngResolved, latResolved] = top.center;
-        setLat(latResolved);
-        setLng(lngResolved);
-        setAddress(top.place_name);
-        return { latitude: latResolved, longitude: lngResolved };
-      }
-    } catch (err) {
-      console.error('Could not resolve manual address:', err);
-    }
-
-    return { latitude: lat, longitude: lng };
   };
 
   const handleSubmit = async (e) => {
@@ -279,10 +197,6 @@ const handleAddressType = (e) => {
       return;
     }
 
-    if (industry === 'Other' && !customIndustry.trim()) {
-      setStatusMessage({ type: 'error', text: "Please specify your industry type." });
-      return;
-    }
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
         if (!passwordRegex.test(password)) {
           setStatusMessage({ 
@@ -315,17 +229,6 @@ const handleAddressType = (e) => {
       }
     }
 
-    
-    // If the user typed an address but never picked a suggestion, resolve it now.
-const coords = await resolveManualAddress();
-    if (!coords.latitude || !coords.longitude) {
-      setStatusMessage({
-        type: 'error',
-        text: 'We could not pinpoint your workplace address. Please select a suggestion from the dropdown or use "Open Map & Detect Location".'
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     const formData = new FormData();
@@ -334,11 +237,12 @@ const coords = await resolveManualAddress();
     formData.append('email', email);
     formData.append('phone', phone);
     formData.append('password', password);
-    formData.append('industry', industry === 'Other' ? customIndustry : industry);
+    formData.append('industry', industry);
     formData.append('jobRole', jobRole);
     formData.append('address', address);
-    formData.append('latitude', coords.latitude);
-    formData.append('longitude', coords.longitude);
+    
+    if (lat) formData.append('latitude', lat);
+    if (lng) formData.append('longitude', lng);
     if (verificationDocs && verificationDocs.length > 0) {
       verificationDocs.forEach((file) => {
         formData.append('verificationDocuments', file); // Use an array field name
@@ -603,19 +507,6 @@ const coords = await resolveManualAddress();
                       </option>
                     ))}
                   </select>
-
-                  {industry === 'Other' && (
-                    <input
-                      id="customIndustry"
-                      type="text"
-                      value={customIndustry}
-                      onChange={(e) => setCustomIndustry(e.target.value)}
-                      placeholder="Please specify your industry"
-                      required
-                      className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E] focus:outline-none focus:border-[#2C7FFF] transition mt-1.5"
-                      aria-label="Custom Industry. Please specify your industry since you selected Other."
-                    />
-                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -756,22 +647,14 @@ const coords = await resolveManualAddress();
                   <span className={isAccessibilityDarkMode ? '!text-black' : ''}>Open Map & Detect Location</span>
                 </button>
 
-                <div className="relative w-full mt-2" ref={addressWrapRef}>
+                <div className="relative w-full mt-2">
                   <input
                     id="address"
                     type="text"
                     value={address}
                     onChange={handleAddressType}
-                    onFocus={handleAddressFocus}
-                    onBlur={() => {
-                      handleAddressBlur();
-                      if (address.trim().length >= 3 && (!lat || !lng)) {
-                        resolveManualAddress();
-                      }
-                    }}
-                    placeholder="Enter your Address (e.g. Brgy Tuburan, Bacolod City)"
+                    placeholder="Enter your Address (e.g. Bacolod City)"
                     required
-                    autoComplete="off"
                     aria-label="Address autocomplete"
                     aria-autocomplete="list"
                     aria-controls="address-suggestions"
@@ -785,16 +668,16 @@ const coords = await resolveManualAddress();
                       id="address-suggestions"
                       role="listbox"
                       aria-label="Address suggestions list"
-                      className="absolute z-[60] top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                      className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
                     >
-                      {suggestions.map((place) => (
+                      {suggestions.map((place, index) => (
                         <li
-                          key={place.id}
+                          key={index}
                           role="option"
-                          aria-selected={false}
+                          aria-selected="false"
+                          tabIndex="0"
                           title={place.place_name}
                           aria-label={place.place_name}
-                          onMouseDown={(e) => e.preventDefault()}
                           onClick={() => handleSelectSuggestion(place)}
                           className="p-3 cursor-pointer hover:bg-gray-100 text-[#03045E] text-sm border-b last:border-b-0"
                         >

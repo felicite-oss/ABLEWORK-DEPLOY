@@ -73,6 +73,9 @@ export default function ApplicantRegister() {
   const [address, setAddress] = useState('');
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
+  const [barangay, setBarangay] = useState('');
+  const [barangayCoords, setBarangayCoords] = useState({ lat: null, lng: null });
+  const [isResolvingBarangay, setIsResolvingBarangay] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
   const [radius, setRadius] = useState(10); 
   const [independence, setIndependence] = useState('');
@@ -380,6 +383,49 @@ const handleAddressType = (e) => {
     setShowDropdown(false);
   };
 
+  // Handler for when the user selects a Barangay from the dropdown
+  const handleBarangayChange = async (e) => {
+    const selectedBarangay = e.target.value;
+    setBarangay(selectedBarangay);
+
+    if (!selectedBarangay) return;
+
+    setIsResolvingBarangay(true);
+    setLat(null);
+    setLng(null);
+
+    const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
+    // We append the city/municipality from the address to ensure we get the right barangay
+    // (e.g., "Barangay Tuburan, Bacolod City")
+    const cityContext = address.split(',').slice(1).join(', ').trim() || 'Philippines';
+    const query = encodeURIComponent(`${selectedBarangay}, ${cityContext}`);
+    
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
+      `?country=ph&autocomplete=false&limit=1&types=locality,neighborhood,place&language=en&access_token=${mapboxToken}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const top = data.features && data.features[0];
+
+      if (top && top.center && top.center.length === 2) {
+        const [lngResolved, latResolved] = top.center;
+        setLng(lngResolved);
+        setLat(latResolved);
+        setBarangayCoords({ lat: latResolved, lng: lngResolved });
+        
+        // Optionally, force the map to this exact center
+        setAddress(`${selectedBarangay}, ${cityContext}`);
+      } else {
+        setStatusMessage({ type: 'error', text: "Could not pinpoint the selected Barangay. Please use 'Detect My Location'." });
+      }
+    } catch (err) {
+      console.error("Error resolving barangay:", err);
+    } finally {
+      setIsResolvingBarangay(false);
+    }
+  };
+
   const handleAddressBlur = () => {
     // Delay so a click on a suggestion still registers before the list closes
     setTimeout(() => setShowDropdown(false), 150);
@@ -395,10 +441,15 @@ const handleAddressFocus = () => {
 
   // Geocodes a manually typed address if the user didn't pick a suggestion
   const resolveManualAddress = async () => {
+    // 1. If Barangay is selected, prioritize its coordinates
+    if (barangayCoords.lat && barangayCoords.lng) {
+      return { latitude: barangayCoords.lat, longitude: barangayCoords.lng };
+    }
+
+    // 2. If we already have coords from Mapbox autocomplete or GPS, use them
     if ((lat && lng) || !address.trim() || address.trim().length < 3) {
       return { latitude: lat, longitude: lng };
     }
-
     const mapboxToken = import.meta.env.VITE_MAPBOX_API_KEY;
     const normalized = normalizePhAddressQuery(address);
 
@@ -1010,6 +1061,35 @@ const handleAddressFocus = () => {
                     </ul>
                   )}
                 </div>
+                
+                {/* --- BARANGAY DROPDOWN --- */}
+                <div className="flex flex-col gap-1.5 mt-2">
+                  <label htmlFor="barangay" className="text-xs sm:text-sm font-semibold text-[#03045E]">
+                    Barangay (Required for accuracy)
+                  </label>
+                  <select
+                    id="barangay"
+                    value={barangay}
+                    onChange={handleBarangayChange}
+                    className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E] focus:outline-none focus:border-[#2C7FFF] transition cursor-pointer appearance-none"
+                  >
+                    <option value="">Select your Barangay...</option>
+                    {/* Note: Replace these with your actual PSGC dataset mapped out */}
+                    <option value="Barangay Taculing">Barangay Taculing</option>
+                    <option value="Barangay Tangub">Barangay Tangub</option>
+                    <option value="Barangay Villamonte">Barangay Villamonte</option>
+                    <option value="Barangay Mandalagan">Barangay Mandalagan</option>
+                    <option value="Barangay Bata">Barangay Bata</option>
+                    <option value="Barangay Estefania">Barangay Estefania</option>
+                    <option value="Barangay Alijis">Barangay Alijis</option>
+                    <option value="Barangay Pahanocoy">Barangay Pahanocoy</option>
+                    {/* Add more here based on user's selected city... */}
+                  </select>
+                  {isResolvingBarangay && (
+                    <p className="text-[10px] text-[#2C7FFF] font-bold animate-pulse">Resolving barangay coordinates...</p>
+                  )}
+                </div>
+                
               </div>
 
                 <div className="mt-4 flex flex-col gap-2">
