@@ -275,7 +275,7 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
       </div>
     );
   };
-
+  
   const renderCard = (companyGroup) => {
     const isOpen = expandedCompany === companyGroup.company_name;
     const activeRole = selectedRolePerCompany[companyGroup.company_name] || companyGroup.applicationsList[0];
