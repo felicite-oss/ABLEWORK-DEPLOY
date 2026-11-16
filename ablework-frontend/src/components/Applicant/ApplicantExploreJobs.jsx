@@ -1383,7 +1383,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                       </div>
 
                     {!useExistingResume && (
- <input 
+<input 
   type="file" 
   accept=".pdf,.jpg,.jpeg,.png"
   onChange={(e) => setCertificateDoc(e.target.files[0])}
