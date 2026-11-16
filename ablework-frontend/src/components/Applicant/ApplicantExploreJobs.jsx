@@ -818,17 +818,17 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                     <div className="flex flex-col gap-3">
                       
                       {/* Badges Row */}
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center justify-between gap-2 w-full flex-nowrap">
                         <div 
                           tabIndex="0"
                           aria-label={`Overall match score: ${job.match_percentage || 0} percent.`}
                           className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${getMatchColor(job.match_percentage || 0, isDarkScreen)}`}
                         >
-                          <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                          <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="12" cy="12" r="10" />
                             <circle cx="12" cy="12" r="3" />
                           </svg>
-                          <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest">
+                          <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest whitespace-nowrap">
                             {job.match_percentage || 0}% MATCH
                           </span>
                         </div>
@@ -837,11 +837,11 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                           aria-label={`Distance: ${job.distance_km || '0.0'} kilometers away.`}
                           className={`flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] ${getDistanceBadgeStyles(job.distance_km, isDarkScreen)}`}
                         >
-                          <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                          <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
-                          <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest">
+                          <span aria-hidden="true" className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest whitespace-nowrap">
                             {job.distance_km || '0.0'} KM AWAY
                           </span>
                         </div>
