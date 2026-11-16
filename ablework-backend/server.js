@@ -177,6 +177,16 @@ const upload = multer({
         cb(null, true);
     }
 });
+// =========================================================
+// FIX #6: Warm the embedding model in background on boot
+// =========================================================
+let extractorPromise = null;
+async function getExtractor() {
+    if (!extractorPromise) {
+        extractorPromise = pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+    }
+    return extractorPromise;
+}
 
 async function getUserLiveContext(userId, role) {
     let contextSummary = { role };
