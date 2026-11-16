@@ -458,18 +458,23 @@ const accommodationSuggestions = [
             </div>
           </div>
 
-                  {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
+          {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
           <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
               Full Job Description <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
 
-            {/* REMOVED max-w-4xl AND ADDED w-full TO FIX THE RIGHT MARGIN */}
-            <div className={`w-full rounded-lg border-2 flex flex-col transition-all ${isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'}`}>
+            <div className={`w-full rounded-lg border-2 flex flex-col transition-all ${
+              isDark ? 'border-white bg-black' : 'border-[var(--color-border)] bg-[var(--color-surface)]'
+            }`}>
               
-              <div className={`flex flex-wrap items-center gap-2 px-2 py-1.5 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
-                <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
+              <div className={`flex flex-wrap items-center gap-2 px-2 py-1.5 border-b-2 ${
+                isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-[var(--color-border)] bg-[var(--color-surfaceMuted)]'
+              }`}>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${
+                  isDark ? 'text-white/50' : 'text-[var(--color-textSubtle)]'
+                }`}>Insert:</span>
                 {descriptionTemplates.map((template) => {
                   const isSelected = selectedTemplates.includes(template.label);
                   return (
@@ -519,7 +524,9 @@ const accommodationSuggestions = [
                 rows="10"
                 placeholder="Describe the role responsibilities and expectations..."
                 className={`w-full p-4 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold leading-relaxed ${
-                  isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
+                  isDark 
+                    ? 'text-white placeholder-white/40' 
+                    : 'text-[var(--color-text)] placeholder-[var(--color-textMuted)]'
                 }`}
               ></textarea>
             </div>
