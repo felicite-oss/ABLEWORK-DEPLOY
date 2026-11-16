@@ -1383,7 +1383,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                       </div>
 
                     {!useExistingResume && (
-<input 
+ <input 
   type="file" 
   accept=".pdf,.jpg,.jpeg,.png"
   onChange={(e) => setCertificateDoc(e.target.files[0])}
@@ -1392,17 +1392,17 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
 )}
                     </div>
 
-                    {/* Certificate Section (Optional) */}
+                   {/* Certificate Section (Optional) */}
 <div className={`p-4 rounded-xl border-2 ${isDarkScreen ? 'border-white/10 bg-black' : 'border-gray-300 bg-white'}`}>
-                      <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${isDarkScreen ? 'text-white/70' : 'text-[#03045E]/70'}`}>Training Certificate (Optional)</label>
-                      <p className={`text-[10px] font-semibold mb-3 ${isDarkScreen ? 'text-white/60' : 'text-[#03045E]/60'}`}>Upload any relevant certificates or licenses for this role.</p>
-                      <input 
-                        type="file" 
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => setCertificateDoc(e.target.files[0])}
-                        className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black cursor-pointer ${isDarkScreen ? 'text-white file:bg-white/20 file:text-white' : 'text-[#03045E] file:bg-white file:text-[#03045E]'}`}
-                      />
-                    </div>
+  <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${isDarkScreen ? 'text-white/70' : 'text-[#03045E]/70'}`}>Training Certificate (Optional)</label>
+  <p className={`text-[10px] font-semibold mb-3 ${isDarkScreen ? 'text-white/60' : 'text-[#03045E]/60'}`}>Upload any relevant certificates or licenses for this role.</p>
+  <input 
+    type="file" 
+    accept=".pdf,.jpg,.jpeg,.png"
+    onChange={(e) => setCertificateDoc(e.target.files[0])}
+    className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-2 file:border-gray-300 file:text-xs file:font-black cursor-pointer ${isDarkScreen ? 'text-white file:bg-white/20 file:text-white' : 'text-[#03045E] file:bg-white file:text-[#03045E]'}`}
+  />
+</div>
                   </div>
                   <div className="flex flex-col gap-1.5 sm:gap-2">
                     <label htmlFor="cover-letter" className="text-xs sm:text-sm font-black text-[#03045E]">Pitch / Cover Letter <span className="text-[#03045E]/70 font-semibold">(Optional)</span></label>
