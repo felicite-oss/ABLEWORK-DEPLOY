@@ -628,11 +628,10 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               aria-label="Job filters panel"
               className="
                 fixed sm:absolute
-                inset-x-3 bottom-3 sm:inset-x-auto sm:bottom-auto
-                sm:top-full sm:right-0
+                top-24 bottom-4 left-4 right-4 sm:top-full sm:bottom-auto sm:left-auto sm:right-0
                 z-50
                 w-auto sm:w-[600px]
-                max-h-[70vh] sm:max-h-[75vh]
+                max-h-[calc(100vh-8rem)] sm:max-h-[75vh]
                 overflow-y-auto overflow-x-hidden
                 p-4 sm:p-8
                 rounded-2xl sm:rounded-3xl
@@ -642,7 +641,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               "
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <div className="flex flex-col gap-1 sm:gap-1.5">
+                <div className="flex flex-col gap-1 sm:gap-1.5 min-w-0">
                   <label htmlFor="job-search" className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-widest ${isDarkScreen ? 'text-white' : 'text-[#03045E]'} focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded`} tabIndex="0">Search by Title or Company</label>
                   <input 
                     id="job-search"
@@ -672,7 +671,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   
                   <div className="flex flex-col gap-1 sm:gap-1.5">
                     <label htmlFor="salary-filter" className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-widest ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
