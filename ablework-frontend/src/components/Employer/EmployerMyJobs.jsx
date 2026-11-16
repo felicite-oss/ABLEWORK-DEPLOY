@@ -217,6 +217,16 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
 
   const handleEditJob = async (e) => {
     e.preventDefault();
+    setStatusMessage({ type: '', text: '' });
+
+    // VALIDATION: Make sure all required fields are present
+    if (!editingJob.job_title?.trim()) return triggerAlert('default', 'Missing Field', 'Job Title is required.', 'Please enter a job title.');
+    if (!editingJob.job_description?.trim()) return triggerAlert('default', 'Missing Field', 'Job Description is required.', 'Please enter a job description.');
+    if (!editingJob.working_hours_per_week) return triggerAlert('default', 'Missing Field', 'Working Hours is required.', 'Please specify the number of working hours per week.');
+    if (!editingJob.work_schedule?.trim()) return triggerAlert('default', 'Missing Field', 'Work Schedule is required.', 'Please provide a work schedule.');
+    if (editingJob.parsedSkills.length === 0) return triggerAlert('default', 'Missing Field', 'Required Skills are missing.', 'Please add at least one skill.');
+    if (editingJob.parsedDisabilities.length === 0) return triggerAlert('default', 'Missing Field', 'Accepted Disabilities are missing.', 'Please select at least one disability.');
+    
     setIsSubmitting(true);
 
     const payload = {
@@ -324,7 +334,6 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
   return (
     <div className={`animate-fadeIn max-w-9xl mx-auto pb-6 sm:pb-10 relative px-1 sm:px-0 ${pageText}`}>
       
-      {/* Header Panel (Outer) */}
       <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 backdrop-blur-md p-4 sm:p-6 rounded-2xl border-2 ${panelBg}`}>
         <div>
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5 flex-wrap">
@@ -353,7 +362,6 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
             />
           </div>
 
-          {/* Tab Container (Medium Outer) - FIXED FOR FONT SCALING */}
           <div className={`flex gap-1 sm:gap-2 p-1 rounded-xl border-2 w-full md:w-auto ${tabContainerBg}`}>
             <button 
               onClick={() => setListTab('active')}
@@ -371,7 +379,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
         </div>
       </div>
 
-                  <div className="flex flex-col gap-4 sm:gap-8">
+      <div className="flex flex-col gap-4 sm:gap-8">
         {displayedJobs.length > 0 ? (
           <div className="flex flex-col gap-6 w-full">
             <div className={`w-full overflow-x-auto rounded-2xl border-2 ${panelBg}`}>
@@ -399,7 +407,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                           >
                             {job.job_description || 'No description provided.'}
                           </p>
-                                                  {job.job_description && job.job_description.length > 150 && (
+                          {job.job_description && job.job_description.length > 150 && (
                             <button
                               onClick={() => toggleExpand(job.id)}
                               className={`text-[10px] font-bold mt-1 cursor-pointer hover:underline text-left w-fit ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`}
@@ -447,7 +455,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                                 Edit
                               </button>
                               
-                                                                <button 
+                              <button 
                                 onClick={() => handleArchiveJob(job.id)} 
                                 className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-black rounded-lg border-2 transition cursor-pointer bg-transparent ${
                                   isDark 
@@ -503,19 +511,18 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300"
           style={{ backgroundColor: (isContrast || isDarkMode) ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)', filter: 'none' }}
         >
-          {/* Edit Modal (Large Outer) */}
           <div className={`p-5 sm:p-8 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] border-2 ${modalBg}`}>
             <h2 className={`text-xl sm:text-2xl font-extrabold mb-4 sm:mb-6 ${pageText}`}>Edit Job Posting</h2>
             
             <form onSubmit={handleEditJob} className="flex flex-col gap-4 sm:gap-5">
               
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Job Title</label>
+                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Job Title <span className="text-red-500">*</span></label>
                 <input type="text" value={editingJob.job_title} onChange={e => setEditingJob({...editingJob, job_title: e.target.value})} required className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`} />
               </div>
               
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Description</label>
+                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Description <span className="text-red-500">*</span></label>
                 <textarea rows="4" value={editingJob.job_description} onChange={e => setEditingJob({...editingJob, job_description: e.target.value})} required className={`p-2.5 sm:p-3 border-2 rounded-xl resize-none outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`}></textarea>
               </div>
 
@@ -538,11 +545,11 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs sm:text-sm font-bold text-[#03045E]">Working Hours / Week</label>
+                  <label className="text-xs sm:text-sm font-bold text-[#03045E]">Working Hours / Week <span className="text-red-500">*</span></label>
                   <input
                     type="number"
                     min="0"
-                    max="60"
+                    max="168"
                     step="1"
                     placeholder="e.g. 40"
                     value={editingJob.working_hours_per_week ?? ''}
@@ -550,20 +557,19 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                       ...editingJob,
                       working_hours_per_week: e.target.value === '' ? null : Number(e.target.value)
                     })}
+                    required
                     className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`}
                   />
-                  <p className={`text-[10px] sm:text-xs font-semibold ${subtle}`}>
-                    Optional. Helps applicants compare full-time vs. part-time combinations.
-                  </p>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs sm:text-sm font-bold text-[#03045E]">Work Schedule (optional)</label>
+                  <label className="text-xs sm:text-sm font-bold text-[#03045E]">Work Schedule <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     placeholder="e.g. Mon–Fri, 9am–6pm"
                     value={editingJob.work_schedule ?? ''}
                     onChange={e => setEditingJob({ ...editingJob, work_schedule: e.target.value })}
+                    required
                     className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`}
                   />
                 </div>
@@ -572,7 +578,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
               <hr className={`my-1 border-t-2 ${divider}`} />
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Required Skills</label>
+                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Required Skills <span className="text-red-500">*</span></label>
                 <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${subtle}`}>Type and press <strong>Enter</strong> to add.</p>
                 <input 
                   type="text" value={currentSkill} 
@@ -635,87 +641,86 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                 )}
               </div>
 
-            {/* Disability Section (Categorized) */}
-              <div className={`flex flex-col gap-2 p-3 sm:p-5 rounded-xl border-2 ${disabBoxBg}`}>
-                <div>
-                  <label className="text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider text-[#03045E]">
-                    Accepted Disabilities <span style={{ color: 'var(--color-primary, #2C7FFF)' }}>*</span>
-                  </label>
-                  <p className={`text-[10px] sm:text-xs font-semibold mt-1 ${subtle}`}>Select categories below to reveal specific conditions.</p>
-                </div>
-                
-                {editingJob.parsedDisabilities.length > 0 && (
-                  <div className={chipBoxContainer}>
-                    <span className={`w-full text-[10px] font-black uppercase tracking-wider ${subtle}`}>Currently Selected:</span>
-                    {editingJob.parsedDisabilities.map(disability => (
-                      <span key={disability} className={chipPill}>
-                        {disability}
-                        <button type="button" onClick={() => toggleDisability(disability)} className="font-bold ml-0.5 hover:text-red-500 transition-colors">✕</button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-                
-                 <div className="flex flex-wrap gap-1.5 mt-1">
-                  {Object.keys(disabilityCategories).map(category => {
-                    const isActive = expandedCategory === category;
-                    return (
-                      <button
-                        type="button"
-                        key={category}
-                        onClick={() => setExpandedCategory(isActive ? null : category)}
-                        className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border-2 transition-colors ${
-                          isActive
-                            ? (isDark ? 'bg-white text-black border-white' : 'bg-[#03045E] text-white border-[#03045E]')
-                            : (isDark ? 'bg-black text-white border-white/50 hover:border-white' : 'bg-white text-[#03045E] border-gray-200 hover:border-[#03045E]')
-                        }`}
-                      >
-                        {category} 
-                        <svg 
-                          className={`w-3 h-3 shrink-0 transition-transform duration-300 ${isActive ? 'rotate-0' : '-rotate-90'}`} 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="3" 
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {expandedCategory && (
-                  <div className={`p-3 rounded-xl border-2 animate-fadeIn mt-2 ${isDark ? 'border-white/30 bg-white/5' : 'border-[#03045E]/15 bg-[#f4f4f4]'}`}>
-                    <p className={`text-[10px] font-black uppercase tracking-wider mb-2 ${pageText}`}>Specific Conditions under {expandedCategory}:</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {disabilityCategories[expandedCategory].map(disability => {
-                        const isSelected = editingJob.parsedDisabilities.includes(disability);
-                        return (
-                          <button
-                            type="button"
-                            key={disability}
-                            onClick={() => toggleDisability(disability)}
-                            className={`px-2 py-1 rounded border-2 text-[10px] font-bold transition-colors ${
-                              isSelected
-                                ? (isDark ? 'bg-white text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]')
-                                : (isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF]')
-                            }`}
-                          >
-                            {disability} {isSelected ? '✓' : '+'}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+            <div className={`flex flex-col gap-2 p-3 sm:p-5 rounded-xl border-2 ${disabBoxBg}`}>
+              <div>
+                <label className="text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider text-[#03045E]">
+                  Accepted Disabilities <span style={{ color: 'var(--color-primary, #2C7FFF)' }}>*</span>
+                </label>
+                <p className={`text-[10px] sm:text-xs font-semibold mt-1 ${subtle}`}>Select categories below to reveal specific conditions.</p>
               </div>
+              
+              {editingJob.parsedDisabilities.length > 0 && (
+                <div className={chipBoxContainer}>
+                  <span className={`w-full text-[10px] font-black uppercase tracking-wider ${subtle}`}>Currently Selected:</span>
+                  {editingJob.parsedDisabilities.map(disability => (
+                    <span key={disability} className={chipPill}>
+                      {disability}
+                      <button type="button" onClick={() => toggleDisability(disability)} className="font-bold ml-0.5 hover:text-red-500 transition-colors">✕</button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {Object.keys(disabilityCategories).map(category => {
+                  const isActive = expandedCategory === category;
+                  return (
+                    <button
+                      type="button"
+                      key={category}
+                      onClick={() => setExpandedCategory(isActive ? null : category)}
+                      className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border-2 transition-colors ${
+                        isActive
+                          ? (isDark ? 'bg-white text-black border-white' : 'bg-[#03045E] text-white border-[#03045E]')
+                          : (isDark ? 'bg-black text-white border-white/50 hover:border-white' : 'bg-white text-[#03045E] border-gray-200 hover:border-[#03045E]')
+                      }`}
+                    >
+                      {category} 
+                      <svg 
+                        className={`w-3 h-3 shrink-0 transition-transform duration-300 ${isActive ? 'rotate-0' : '-rotate-90'}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="3" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {expandedCategory && (
+                <div className={`p-3 rounded-xl border-2 animate-fadeIn mt-2 ${isDark ? 'border-white/30 bg-white/5' : 'border-[#03045E]/15 bg-[#f4f4f4]'}`}>
+                  <p className={`text-[10px] font-black uppercase tracking-wider mb-2 ${pageText}`}>Specific Conditions under {expandedCategory}:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {disabilityCategories[expandedCategory].map(disability => {
+                      const isSelected = editingJob.parsedDisabilities.includes(disability);
+                      return (
+                        <button
+                          type="button"
+                          key={disability}
+                          onClick={() => toggleDisability(disability)}
+                          className={`px-2 py-1 rounded border-2 text-[10px] font-bold transition-colors ${
+                            isSelected
+                              ? (isDark ? 'bg-white text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]')
+                              : (isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-[#03045E]/20 hover:border-[#2C7FFF]')
+                          }`}
+                        >
+                          {disability} {isSelected ? '✓' : '+'}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
 
               <hr className={`my-1 border-t-2 ${divider}`} />
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Salary Range</label>
+                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Salary Range <span className="text-red-500">*</span></label>
                 <div className="flex gap-2">
                   <select
                     className={`w-20 p-2.5 sm:p-3 border-2 rounded-xl font-bold transition-all text-xs sm:text-sm appearance-none text-center outline-none ${inputBg}`}
@@ -727,6 +732,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                   <select
                     value={editingJob.salary_range}
                     onChange={(e) => setEditingJob({...editingJob, salary_range: e.target.value})}
+                    required
                     className={`flex-1 p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-xs sm:text-sm appearance-none ${inputBg}`}
                   >
                     <option value="" disabled>Select a salary bracket...</option>

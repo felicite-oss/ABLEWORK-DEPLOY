@@ -31,6 +31,9 @@ export default function EmployerPostJob({ profile, refreshData, setActiveTab }) 
   const isDeactivated = profile?.account_status === 'Deactivated' || profile?.status === 'Deactivated';
   const isVerified = profile?.verification_status === 'Approved';
   const [jobType, setJobType] = useState('Full-Time');
+  // NEW STATES for Working Hours and Schedule
+  const [workingHours, setWorkingHours] = useState('');
+  const [workSchedule, setWorkSchedule] = useState('');
 
   useEffect(() => {
     if (salaryRange.trim() === '') {
@@ -197,6 +200,13 @@ const accommodationSuggestions = [
     e.preventDefault();
     setStatusMessage({ type: '', text: '' });
 
+    // VALIDATION: Check required fields
+    if (!jobTitle.trim()) return setStatusMessage({ type: 'error', text: 'Job Title is required.' });
+    if (!jobDescription.trim()) return setStatusMessage({ type: 'error', text: 'Job Description is required.' });
+    if (!workingHours) return setStatusMessage({ type: 'error', text: 'Working Hours / Week is required.' });
+    if (!workSchedule.trim()) return setStatusMessage({ type: 'error', text: 'Work Schedule is required.' });
+    if (!salaryRange) return setStatusMessage({ type: 'error', text: 'Salary Range is required.' });
+    
     if (selectedDisabilities.length === 0) {
       return setStatusMessage({ type: 'error', text: 'Please select at least one accepted disability.' });
     }
@@ -213,6 +223,8 @@ const accommodationSuggestions = [
       job_title: jobTitle,
       job_type: jobType,
       job_description: jobDescription,
+      working_hours_per_week: Number(workingHours),
+      work_schedule: workSchedule,
       required_skills: selectedSkills,
       provided_accommodations: selectedAccommodations, 
       accepted_disabilities: selectedDisabilities, 
@@ -238,6 +250,8 @@ const accommodationSuggestions = [
         setStatusMessage({ type: 'success', text: 'Job posted successfully! Redirecting to dashboard...' });
         setJobTitle('');
         setJobDescription('');
+        setWorkingHours('');
+        setWorkSchedule('');
         setSelectedSkills([]);
         setCurrentSkill('');
         setSelectedAccommodations([]);
@@ -270,7 +284,6 @@ const accommodationSuggestions = [
   const cardBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
   const softBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
   
-  // Radius adjusted: inputs now use rounded-lg / rounded-md
   const inputCls = isContrast
     ? 'w-full p-2.5 sm:p-4 border-2 border-white rounded-lg bg-black text-white font-semibold placeholder:text-gray-400 focus:outline-none focus:border-white transition-all text-sm sm:text-base'
     : isDarkMode
@@ -296,7 +309,6 @@ const accommodationSuggestions = [
   return (
     <div className="animate-fadeIn max-w-9xl mx-auto pb-6 sm:pb-10 px-1 sm:px-0">
       
-      {/* Header Container (Outer) */}
       <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 backdrop-blur-md p-4 sm:p-6 rounded-2xl shadow-[0_10px_30px_rgba(3,4,94,0.06)] border-2 ${cardBg}`}>
         <div>
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5 flex-wrap">
@@ -322,13 +334,11 @@ const accommodationSuggestions = [
         </div>
       )}
 
-      {/* VERIFICATION REQUIRED LOCK SCREEN */}
       {!isVerified ? (
         <div className={`relative p-8 md:p-16 rounded-2xl border-2 flex flex-col items-center text-center overflow-hidden shadow-sm ${cardBg}`}>
           <div className={`absolute -top-12 -right-12 w-40 h-40 rounded-full opacity-50 pointer-events-none ${isDark ? 'bg-white/10' : 'bg-[#2C7FFF]/10'}`}></div>
           <div className={`absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-50 pointer-events-none ${isDark ? 'bg-white/10' : 'bg-[#2C7FFF]/10'}`}></div>
           
-          {/* Inner Icon Box */}
           <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-xl flex items-center justify-center mb-6 shadow-sm border-2 ${isDark ? 'bg-white text-black border-white' : 'bg-[#03045E] text-white border-[#03045E]'}`}>
             <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -363,7 +373,7 @@ const accommodationSuggestions = [
       ) : (
       <form onSubmit={handleSubmit} className={`p-4 sm:p-8 rounded-2xl shadow-sm border-2 flex flex-col gap-6 sm:gap-8 ${cardBg}`}>
         
-                <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           
           {/* JOB TITLE */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
@@ -378,7 +388,7 @@ const accommodationSuggestions = [
             />
           </div>
 
-          {/* NEW: JOB TYPE */}
+          {/* JOB TYPE */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -398,6 +408,40 @@ const accommodationSuggestions = [
             </select>
           </div>
 
+          {/* NEW: WORKING HOURS & WORK SCHEDULE */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5 sm:gap-2">
+              <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+                Working Hours / Week <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="168"
+                step="1"
+                placeholder="e.g. 40"
+                value={workingHours}
+                onChange={(e) => setWorkingHours(e.target.value)}
+                required
+                className={inputSmCls}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 sm:gap-2">
+              <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
+                Work Schedule <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Mon–Fri, 9am–6pm"
+                value={workSchedule}
+                onChange={(e) => setWorkSchedule(e.target.value)}
+                required
+                className={inputSmCls}
+              />
+            </div>
+          </div>
+
           {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
@@ -405,12 +449,10 @@ const accommodationSuggestions = [
               Full Job Description <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
 
-            {/* Textarea Container */}
             <div className={`w-full rounded-lg border-2 flex flex-col transition-all ${
               isDark ? 'border-white bg-black' : 'border-gray-200 bg-white'
             } focus-within:border-[#2C7FFF]`}>
               
-              {/* Formatting Toolbar (Inside the box) */}
               <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
                 {descriptionTemplates.map((template) => (
@@ -430,7 +472,6 @@ const accommodationSuggestions = [
                 ))}
               </div>
 
-              {/* Actual Text Area */}
               <textarea 
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
@@ -445,41 +486,36 @@ const accommodationSuggestions = [
           </div>
         </div>
 
-
-          {/* NEW MAX APPLICATIONS FIELD */}
-          <div className="flex flex-col gap-1.5 sm:gap-2">
-            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              Maximum Applications Allowed
-            </label>
-            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
-              The job will automatically stop accepting resumes once this number is reached (Max: 50).
-            </p>
-            <input 
-              type="number" 
-              min="1" 
-              max="50"
-              value={maxApplications} 
-              onChange={(e) => {
-                let val = parseInt(e.target.value) || 1;
-                // Instantly forces the number back to 50 if they try to type 51 or higher
-                if (val > 50) val = 50; 
-                setMaxApplications(val);
-              }} 
-              required
-              className={inputSmCls}
-            />
-          </div>
+        <div className="flex flex-col gap-1.5 sm:gap-2">
+          <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+            <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            Maximum Applications Allowed
+          </label>
+          <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
+            The job will automatically stop accepting resumes once this number is reached (Max: 50).
+          </p>
+          <input 
+            type="number" 
+            min="1" 
+            max="50"
+            value={maxApplications} 
+            onChange={(e) => {
+              let val = parseInt(e.target.value) || 1;
+              if (val > 50) val = 50; 
+              setMaxApplications(val);
+            }} 
+            required
+            className={inputSmCls}
+          />
+        </div>
 
         <hr className={divider} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           
-
-{/* SALARY & CURRENCY DROPDOWN */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
-              Salary Range
+              Salary Range <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
             </label>
             <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
             
@@ -488,7 +524,7 @@ const accommodationSuggestions = [
                 value={currency}
                 onChange={(e) => {
                   setCurrency(e.target.value);
-                  setSalaryRange(''); // Resets the bracket if they switch currencies
+                  setSalaryRange(''); 
                 }}
                 className={`w-24 p-2 sm:p-3 border-2 rounded-md font-bold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none text-center ${
                   isContrast || isDarkMode
@@ -503,6 +539,7 @@ const accommodationSuggestions = [
               <select
                 value={salaryRange}
                 onChange={(e) => setSalaryRange(e.target.value)}
+                required
                 className={`flex-1 p-2 sm:p-3 border-2 rounded-md font-semibold focus:outline-none transition-all text-xs sm:text-sm cursor-pointer appearance-none ${
                   isContrast || isDarkMode
                     ? 'border-white bg-black text-white focus:border-white'
@@ -517,7 +554,6 @@ const accommodationSuggestions = [
             </div>
           </div>
 
-          {/* DOLE & COMPANY BENEFITS DROPDOWN */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Benefits Package
@@ -557,7 +593,6 @@ const accommodationSuggestions = [
               </optgroup>
             </select>
 
-            {/* Selected Benefits Chips */}
             {selectedBenefits.length > 0 && (
               <div className={chipContainer}>
                 {selectedBenefits.map(benefit => (
@@ -579,7 +614,7 @@ const accommodationSuggestions = [
 
         <hr className={divider} />
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
@@ -605,7 +640,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedSkills.length > 0 && (
-                           <div className={`${chipContainer} flex-col`}>
+              <div className={`${chipContainer} flex-col`}>
                 {selectedSkills.map(skill => (
                   <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -653,7 +688,6 @@ const accommodationSuggestions = [
 
         <hr className={divider} />
 
-{/* Disability Section Container (Expandable UI) */}
         <div className={`flex flex-col gap-3 sm:gap-4 p-3 sm:p-5 rounded-xl border-2 ${softBg}`}>
           <div>
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
@@ -663,7 +697,6 @@ const accommodationSuggestions = [
             <p className={`text-[10px] sm:text-xs font-semibold mt-1 ${muted}`}>Select a category below to reveal and choose specific conditions this workplace is fully equipped to support.</p>
           </div>
 
-          {/* Show Currently Selected Disabilities so they don't get lost when categories switch */}
           {selectedDisabilities.length > 0 && (
             <div className={chipContainer}>
               <span className={`w-full text-[10px] font-black uppercase tracking-wider ${muted}`}>Currently Selected:</span>
@@ -676,7 +709,6 @@ const accommodationSuggestions = [
             </div>
           )}
           
-                 {/* Main Category Buttons */}
           <div className="flex flex-wrap gap-2 mt-1">
             {Object.keys(disabilityCategories).map(category => {
               const isActive = expandedCategory === category;
@@ -707,7 +739,6 @@ const accommodationSuggestions = [
             })}
           </div>
 
-          {/* Expanded Specific Options Box */}
           {expandedCategory && (
             <div className={`p-3 sm:p-4 rounded-xl border-2 animate-fadeIn ${isDark ? 'border-white/30 bg-white/5' : 'border-[#03045E]/15 bg-[#f4f4f4]'}`}>
               <p className={`text-[10px] font-black uppercase tracking-wider mb-2 sm:mb-3 ${pageText}`}>Specific Conditions under {expandedCategory}:</p>
@@ -800,7 +831,6 @@ const accommodationSuggestions = [
                 <span className={`font-black ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`}>"{publishedJobTitle}"</span> has been published successfully and is now visible to matching candidates.
               </p>
 
-              {/* Inner Status Box */}
               <div className={`w-full rounded-xl p-3 sm:p-4 border-2 mb-4 sm:mb-6 ${isDark ? 'bg-black border-white' : 'bg-white border-[#2C7FFF]'}`}>
                 <div className="flex items-center justify-between">
                   <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-wider ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Status</span>
