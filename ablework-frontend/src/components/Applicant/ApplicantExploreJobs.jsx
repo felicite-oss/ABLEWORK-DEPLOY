@@ -52,57 +52,6 @@ const getMatchColor = (percentage, isDarkScreen) => {
   if (percentage >= 50) return 'bg-[#2C7FFF]/10 text-[#03045E] border-[#03045E]/40';
   return 'bg-[#f4f4f4] text-[#03045E] border-[#03045E]/20';
 };
-
-const MatchBreakdown = ({ job, isDarkScreen, colorUI }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const totalDist = Math.round(job.distance_score || 0); 
-  const semanticScore = (parseFloat(job.semantic_similarity_raw) || 0) * 40;
-  const totalSemantic = Math.round(semanticScore);
-
-  return (
-    <div className={`mt-2 mb-4 border-t pt-3 ${isDarkScreen ? 'border-white/15' : 'border-[#03045E]/15'}`}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-label={isOpen ? "Hide match breakdown" : "Show why this job is a match"}
-        className={`flex items-center gap-1.5 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded p-1 ${isDarkScreen ? 'text-white hover:text-gray-300' : 'text-[#2C7FFF] hover:text-[#03045E]'}`}
-      >
-        <svg aria-hidden="true" className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-        Why this match?
-      </button>
-
-      {isOpen && (
-        <div className="mt-3 flex flex-col gap-3 animate-fadeIn" role="region" aria-label="Match score breakdown details">
-          
-          {/* Unified Skills (Semantic AI) */}
-          <div tabIndex="0" aria-label={`Skills match score: ${totalSemantic} out of 40 points.`} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded">
-            <div aria-hidden="true" className={`flex justify-between text-[10px] sm:text-xs font-bold mb-1 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
-              <span>Skills & AI Match (Max 40 pts)</span>
-              <span className="text-[#2C7FFF]">{totalSemantic} pts</span>
-            </div>
-            <div aria-hidden="true" className={`w-full rounded-full h-1.5 sm:h-2 overflow-hidden ${isDarkScreen ? 'bg-gray-700' : 'bg-gray-200'}`}>
-              <div className="bg-[#2C7FFF] h-full rounded-full transition-all duration-1000" style={{ width: `${(totalSemantic / 40) * 100}%` }} />
-            </div>
-          </div>
-
-          {/* Rule-Based Distance */}
-          <div tabIndex="0" aria-label={`Distance match score: ${totalDist} out of 60 points.`} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded">
-            <div aria-hidden="true" className={`flex justify-between text-[10px] sm:text-xs font-bold mb-1 ${isDarkScreen ? 'text-white' : 'text-[#03045E]'}`}>
-              <span>Distance (Max 60 pts)</span>
-              <span className="text-[#F59E0B]">{totalDist} pts</span>
-            </div>
-            <div aria-hidden="true" className={`w-full rounded-full h-1.5 sm:h-2 overflow-hidden ${isDarkScreen ? 'bg-gray-700' : 'bg-gray-200'}`}>
-              <div className="bg-[#F59E0B] h-full rounded-full transition-all duration-1000" style={{ width: `${(totalDist / 60) * 100}%` }} />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const CompanyLogo = ({ logoUrl, companyName, size = 'md' }) => {
   const [errored, setErrored] = useState(false);
 
@@ -929,11 +878,8 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                       />
                     </div>
 
-                    {/* BOTTOM SECTION: Breakdown & Buttons */}
-                    <div className="flex flex-col gap-2 mt-auto">
+                                       <div className="flex flex-col gap-2 mt-auto">
                       
-                      <MatchBreakdown job={job} isDarkScreen={isDarkScreen} colorUI={colorUI} />
-
                       <div className="flex gap-2 w-full mt-2">
                         <button
                           onClick={() => openModal(job)}
@@ -1563,4 +1509,4 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
       )}
     </main>
   );
-}
+} 
