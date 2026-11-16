@@ -1382,25 +1382,26 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
                         </label>
                       </div>
 
-                    {!useExistingResume && (
- <input 
-  type="file" 
-  accept=".pdf,.jpg,.jpeg,.png"
-  onChange={(e) => setCertificateDoc(e.target.files[0])}
-  className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-2 file:border-gray-300 file:text-xs file:font-black cursor-pointer ${isDarkScreen ? 'text-white file:bg-white/20 file:text-white' : 'text-[#03045E] file:bg-white file:text-[#03045E]'}`}
-/>
+{!useExistingResume && (
+  <input 
+    type="file" 
+    accept=".pdf,.doc,.docx"
+    required={!useExistingResume}
+    onChange={(e) => setResumeFile(e.target.files[0])}
+    className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-2 file:border-[var(--color-border)] file:text-xs file:font-black cursor-pointer file:bg-[var(--color-background)] file:text-[var(--color-text)] hover:file:bg-[var(--color-surfaceMuted)] ${isDarkScreen ? 'text-white' : 'text-[var(--color-text)]'}`}
+  />
 )}
                     </div>
 
-                   {/* Certificate Section (Optional) */}
-<div className={`p-4 rounded-xl border-2 ${isDarkScreen ? 'border-white/10 bg-black' : 'border-gray-300 bg-white'}`}>
-  <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${isDarkScreen ? 'text-white/70' : 'text-[#03045E]/70'}`}>Training Certificate (Optional)</label>
-  <p className={`text-[10px] font-semibold mb-3 ${isDarkScreen ? 'text-white/60' : 'text-[#03045E]/60'}`}>Upload any relevant certificates or licenses for this role.</p>
+              {/* Certificate Section (Optional) */}
+<div className={`p-4 rounded-xl border-2 ${isDarkScreen ? 'border-white/10 bg-black' : 'border-[var(--color-border)] bg-[var(--color-surface)]'}`}>
+  <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${isDarkScreen ? 'text-white/70' : 'text-[var(--color-textMuted)]'}`}>Training Certificate (Optional)</label>
+  <p className={`text-[10px] font-semibold mb-3 ${isDarkScreen ? 'text-white/60' : 'text-[var(--color-textSubtle)]'}`}>Upload any relevant certificates or licenses for this role.</p>
   <input 
     type="file" 
     accept=".pdf,.jpg,.jpeg,.png"
     onChange={(e) => setCertificateDoc(e.target.files[0])}
-    className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-2 file:border-gray-300 file:text-xs file:font-black cursor-pointer ${isDarkScreen ? 'text-white file:bg-white/20 file:text-white' : 'text-[#03045E] file:bg-white file:text-[#03045E]'}`}
+    className={`w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-2 file:border-[var(--color-border)] file:text-xs file:font-black cursor-pointer file:bg-[var(--color-background)] file:text-[var(--color-text)] hover:file:bg-[var(--color-surfaceMuted)] ${isDarkScreen ? 'text-white' : 'text-[var(--color-text)]'}`}
   />
 </div>
                   </div>
