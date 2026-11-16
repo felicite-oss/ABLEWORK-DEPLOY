@@ -217,7 +217,6 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
 
   const handleEditJob = async (e) => {
     e.preventDefault();
-    setStatusMessage({ type: '', text: '' });
 
     // VALIDATION: Make sure all required fields are present
     if (!editingJob.job_title?.trim()) return triggerAlert('default', 'Missing Field', 'Job Title is required.', 'Please enter a job title.');

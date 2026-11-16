@@ -85,11 +85,11 @@ const accommodationSuggestions = [
     'Large Print Documents', 'Step-Free Access', 'Travel Assistant', 'Walking Assistant', 'Accessible Parking'
   ];
 
-   const descriptionTemplates = [
+  const descriptionTemplates = [
     { label: 'Role Overview', prefix: '\n\nRole Overview:\n' },
-    { label: 'Key Responsibilities', prefix: '\n\nKey Responsibilities:\n• ' },
-    { label: 'Qualifications & Skills', prefix: '\n\nWhat You Will Need (Qualifications & Skills):\n• ' },
-    { label: 'Workplace Accommodations', prefix: '\n\nWorkplace Accommodations & Inclusivity:\n• ' }
+    { label: 'Key Responsibilities', prefix: '\n\nKey Responsibilities:\n- ' },
+    { label: 'Qualifications & Skills', prefix: '\n\nWhat You Will Need (Qualifications & Skills):\n- ' },
+    { label: 'Workplace Accommodations', prefix: '\n\nWorkplace Accommodations & Inclusivity:\n- ' }
   ];
 
   const salaryOptionsPHP = [
@@ -454,7 +454,7 @@ const accommodationSuggestions = [
             </div>
           </div>
 
-                 {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
+          {/* JOB DESCRIPTION WITH TOOLBAR INSIDE */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
             <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
               <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
@@ -467,22 +467,16 @@ const accommodationSuggestions = [
               
               <div className={`flex flex-wrap items-center gap-2 p-2 border-b-2 ${isDark ? 'border-white/20 bg-[#1A1A1A]' : 'border-gray-100 bg-[#f4f4f4]'}`}>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-1 ${isDark ? 'text-white/50' : 'text-[#03045E]/50'}`}>Insert:</span>
-                               {descriptionTemplates.map((template) => (
+                {descriptionTemplates.map((template) => (
                   <button
                     key={template.label}
                     type="button"
-                    onClick={() => {
-                      // Add a newline before the template if the textarea isn't empty
-                      const prefix = jobDescription.length > 0 && !jobDescription.endsWith('\n') 
-                        ? '\n' + template.prefix 
-                        : template.prefix;
-                      setJobDescription(prev => prev + prefix);
-                    }}
+                    onClick={() => setJobDescription(prev => prev + template.prefix)}
                     style={{ color: isDark ? '#ffffff' : '#03045E' }}
                     className={`px-2 py-1 text-[10px] sm:text-xs font-bold rounded transition-all cursor-pointer border shadow-sm ${
                       isDark 
-                        ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
-                        : 'bg-white border-gray-400'
+                        ? 'bg-[#2C7FFF] border-[#2C7FFF] hover:bg-white hover:text-black' 
+                        : 'bg-white border-gray-400 hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
                     }`}
                   >
                     + {template.label}
@@ -490,13 +484,13 @@ const accommodationSuggestions = [
                 ))}
               </div>
 
-                           <textarea 
+              <textarea 
                 value={jobDescription} 
                 onChange={(e) => setJobDescription(e.target.value)} 
                 required 
-                rows="12"
+                rows="8"
                 placeholder="Describe the role responsibilities and expectations..."
-                className={`w-full p-4 sm:p-5 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold leading-relaxed ${
+                className={`w-full p-3 sm:p-4 bg-transparent outline-none resize-y text-sm sm:text-base font-semibold ${
                   isDark ? 'text-white placeholder-white/40' : 'text-[#03045E] placeholder-[#03045E]/40'
                 }`}
               ></textarea>
