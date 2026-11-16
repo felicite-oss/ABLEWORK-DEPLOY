@@ -40,7 +40,7 @@ const { paletteKey, palette } = useColorPalette();
   const isAPlusPlus = mode === 'A++' || mode === 'Assist' || mode === 'a++' || mode === 'assist';
   const isAPlus = mode === 'A+' || mode === 'a+';
   const isAssist = isAPlusPlus;
- const textColor = palette?.colors?.text || '#03045E';  // <-- ADD THIS LINE HERE
+ const textColor = 'var(--color-text)';
 
   const titleSize = isAPlusPlus
     ? 'text-3xl sm:text-5xl font-bold'
@@ -403,11 +403,11 @@ const { paletteKey, palette } = useColorPalette();
           {step === 1 ? (
             <form onSubmit={requestOtp} className="flex flex-col gap-4 sm:gap-5 w-full" autoComplete="off">
               <div className="flex flex-col gap-1.5 sm:gap-2">
-         <label htmlFor="fpEmail" title="Email Address" tabIndex="0" style={{ color: (isContrast || isDarkMode) ? '#ffffff' : textColor }} className={`${labelSize}`}>
+       <label htmlFor="fpEmail" title="Email Address" tabIndex="0" style={{ color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)' }} className={`${labelSize}`}>
   Email Address
 </label>
                 <div className="relative">
-                  <span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
+<span style={{ color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)' }} className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 opacity-60`}>
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
