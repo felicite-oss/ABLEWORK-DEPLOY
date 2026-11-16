@@ -529,7 +529,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     <main
       role="main"
       aria-label="Explore Jobs page. Your smart-matched marketplace filtered to your profile and accommodations."
-      className="animate-fadeIn w-full space-y-6 sm:space-y-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] pb-10"
+      className="animate-fadeIn w-full overflow-x-hidden space-y-6 sm:space-y-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] pb-10"
     >
       
       <section
@@ -554,12 +554,12 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
           </div>
         </div>
             <div className="flex flex-col items-start sm:items-end gap-2 sm:gap-3 w-full sm:w-auto shrink-0 relative">
-          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-start sm:justify-end flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-start sm:justify-end flex-wrap min-w-0">
             {filteredJobs.length > 0 && (
               <div
                 tabIndex="0"
                 aria-label={`${filteredJobs.length} matches found.`}
-                className="flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-[#f4f4f4] border-2 border-[#03045E]/30 shrink-0 cursor-pointer hover:border-[#2C7FFF] transition-all group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2"
+                className="flex items-center gap-1.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-[#f4f4f4] border-2 border-[#03045E]/30 min-w-0 max-w-full cursor-pointer hover:border-[#2C7FFF] transition-all group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2"
               >
                 <span aria-hidden="true" className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#10B981]" />
                 <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-[#03045E] group-hover:text-[#2C7FFF] transition-all">
@@ -626,7 +626,20 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
               id="explore-jobs-filters"
               role="region"
               aria-label="Job filters panel"
-              className="absolute top-full right-0 mt-3 z-50 w-[95vw] sm:w-[600px] max-w-[calc(100vw-2rem)] max-h-[75vh] overflow-y-auto p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white shadow-[0_20px_50px_rgba(3,4,94,0.25)] border-2 border-[#03045E]/20 animate-fadeIn flex flex-col gap-4 sm:gap-6 text-left"
+              className="
+                fixed sm:absolute
+                inset-x-3 bottom-3 sm:inset-x-auto sm:bottom-auto
+                sm:top-full sm:right-0
+                z-50
+                w-auto sm:w-[600px]
+                max-h-[70vh] sm:max-h-[75vh]
+                overflow-y-auto overflow-x-hidden
+                p-4 sm:p-8
+                rounded-2xl sm:rounded-3xl
+                bg-white shadow-[0_20px_50px_rgba(3,4,94,0.25)]
+                border-2 border-[#03045E]/20
+                animate-fadeIn flex flex-col gap-4 sm:gap-6 text-left
+              "
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 <div className="flex flex-col gap-1 sm:gap-1.5">
@@ -704,7 +717,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
 
               <div role="group" aria-label="Filter by skills">
                 <span aria-hidden="true" className={`text-[10px] sm:text-xs font-extrabold text-[#03045E] uppercase tracking-widest mb-2 sm:mb-3 block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded`} tabIndex="0">Filter by Skills</span>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 min-w-0">
                   {availableSkills.map(skill => (
                     <button 
                       key={skill} onClick={() => toggleSkill(skill)}
@@ -727,7 +740,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
 
               <div role="group" aria-label="Filter by accommodations">
                 <span aria-hidden="true" className={`text-[10px] sm:text-xs font-extrabold text-[#03045E] uppercase tracking-widest mb-2 sm:mb-3 block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded`} tabIndex="0">Filter by Accommodations</span>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 min-w-0">
                   {availableAccs.map(acc => (
                     <button 
                       key={acc} onClick={() => toggleAcc(acc)}
