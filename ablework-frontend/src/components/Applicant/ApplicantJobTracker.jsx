@@ -476,15 +476,15 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
   if (hired.length === 0) return null;
   const totalHours = hired.reduce((sum, a) => sum + Number(a.working_hours_per_week), 0);
   return (
-    <div
+       <div
       role="status"
       aria-live="polite"
       aria-label={`Total committed: ${totalHours} hours per week across ${hired.length} hired role${hired.length !== 1 ? 's' : ''}.`}
-      className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-start gap-3 ${
+      className={`p-3 sm:p-4 rounded-xl border-2 flex flex-row items-center gap-3 ${
         isDark ? 'bg-[#111111] border-[#10B981] text-white' : 'bg-transparent border-[#10B981] text-[#10B981]'
       }`}
     >
-      <div aria-hidden="true" className={`p-1.5 sm:p-2 rounded-lg shrink-0 mt-0.5 ${isDark ? 'bg-[#10B981]/20' : 'bg-transparent'}`}>
+      <div aria-hidden="true" className={`p-1.5 sm:p-2 rounded-lg shrink-0 ${isDark ? 'bg-[#10B981]/20' : 'bg-transparent'}`}>
         <svg className={`w-4 h-4 sm:w-5 sm:h-5 text-[#10B981]`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
