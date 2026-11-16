@@ -349,8 +349,8 @@ export default function ForgotPassword({ onClose }) {
   style={{ backgroundImage: `url(${backgroundImg})` }}
 >
 <div
-  className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-lg'} flex flex-col items-center justify-start gap-4 sm:gap-6 relative z-10
-${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-[var(--color-surface)]/90 text-[var(--color-text)] border border-[var(--color-border)]'}
+ className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-lg'} flex flex-col items-center justify-start gap-4 sm:gap-6 relative z-10
+    ${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : isDarkMode ? 'bg-zinc-900 text-white border-2 border-blue-500/50 shadow-2xl' : 'bg-white/90 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl
     pt-8 px-5 pb-8 sm:pt-12 sm:px-10 sm:pb-14 mr-0 md:mr-4 lg:mr-8`}
 >
           <div className="w-full flex items-center justify-start">
@@ -399,7 +399,7 @@ ${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rg
           {step === 1 ? (
             <form onSubmit={requestOtp} className="flex flex-col gap-4 sm:gap-5 w-full" autoComplete="off">
               <div className="flex flex-col gap-1.5 sm:gap-2">
-<label htmlFor="fpEmail" title="Email Address" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
+                <label htmlFor="fpEmail" title="Email Address" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
                   Email Address
                 </label>
                 <div className="relative">
@@ -419,7 +419,7 @@ ${isContrast ? 'bg-black text-white border-2 border-blue-400 shadow-[0_0_25px_rg
                     required
                     autoComplete="off"
                     placeholder="Enter your registered email"
-className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+                    className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
                   />
                 </div>
               </div>
@@ -455,7 +455,7 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
               <input type="password" name="fakepasswordremembered" autoComplete="new-password" style={{ display: 'none' }} tabIndex={-1} />
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-<label htmlFor="fpOtp" title="6-Digit Recovery Code" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
+                <label htmlFor="fpOtp" title="6-Digit Recovery Code" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
                   6-Digit Recovery Code
                 </label>
                 <input
@@ -470,16 +470,16 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
                   required
                   autoComplete="off"
                   placeholder="000000"
-                  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
-/>
+                  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
+                />
               </div>
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
-<label htmlFor="fpNewPass" title="New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-text)]'}`}>
+                <label htmlFor="fpNewPass" title="New Password" tabIndex="0" className={`${labelSize} ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]'}`}>
                   New Password
                 </label>
                 <div className="relative">
-<span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[var(--color-textSubtle)]'}`}>
+                  <span className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 ${(isContrast || isDarkMode) ? 'text-white' : 'text-[#03045E]/40'}`}>
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
@@ -495,14 +495,14 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'b
                     required
                     autoComplete="new-password"
                     placeholder="Enter new password"
-className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-/>
-<button
-  type="button"
-  title="Show password"
-  onClick={() => setShowPassword(!showPassword)}
-  className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? 'text-white hover:text-white' : (isContrast || isDarkMode) ? 'text-white/60 hover:text-white' : 'text-[var(--color-textSubtle)] hover:text-[var(--color-accent)]'}`}
->
+                    className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+                  />
+                  <button
+                    type="button"
+                    title="Show password"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? 'text-white hover:text-white' : (isContrast || isDarkMode) ? 'text-white/60 hover:text-white' : 'text-[#03045E]/50 hover:text-[#2C7FFF]'}`}
+                  >
                     {showPassword ? (
                       <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -538,8 +538,8 @@ className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || i
                     required
                     autoComplete="new-password"
                     placeholder="Confirm new password"
- className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-/>
+                    className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+                  />
                   <button
                     type="button"
                     title="Show confirm password"
