@@ -345,7 +345,7 @@ export default function ForgotPassword({ onClose }) {
         </div>
       </header>
 <div
-  className={`flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300`}
+  className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300"
   style={{ backgroundImage: `url(${backgroundImg})` }}
 >
 <div
