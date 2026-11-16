@@ -303,8 +303,11 @@ const [withdrawTargetStatus, setWithdrawTargetStatus] = useState(null);
                 <h3 className={`text-sm sm:text-2xl font-extrabold leading-tight break-words line-clamp-2 w-full ${textColor}`}>
                   {companyGroup.company_name}
                 </h3>
-                <p className={`text-[10px] sm:text-sm font-extrabold mt-0.5 sm:mt-1 break-words line-clamp-1 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
-                  {activeRole.job_title} {appCount > 1 && `(Showing ${displayIndex} of ${appCount} roles)`}
+                <p className={`text-[10px] sm:text-sm font-extrabold mt-0.5 sm:mt-1 break-words line-clamp-1 flex items-center gap-1.5 ${isDark ? 'text-blue-400' : 'text-[#2C7FFF]'}`}>
+                  <span className="truncate">{activeRole.job_title} {appCount > 1 && `(Showing ${displayIndex} of ${appCount} roles)`}</span>
+                  <span className={`px-1.5 py-0.5 text-[8px] sm:text-[10px] rounded border whitespace-nowrap ${isDark ? 'border-white/20 bg-white/10 text-white' : 'border-[#03045E]/20 bg-[#03045E]/5 text-[#03045E]'}`}>
+                    {activeRole.job_type || 'Full-time'}
+                  </span>
                 </p>
               </div>
 

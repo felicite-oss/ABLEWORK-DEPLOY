@@ -222,6 +222,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
     const payload = {
       job_title: editingJob.job_title,
       job_description: editingJob.job_description,
+      job_type: editingJob.job_type || 'Full-time',
       required_skills: editingJob.parsedSkills,
       provided_accommodations: editingJob.parsedAccoms,
       accepted_disabilities: editingJob.parsedDisabilities,
@@ -426,6 +427,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                                 onClick={() => {
                                   setEditingJob({
                                     ...job, 
+                                    job_type: job.job_type || 'Full-time',
                                     parsedSkills: parseToArray(job.required_skills), 
                                     parsedAccoms: parseToArray(job.provided_accommodations),
                                     parsedBenefits: parseToArray(job.benefits),
@@ -512,7 +514,24 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
                 <label className="text-xs sm:text-sm font-bold text-[#03045E]">Description</label>
                 <textarea rows="4" value={editingJob.job_description} onChange={e => setEditingJob({...editingJob, job_description: e.target.value})} required className={`p-2.5 sm:p-3 border-2 rounded-xl resize-none outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`}></textarea>
               </div>
-              
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Job Type</label>
+                <select
+                  value={editingJob.job_type || 'Full-time'}
+                  onChange={e => setEditingJob({...editingJob, job_type: e.target.value})}
+                  className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base appearance-none ${inputBg}`}
+                >
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Freelance">Freelance</option>
+                  <option value="Internship">Internship</option>
+                  <option value="Temporary">Temporary</option>
+                  <option value="Volunteer">Volunteer</option>
+                </select>
+              </div>
+
               <hr className={`my-1 border-t-2 ${divider}`} />
 
               <div className="flex flex-col gap-1.5">

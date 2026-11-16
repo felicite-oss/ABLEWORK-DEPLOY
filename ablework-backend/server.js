@@ -1051,8 +1051,28 @@ app.post('/api/applications/apply', upload.fields([
             [applicant_id, job_id]
         );
 
-        if (existing.length > 0) {
+                if (existing.length > 0) {
             return res.status(400).json({ message: "You have already applied for this job." });
+        }
+
+        // --- NEW RULE: Check if already hired for this job type ---
+        const [newJobInfo] = await db.execute('SELECT job_type FROM job_postings WHERE id = ?', [job_id]);
+        if (newJobInfo.length > 0) {
+            const targetJobType = newJobInfo[0].job_type;
+
+            const [existingHires] = await db.execute(`
+                SELECT j.job_title, j.company_name 
+                FROM applications a
+                JOIN job_postings j ON a.job_id = j.id
+                WHERE a.applicant_id = ? AND a.status = 'Hired' AND j.job_type = ?
+            `, [applicant_id, targetJobType]);
+
+            if (existingHires.length > 0) {
+                const hiredAt = existingHires[0];
+                return res.status(403).json({ 
+                    message: `You are already hired at ${hiredAt.company_name} for a ${targetJobType} role. You cannot apply for other ${targetJobType} jobs.` 
+                });
+            }
         }
 
         const [jobCheck] = await db.execute('SELECT max_applications FROM job_postings WHERE id = ?', [job_id]);
@@ -1143,7 +1163,7 @@ app.get('/api/applicant/:id/applications', async (req, res) => {
             SELECT
                 a.id as application_id, a.job_id, a.status, a.applied_at, a.employer_message,
                 a.withdrawal_reasons, a.withdrawal_details, a.withdrawn_at,
-                j.job_title, j.company_name, j.job_description, j.salary_range, 
+                j.job_title, j.company_name, j.job_type, j.job_description, j.salary_range, 
                 j.benefits, j.provided_accommodations, j.required_skills
             FROM applications a
             JOIN job_postings j ON a.job_id = j.id
@@ -1346,6 +1366,7 @@ app.post('/api/jobs/create', async (req, res) => {
 
     const {
         employer_id, job_title, company_name, job_description,
+        job_type,
         required_skills, provided_accommodations, accepted_disabilities,
         salary_range, benefits, latitude, longitude,
         max_applications
@@ -1364,13 +1385,14 @@ app.post('/api/jobs/create', async (req, res) => {
 
         const [result] = await db.execute(
             `INSERT INTO job_postings
-             (employer_id, job_title, company_name, job_description, required_skills, provided_accommodations, accepted_disabilities, salary_range, benefits, latitude, longitude, max_applications, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
+             (employer_id, job_title, company_name, job_description, job_type, required_skills, provided_accommodations, accepted_disabilities, salary_range, benefits, latitude, longitude, max_applications, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
             [
                 employer_id ?? null,
                 job_title ?? null,
                 company_name ?? null,
                 job_description ?? null,
+                job_type || 'Full-time',
                 required_skills ? JSON.stringify(required_skills) : '[]',
                 provided_accommodations ? JSON.stringify(provided_accommodations) : '[]',
                 accepted_disabilities ? JSON.stringify(accepted_disabilities) : '[]',
@@ -1426,7 +1448,7 @@ app.post('/api/jobs/create', async (req, res) => {
 app.put('/api/jobs/:id', async (req, res) => {
     const jobId = req.params.id;
     const {
-        job_title, job_description, required_skills,
+        job_title, job_description, job_type, required_skills,
         provided_accommodations, accepted_disabilities,
         salary_range, benefits
     } = req.body;
@@ -1434,11 +1456,12 @@ app.put('/api/jobs/:id', async (req, res) => {
     try {
         await db.execute(
             `UPDATE job_postings
-             SET job_title = ?, job_description = ?, required_skills = ?, provided_accommodations = ?, accepted_disabilities = ?, salary_range = ?, benefits = ?
+             SET job_title = ?, job_description = ?, job_type = ?, required_skills = ?, provided_accommodations = ?, accepted_disabilities = ?, salary_range = ?, benefits = ?
              WHERE id = ?`,
             [
                 job_title,
                 job_description,
+                job_type || 'Full-time',
                 JSON.stringify(required_skills || []),
                 JSON.stringify(provided_accommodations || []),
                 JSON.stringify(accepted_disabilities || []),
