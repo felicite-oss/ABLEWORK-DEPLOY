@@ -531,33 +531,33 @@ const accommodationSuggestions = [
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5 sm:gap-2">
-          <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
-            <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            Maximum Applications Allowed
-          </label>
-          <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
-            The job will automatically stop accepting resumes once this number is reached (Max: 50).
-          </p>
-          <input 
-            type="number" 
-            min="1" 
-            max="50"
-            value={maxApplications} 
-            onChange={(e) => {
-              let val = parseInt(e.target.value) || 1;
-              if (val > 50) val = 50; 
-              setMaxApplications(val);
-            }} 
-            required
-            className={inputSmCls}
-          />
-        </div>
-
-               <hr className={divider} />
-
-        <div className="flex flex-col gap-6 sm:gap-8">
+            {/* 2-COLUMN GRID FOR MAX APPLICATIONS & SALARY */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
           
+          {/* Maximum Applications Allowed */}
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label className={`text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider ${pageText}`}>
+              <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              Maximum Applications Allowed
+            </label>
+            <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>
+              The job will automatically stop accepting resumes once this number is reached (Max: 50).
+            </p>
+            <input 
+              type="number" 
+              min="1" 
+              max="50"
+              value={maxApplications} 
+              onChange={(e) => {
+                let val = parseInt(e.target.value) || 1;
+                if (val > 50) val = 50; 
+                setMaxApplications(val);
+              }} 
+              required
+              className={inputCls}
+            />
+          </div>
+
           {/* Salary Range */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
@@ -565,7 +565,7 @@ const accommodationSuggestions = [
             </label>
             <p className={`text-[10px] sm:text-xs font-semibold mb-1 ${muted}`}>Select currency and applicable income bracket.</p>
             
-            <div className="flex gap-2 max-w-2xl">
+            <div className="flex gap-2 w-full">
               <select
                 value={currency}
                 onChange={(e) => {
@@ -658,7 +658,7 @@ const accommodationSuggestions = [
             )}
           </div>
 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
+          {/* Required Skills */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Required Skills <span className={isDark ? 'text-white' : 'text-red-500'}>*</span>
@@ -667,10 +667,10 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentSkill} onChange={(e) => setCurrentSkill(e.target.value)} onKeyDown={handleSkillKeyDown}
               placeholder="e.g. Python, Graphic Design..."
-              className={inputCls}
+              className={`${inputSmCls} max-w-2xl`}
             />
             {filteredSkills.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1 max-w-2xl">
                 {filteredSkills.map(suggestion => (
                   <button
                     key={suggestion}
@@ -684,7 +684,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedSkills.length > 0 && (
-              <div className={`${chipContainer} flex-col`}>
+              <div className={`${chipContainer} flex-col max-w-2xl`}>
                 {selectedSkills.map(skill => (
                   <span key={skill} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {skill} <button type="button" onClick={() => removeSkill(skill)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -694,6 +694,7 @@ const accommodationSuggestions = [
             )}
           </div>
 
+          {/* Guaranteed Accommodations */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <label className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${pageText}`}>
               Guaranteed Accommodations
@@ -702,10 +703,10 @@ const accommodationSuggestions = [
             <input
               type="text" value={currentAccommodation} onChange={(e) => setCurrentAccommodation(e.target.value)} onKeyDown={handleAccommodationKeyDown}
               placeholder="e.g. Wheelchair Access, Screen Reader..."
-              className={inputSmCls}
+              className={`${inputSmCls} max-w-2xl`}
             />
             {filteredAccommodations.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1 max-w-2xl">
                 {filteredAccommodations.map(suggestion => (
                   <button
                     key={suggestion}
@@ -719,7 +720,7 @@ const accommodationSuggestions = [
               </div>
             )}
             {selectedAccommodations.length > 0 && (
-              <div className={chipContainer}>
+              <div className={`${chipContainer} max-w-2xl`}>
                 {selectedAccommodations.map(acc => (
                   <span key={acc} className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-md border-2 ${isDark ? 'bg-black text-white border-white' : 'bg-white text-[#03045E] border-gray-200'}`}>
                     {acc} <button type="button" onClick={() => removeAccommodation(acc)} className={`font-bold ml-0.5 transition ${isDark ? 'text-white hover:text-red-500' : 'text-[#03045E] hover:text-red-500'}`}>✕</button>
@@ -728,7 +729,6 @@ const accommodationSuggestions = [
               </div>
             )}
           </div>
-        </div>
 
         </div>
 
