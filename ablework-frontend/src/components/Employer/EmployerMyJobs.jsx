@@ -57,7 +57,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
   const panelBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
   const inputBg = isDark
     ? 'bg-black border-white text-white placeholder:text-gray-400 focus:border-white'
-    : 'bg-white border-gray-200 text-[#03045E] placeholder:text-gray-400 focus:border-gray-200';
+    : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textMuted)] focus:border-[var(--color-accent)]';
   const divider = isDark ? 'border-white' : 'border-gray-200';
   const modalBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
   const chipBoxBg = isDark ? 'bg-black border-white' : 'bg-white border-gray-200';
@@ -76,13 +76,13 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
   const suggestionBtn = isDark
     ? 'px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-lg border-2 bg-black text-white border-white'
     : 'px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-lg border-2 bg-white text-[#03045E] border-gray-200';
-  const chipBoxContainer = isDark
+    const chipBoxContainer = isDark
     ? 'flex flex-wrap gap-1.5 sm:gap-2 mt-2 p-2 sm:p-3 rounded-xl border-2 bg-black border-white'
-    : 'flex flex-wrap gap-1.5 sm:gap-2 mt-2 p-2 sm:p-3 rounded-xl border-2 bg-white border-gray-200';
+    : 'flex flex-wrap gap-1.5 sm:gap-2 mt-2 p-2 sm:p-3 rounded-xl border-2 bg-[var(--color-surfaceMuted)] border-[var(--color-border)]';
+    
   const chipPill = isDark
     ? 'inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-full shadow-sm bg-white text-black border-2 border-white'
-    : 'inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-full shadow-sm bg-white text-[#03045E] border-2 border-gray-200';
-
+    : 'inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-full shadow-sm bg-[var(--color-surface)] text-[var(--color-text)] border-2 border-[var(--color-border)]';
   const disabilityCategories = {
     "Vision Impairments": ['Total Blindness', ' Partially Blind', 'Low Vision', 'Color Blindness'],
     "Hearing & Speech": ['Deafness', 'Hard of Hearing', 'Muteness', 'Speech Impairment'],
@@ -516,7 +516,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
             <form onSubmit={handleEditJob} className="flex flex-col gap-4 sm:gap-5">
               
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-bold text-[#03045E]">Job Title <span className="text-red-500">*</span></label>
+               <label className="text-xs sm:text-sm font-bold text-[var(--color-text)]">Job Title <span className="text-red-500">*</span></label>
                 <input type="text" value={editingJob.job_title} onChange={e => setEditingJob({...editingJob, job_title: e.target.value})} required className={`p-2.5 sm:p-3 border-2 rounded-xl outline-none font-semibold transition-all text-sm sm:text-base ${inputBg}`} />
               </div>
               
@@ -642,7 +642,7 @@ export default function EmployerMyJobs({ jobs, refreshData }) {
 
             <div className={`flex flex-col gap-2 p-3 sm:p-5 rounded-xl border-2 ${disabBoxBg}`}>
               <div>
-                <label className="text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider text-[#03045E]">
+<label className="text-xs sm:text-sm font-extrabold flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider text-[var(--color-text)]">
                   Accepted Disabilities <span style={{ color: 'var(--color-primary, #2C7FFF)' }}>*</span>
                 </label>
                 <p className={`text-[10px] sm:text-xs font-semibold mt-1 ${subtle}`}>Select categories below to reveal specific conditions.</p>
