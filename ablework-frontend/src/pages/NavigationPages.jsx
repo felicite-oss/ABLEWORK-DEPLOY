@@ -412,32 +412,28 @@ export function Home() {
             color: #000000 !important;
           }
         `}</style>
-      )}
-
-      {isDarkMode && !isContrast && (
+      )}      {usePlainWhiteText && (
         <style>{`
-          .learn-more-btn, .learn-more-btn:hover,
-          .get-started-btn, .get-started-btn:hover,
-          .find-jobs-btn, .find-jobs-btn:hover,
-          .register-btn, .register-btn:hover {
+          .dark-mode-fix, .dark-mode-fix * {
+            text-shadow: none !important;
+            filter: none !important;
+            -webkit-text-stroke: 0 !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            color: #FFFFFF !important;
+            mix-blend-mode: normal !important;
+          }
+          .dark-mode-fix *:not(.hero-bg-img) {
+            background-image: none !important;
+          }
+          .dark-mode-fix .leaflet-popup,
+          .dark-mode-fix .leaflet-popup * {
             color: #000000 !important;
             -webkit-text-fill-color: #000000 !important;
+            text-shadow: none !important;
+            stroke: #000000 !important;
           }
-        `}</style>
-      )}
-
-      {isDarkMode && isContrast && (
-        <style>{`
-          .learn-more-btn, .learn-more-btn:hover, .learn-more-btn *,
-          .get-started-btn, .get-started-btn:hover, .get-started-btn *,
-          .find-jobs-btn, .find-jobs-btn:hover, .find-jobs-btn *,
-          .register-btn, .register-btn:hover, .register-btn *,
-          .login-btn, .login-btn:hover, .login-btn * {
-            color: #000000 !important;
-            -webkit-text-fill-color: #000000 !important;
-          }
-          .get-started-btn svg, .get-started-btn svg *,
-          .find-jobs-btn svg, .find-jobs-btn svg * {
+          .dark-mode-fix .leaflet-popup svg,
+          .dark-mode-fix .leaflet-popup svg * {
             stroke: #000000 !important;
             color: #000000 !important;
           }
@@ -2016,17 +2012,17 @@ export function Contact() {
           <form className="space-y-3 sm:space-y-4">
             <div>
               <label htmlFor="contact-name" className="sr-only">Your Name</label>
-              <input
-  type="text"
-  placeholder="Your Name"
-  value={name}
-  onChange={(e) => setName(e.target.value)}
-  style={{
-    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
-    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
-  }}
-  className="w-full p-3 border-2 border-[#03045E]/20 rounded-xl focus:outline-none ..."
-/>
+           <input
+                id="contact-email"
+                type="email"
+                placeholder="Your Email"
+                aria-label="Your Email"
+                title="Your Email"
+                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
+                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
+                }`}
+              />
+
             </div>
             <div>
               <label htmlFor="contact-email" className="sr-only">Your Email</label>
@@ -2044,16 +2040,16 @@ export function Contact() {
             </div>
             <div>
               <label htmlFor="contact-message" className="sr-only">Your Message</label>
-             <textarea
-  placeholder="Your Message"
-  value={message}
-  onChange={(e) => setMessage(e.target.value)}
-  style={{
-    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
-    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
-  }}
-  className="w-full p-3 border-2 border-[#03045E]/20 rounded-xl focus:outline-none ..."
-/>
+           <textarea
+                id="contact-message"
+                rows="5"
+                placeholder="Your Message"
+                aria-label="Your Message"
+                title="Your Message"
+                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
+                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
+                }`}
+              />
             </div>
             <button
               type="button"
