@@ -1417,13 +1417,8 @@ export function About() {
   );
 }
 
-// --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CODE ---
-import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AccessibilityContext } from '../context/AccessibilityContext';
-import { useColorPalette } from '../context/ColorPaletteContext';
-
-export function ContactSupport() {
+// --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
+export function Contact() {
   const navigate = useNavigate();
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
