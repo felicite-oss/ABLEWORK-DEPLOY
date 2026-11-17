@@ -1,8 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom'; // <-- ADD THIS LINE
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom'; // ✅ ONLY ONE LINE
 import { AccessibilityContext } from '../context/AccessibilityContext';
 import { useColorPalette } from '../context/ColorPaletteContext';
 import { AccessibilityWelcome } from '../components/AccessibilityWelcome';
