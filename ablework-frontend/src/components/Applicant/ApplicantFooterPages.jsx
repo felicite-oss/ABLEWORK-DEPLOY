@@ -710,7 +710,7 @@ export function ApplicantContact({ onBack, profile }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
     if (reasons.length === 0) {
       setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
@@ -721,6 +721,32 @@ export function ApplicantContact({ onBack, profile }) {
       return;
     }
 
+    // 1. ADDED: Confirmation SweetAlert pop-up
+    const confirmResult = await Swal.fire({
+      title: 'Submit Ticket?',
+      text: 'Are you sure you want to submit this support ticket? Please ensure your details are accurate.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit it!',
+      cancelButtonText: 'Cancel',
+      background: isDark ? '#111111' : '#ffffff',
+      color: isDark ? '#ffffff' : 'var(--color-text)',
+      confirmButtonColor: 'var(--color-accent)',
+      cancelButtonColor: isDark ? '#333333' : '#64748b',
+      customClass: {
+        popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
+        title: 'font-black text-2xl',
+        confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform',
+        cancelButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
+      }
+    });
+
+    // If the user clicks "Cancel" or clicks outside the modal, stop here
+    if (!confirmResult.isConfirmed) {
+      return; 
+    }
+
+    // 2. Proceed with loading state and submission
     setIsSubmitting(true);
     setAlert({ show: false, type: '', text: '' });
 
