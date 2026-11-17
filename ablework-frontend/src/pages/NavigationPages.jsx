@@ -1418,6 +1418,7 @@ export function About() {
 
 // --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
 // --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
+// --- CONTACT COMPONENT ---
 export function Contact() {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
@@ -1434,11 +1435,9 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
-  // SweetAlert-style modals
   const [confirmModal, setConfirmModal] = useState({ show: false });
   const [successModal, setSuccessModal] = useState({ show: false, message: '' });
 
-  // Step 1: validate, then open the SweetAlert confirmation card
   const handleSubmit = (e) => {
     e.preventDefault();
     if (reasons.length === 0) {
@@ -1451,10 +1450,9 @@ export function Contact() {
     }
 
     setAlert({ show: false, type: '', text: '' });
-    setConfirmModal({ show: true }); // open confirmation card
+    setConfirmModal({ show: true }); 
   };
 
-  // Step 2: actual submission after the user confirms
   const submitTicket = async () => {
     setConfirmModal({ show: false });
     setIsSubmitting(true);
@@ -1525,7 +1523,6 @@ export function Contact() {
     >
       <div className="w-full max-w-6xl flex flex-col gap-8">
         
-        {/* HEADER */}
         <div className="text-center pt-6 pb-2">
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isDark ? 'white' : '#1e1b4b' }}>
             Help and Support
@@ -1534,7 +1531,6 @@ export function Contact() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
           
-          {/* LEFT SIDE: Information Cards (Kept your exact layout) */}
           <div className="md:col-span-5 flex flex-col gap-4">
             {[
               { label: 'System Name', value: 'ABLEWORK' },
@@ -1551,20 +1547,17 @@ export function Contact() {
             ))}
           </div>
 
-          {/* RIGHT SIDE: Submit Ticket Form (UPDATED) */}
           <div className="md:col-span-7">
             <h2 className={`text-xl font-black mb-4 ${textColor}`}>Submit a Support Ticket</h2>
             
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               
-              {/* ACCESSIBLE ALERT BANNER */}
               {alert.show && (
                 <div role="alert" className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]">
                   {alert.text}
                 </div>
               )}
 
-              {/* Report Reasons Grid */}
               <fieldset>
                 <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
                   What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
@@ -1592,7 +1585,6 @@ export function Contact() {
                 </div>
               </fieldset>
 
-              {/* Subject Input */}
               <div>
                 <input
                   type="text"
@@ -1604,7 +1596,6 @@ export function Contact() {
                 />
               </div>
 
-              {/* Description Textarea */}
               <div>
                 <textarea
                   rows={4}
@@ -1616,7 +1607,6 @@ export function Contact() {
                 />
               </div>
 
-              {/* File Attachment */}
               <div>
                 <p className={`text-xs font-bold mb-2 ${mutedText}`}>Attach Proof <span className="font-normal opacity-70">(Optional Image/PDF)</span></p>
                 <input
@@ -1628,7 +1618,6 @@ export function Contact() {
                 />
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -1654,7 +1643,6 @@ export function Contact() {
         </div>
       </div>
 
-      {/* ===== CONFIRMATION MODAL ===== */}
       {confirmModal.show && createPortal(
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
@@ -1680,7 +1668,6 @@ export function Contact() {
         </div>, document.body
       )}
 
-      {/* ===== SUCCESS MODAL ===== */}
       {successModal.show && createPortal(
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
@@ -1709,6 +1696,7 @@ export function Contact() {
 }
 
 export function Terms() {
+  // ... (keep the rest of your Terms component as it is)
   const [openSection, setOpenSection] = useState(null);
   const toggleSection = (id) => setOpenSection(openSection === id ? null : id);
 
