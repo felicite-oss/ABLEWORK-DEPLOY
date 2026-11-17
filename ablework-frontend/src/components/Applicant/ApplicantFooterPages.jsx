@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -707,12 +706,10 @@ export function ApplicantContact({ onBack, profile }) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [proofImage, setProofImage] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
-  // ADDED: Custom modal state for the ExploreJobs-style SweetAlert
-  const [sweetAlert, setSweetAlert] = useState({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null });
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (reasons.length === 0) {
       setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
@@ -723,77 +720,45 @@ export function ApplicantContact({ onBack, profile }) {
       return;
     }
 
-    // 1. Trigger the confirmation pop-up
-    setSweetAlert({
-      isOpen: true,
-      title: 'Submit Ticket?',
-      text: 'Are you sure you want to submit this support ticket? Please ensure your details are accurate.',
-      type: 'confirm',
-      onConfirm: async () => {
-        setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null }); // Close modal
-        setIsSubmitting(true);
-        setAlert({ show: false, type: '', text: '' });
+    setIsSubmitting(true);
+    setAlert({ show: false, type: '', text: '' });
 
-        // 2-second artificial delay for the loading state
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        try {
-          const formData = new FormData();
-          formData.append('userId', profile?.user_id || profile?.id || '');
-          formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
-          formData.append('userEmail', profile?.email || 'N/A');
-          formData.append('userRole', profile?.role || 'Applicant'); 
-          formData.append('reasons', JSON.stringify(reasons));
-          formData.append('subject', subject);
-          formData.append('message', message);
-          
-          if (proofImage) {
-            formData.append('proof_image', proofImage);
-          }
-
-          const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
-            method: 'POST',
-            body: formData
-          });
-
-          const data = await res.json();
-
-          if (res.ok) {
-            setSweetAlert({
-              isOpen: true,
-              title: 'Ticket Submitted!',
-              text: data.message || 'Your support ticket has been successfully submitted. Our team will review it shortly.',
-              type: 'success',
-              onConfirm: () => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })
-            });
-            
-            setReasons([]);
-            setSubject('');
-            setMessage('');
-            setProofImage(null);
-          } else {
-            setSweetAlert({
-              isOpen: true,
-              title: 'Submission Failed',
-              text: data.message || 'Something went wrong on our end.',
-              type: 'error',
-              onConfirm: () => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })
-            });
-          }
-        } catch (err) {
-          console.error(err);
-          setSweetAlert({
-            isOpen: true,
-            title: 'Network Error',
-            text: 'Could not connect to the server. Please check your internet connection and try again.',
-            type: 'warning',
-            onConfirm: () => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })
-          });
-        } finally {
-          setIsSubmitting(false);
-        }
+    try {
+      const formData = new FormData();
+      formData.append('userId', profile?.user_id || profile?.id || '');
+      formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
+      formData.append('userEmail', profile?.email || 'N/A');
+      formData.append('userRole', profile?.role || 'Applicant'); 
+      formData.append('reasons', JSON.stringify(reasons));
+      formData.append('subject', subject);
+      formData.append('message', message);
+      
+      if (proofImage) {
+        formData.append('proof_image', proofImage);
       }
-    });
+
+      const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setAlert({ show: true, type: 'success', text: data.message || 'Submitted successfully!' });
+        setReasons([]);
+        setSubject('');
+        setMessage('');
+        setProofImage(null); // Reset image
+      } else {
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
+      }
+    } catch (err) {
+      console.error(err);
+      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Adaptive colors for the form
@@ -801,79 +766,149 @@ export function ApplicantContact({ onBack, profile }) {
   const textColor = isDark ? 'text-white' : 'text-[#03045E]';
   const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
-   return (
-    <>
-      <ApplicantPageLayout
-        title="Help and Support"
-        subtitle="Get assistance with your dashboard, applications, or report suspicious activity"
-        onBack={onBack}
-      >
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* ... all your form content stays exactly the same inside here ... */}
+
+  return (
+    <ApplicantPageLayout
+      title="Help and Support"
+      subtitle="Get assistance with your dashboard, applications, or report suspicious activity"
+      onBack={onBack}
+    >
+      <div className="grid md:grid-cols-2 gap-8">
+
+        {/* LEFT SIDE: INFO CARDS */}
+        <div className="space-y-6">
+          {[
+            { label: 'System Name', value: 'ABLEWORK' },
+            { label: 'Project Team', value: '5i' },
+            { label: 'Email Support', value: 'ableworksys5i@gmail.com' },
+            { label: 'Office Address', value: 'Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines' },
+            { label: 'Data Custody Team', value: 'Paquio, Loueala Jean H.\nPagado, Jesie Marie D.\nAstodillo, Felicite S.\nGonzales, John Greg A.\nGamboa, John Bryan T.' },
+            { label: 'Institution', value: 'STIWNU' }
+          ].map((item, idx) => (
+            <div key={idx} role="region" aria-label={`${item.label}: ${item.value}`} className={`p-5 rounded-2xl border-2 ${cardBg}`}>
+              <h3 tabIndex="0" className={`font-bold mb-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${textColor}`}>
+                {item.label}
+              </h3>
+              <p tabIndex="0" className={`text-sm font-semibold whitespace-pre-line focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${mutedText}`}>
+                {item.value}
+              </p>
+            </div>
+          ))}
         </div>
-      </ApplicantPageLayout>
 
-      {/* CUSTOM SWEETALERT MODAL - Rendered via Portal to guarantee it overlays everything */}
-      {sweetAlert.isOpen && createPortal(
-        <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="sweetAlertTitle"
-        >
-          <div className={`w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl border-2 ${isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-[#03045E]/15'} animate-in zoom-in-95 duration-200`}>
-            
-            {/* Icon Area based on Type */}
-            <div className="flex justify-center mb-6">
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center border-4 ${
-                sweetAlert.type === 'success' ? 'border-green-500 text-green-500' : 
-                sweetAlert.type === 'error' ? 'border-red-500 text-red-500' : 
-                sweetAlert.type === 'warning' ? 'border-amber-500 text-amber-500' : 
-                'border-[#2C7FFF] text-[#2C7FFF]'
-              }`}>
-                {sweetAlert.type === 'success' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                {sweetAlert.type === 'error' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>}
-                {sweetAlert.type === 'warning' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
-                {sweetAlert.type === 'confirm' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-              </div>
+        {/* RIGHT SIDE: SUPPORT FORM */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <h3 tabIndex="0" className={`text-lg font-bold focus:outline-none focus-visible:underline ${textColor}`}>
+            Submit a Support Ticket
+          </h3>
+          
+          {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
+          {alert.show && (
+            <div 
+              role="alert"
+              className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
+            >
+              {alert.text}
             </div>
+          )}
 
-            <h3 id="sweetAlertTitle" className={`text-2xl font-black text-center mb-3 ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
-              {sweetAlert.title}
-            </h3>
-            <p className={`text-center text-sm sm:text-base font-semibold mb-8 ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}>
-              {sweetAlert.text}
-            </p>
-
-            <div className="flex gap-3 w-full">
-              {sweetAlert.type === 'confirm' && (
-                <button
-                  onClick={() => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })}
-                  className={`flex-1 py-3.5 px-4 font-bold text-sm rounded-xl border-2 transition-all cursor-pointer ${
-                    isDark 
-                      ? 'border-white/20 text-white hover:bg-white/10' 
-                      : 'border-[#03045E]/15 text-[#03045E] hover:bg-[#f4f4f4]'
-                  }`}
-                >
-                  Cancel
-                </button>
-              )}
-              <button
-                onClick={sweetAlert.onConfirm}
-                className={`flex-1 py-3.5 px-4 font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer text-white ${
-                  sweetAlert.type === 'error' ? 'bg-red-500 hover:bg-red-600' : 
-                  sweetAlert.type === 'success' ? 'bg-green-500 hover:bg-green-600' : 
-                  'bg-[#2C7FFF] hover:bg-[#1a6bed]'
-                }`}
-              >
-                {sweetAlert.type === 'confirm' ? 'Yes, Submit' : 'Okay'}
-              </button>
+          {/* REPORT REASON CHECKLIST */}
+          <fieldset>
+            <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
+              What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
+            </legend>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {REPORT_REASONS.map(reason => {
+                const checked = reasons.includes(reason);
+                return (
+                  <label
+                    key={reason}
+                    className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
+                      checked
+                        ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]'
+                        : `${isDark ? 'bg-black border-white/30' : 'bg-white border-[#03045E]/15'} hover:border-[#2C7FFF]/60`
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={isSubmitting}
+                      onChange={() => {
+                        setReasons(prev =>
+                          prev.includes(reason)
+                            ? prev.filter(r => r !== reason)
+                            : [...prev, reason]
+                        );
+                      }}
+                      className="mt-0.5 accent-[#2C7FFF]"
+                    />
+                    <span className={`text-sm font-medium ${textColor}`}>{reason}</span>
+                  </label>
+                );
+              })}
             </div>
+          </fieldset>
+
+          {/* RESTORED SUBJECT INPUT */}
+          <div>
+            <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
+            <input
+              id="ticket-subject"
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Subject / Issue Summary"
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
+              disabled={isSubmitting}
+            />
           </div>
-        </div>,
-        document.body
-      )}
-    </>
+
+          <div>
+            <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
+            <textarea
+              id="ticket-message"
+              rows="4"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Describe your issue, question, or report suspicious activity..."
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {/* PROOF IMAGE UPLOAD */}
+          <div>
+            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setProofImage(e.target.files[0])}
+              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            aria-label="Submit Request Ticket"
+            className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
+              isDark 
+                ? 'bg-white text-black border-white hover:bg-gray-200' 
+                : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
+              {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
+            </span>
+            <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </button>
+        </form>
+      </div>
+    </ApplicantPageLayout>
   );
 }
 
