@@ -850,48 +850,67 @@ export function ApplicantContact({ onBack, profile }) {
           </fieldset>
 
           {/* RESTORED SUBJECT INPUT */}
-          <div>
-            <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
-           <input
-  id="ticket-subject"
-  type="text"
-  value={subject}
-  onChange={(e) => setSubject(e.target.value)}
-  placeholder="Subject / Issue Summary"
-  style={{ 
-    color: isDark ? '#ffffff' : 'var(--color-text)',
-    caretColor: isDark ? '#ffffff' : 'var(--color-text)'
-  }}
-  className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30 placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 placeholder-[#03045E]/50'}`}
-  disabled={isSubmitting}
-/>
-          </div>
+        <div>
+  <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
+  <input
+    id="ticket-subject"
+    type="text"
+    value={subject}
+    onChange={(e) => setSubject(e.target.value)}
+    placeholder="Subject / Issue Summary"
+    style={{ 
+      color: isDark ? '#ffffff' : 'var(--color-text)',
+      caretColor: isDark ? '#ffffff' : 'var(--color-text)'
+    }}
+    className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
+    disabled={isSubmitting}
+  />
+</div>
 
-          <div>
-            <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
-           <textarea
-  id="ticket-message"
-  rows="4"
-  value={message}
-  onChange={(e) => setMessage(e.target.value)}
-  placeholder="Describe your issue, question, or report suspicious activity..."
-  style={{ 
-    color: isDark ? '#ffffff' : 'var(--color-text)',
-    caretColor: isDark ? '#ffffff' : 'var(--color-text)'
-  }}
-  className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30 placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 placeholder-[#03045E]/50'}`}
-  disabled={isSubmitting}
-/>
-          </div>
+         <div>
+  <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
+  <textarea
+    id="ticket-message"
+    rows="4"
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+    placeholder="Describe your issue, question, or report suspicious activity..."
+    style={{ 
+      color: isDark ? '#ffffff' : 'var(--color-text)',
+      caretColor: isDark ? '#ffffff' : 'var(--color-text)'
+    }}
+    className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
+    disabled={isSubmitting}
+  />
+</div>
 
-          {/* PROOF IMAGE UPLOAD */}
+                  {/* PROOF IMAGE UPLOAD */}
           <div>
             <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+            <style>{`
+              .custom-file-input {
+                color: ${isDark ? '#ffffff' : 'var(--color-text)'} !important;
+              }
+              .custom-file-input::file-selector-button {
+                color: ${isDark ? '#ffffff' : 'var(--color-text)'} !important;
+                background-color: transparent !important;
+                border: 2px solid ${isDark ? '#ffffff' : 'var(--color-text)'} !important;
+                border-radius: 9999px;
+                padding: 0.5rem 1rem;
+                font-weight: bold;
+                margin-right: 1rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              }
+              .custom-file-input::file-selector-button:hover {
+                background-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(3,4,94,0.1)'} !important;
+              }
+            `}</style>
             <input
               type="file"
               accept="image/*,.pdf"
               onChange={(e) => setProofImage(e.target.files[0])}
-              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
+              className={`custom-file-input w-full p-2 border-2 rounded-xl text-sm cursor-pointer ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
               disabled={isSubmitting}
             />
           </div>
