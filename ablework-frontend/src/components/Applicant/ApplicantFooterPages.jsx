@@ -992,13 +992,13 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 >
                   Cancel
                 </button>
-                                  <button
+                                 <button
                   type="button"
                   onClick={submitTicket}
                   className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${
                     isDark 
-                      ? 'bg-[#2C7FFF] text-black border-[#2C7FFF]' 
-                      : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
+                      ? 'bg-white text-black border-white hover:bg-gray-200' 
+                      : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
                   }`}
                 >
                   Yes, Submit
