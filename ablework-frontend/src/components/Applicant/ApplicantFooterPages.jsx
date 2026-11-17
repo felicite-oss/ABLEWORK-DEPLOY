@@ -707,9 +707,14 @@ export function ApplicantContact({ onBack, profile }) {
   const [message, setMessage] = useState('');
   const [proofImage, setProofImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
-  const handleSubmit = async (e) => {
+// SweetAlert-style modals
+const [confirmModal, setConfirmModal] = useState({ show: false });
+const [successModal, setSuccessModal] = useState({ show: false, message: '' });
+
+  // Step 1: validate, then open the SweetAlert confirmation card
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (reasons.length === 0) {
       setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
@@ -720,41 +725,59 @@ export function ApplicantContact({ onBack, profile }) {
       return;
     }
 
+    setAlert({ show: false, type: '', text: '' });
+    setConfirmModal({ show: true }); // open confirmation card
+  };
+
+  // Step 2: actual submission after the user confirms (with 2s minimum loading)
+  const submitTicket = async () => {
+    setConfirmModal({ show: false });
     setIsSubmitting(true);
     setAlert({ show: false, type: '', text: '' });
+
+    // Minimum 2-second loading timer
+    const loadingTimer = new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
       const formData = new FormData();
       formData.append('userId', profile?.user_id || profile?.id || '');
       formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
       formData.append('userEmail', profile?.email || 'N/A');
-      formData.append('userRole', profile?.role || 'Applicant'); 
+      formData.append('userRole', profile?.role || 'Applicant');
       formData.append('reasons', JSON.stringify(reasons));
       formData.append('subject', subject);
       formData.append('message', message);
-      
+
       if (proofImage) {
         formData.append('proof_image', proofImage);
       }
 
-      const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
-        method: 'POST',
-        body: formData
-      });
+      // Run fetch and the 2s timer in parallel so the loader is visible at least 2s
+      const [res] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/support/ticket`, {
+          method: 'POST',
+          body: formData
+        }),
+        loadingTimer
+      ]);
 
       const data = await res.json();
 
       if (res.ok) {
-        setAlert({ show: true, type: 'success', text: data.message || 'Submitted successfully!' });
+        setSuccessModal({
+          show: true,
+          message: data.message || 'Your support ticket has been submitted successfully. Our team will review it shortly.'
+        });
         setReasons([]);
         setSubject('');
         setMessage('');
-        setProofImage(null); // Reset image
+        setProofImage(null);
       } else {
         setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
       }
     } catch (err) {
       console.error(err);
+      await loadingTimer;
       setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
     } finally {
       setIsSubmitting(false);
@@ -765,8 +788,12 @@ export function ApplicantContact({ onBack, profile }) {
   const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-[#03045E]/10';
   const textColor = isDark ? 'text-white' : 'text-[#03045E]';
   const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
-  const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
+ const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
 
+// Modal theme helpers
+const modalBg = isDark ? 'bg-[#111111]' : 'bg-white';
+const modalText = isDark ? 'text-white' : 'text-[#03045E]';
+const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   return (
     <ApplicantPageLayout
       title="Help and Support"
@@ -906,16 +933,107 @@ export function ApplicantContact({ onBack, profile }) {
                 : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
             }`}
           >
-            <span className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
-              {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
-            </span>
+<span className="flex items-center gap-2">
+  {isSubmitting ? (
+    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+  ) : (
+    <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
+  )}
+  {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
+</span>
             <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
               →
             </span>
-          </button>
+            </button>
         </form>
       </div>
+
+      {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
+      {confirmModal.show && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-title"
+          onClick={() => setConfirmModal({ show: false })}
+        >
+          <div
+            className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-full bg-[#2C7FFF]/15 flex items-center justify-center mb-4">
+                <svg className="w-7 h-7 text-[#2C7FFF]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 id="confirm-title" className={`text-lg font-bold mb-2 ${modalText}`}>
+                Confirm Submission
+              </h3>
+              <p className={`text-sm font-medium mb-6 ${modalMuted}`}>
+                Are you sure you want to submit this support ticket? Please review your details before proceeding.
+              </p>
+              <div className="flex w-full gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmModal({ show: false })}
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 transition-colors cursor-pointer ${
+                    isDark
+                      ? 'bg-transparent text-white border-white/30 hover:bg-white/10'
+                      : 'bg-transparent text-[#03045E] border-[#03045E]/30 hover:bg-[#03045E]/5'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={submitTicket}
+                  className="flex-1 py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E] transition-colors cursor-pointer"
+                >
+                  Yes, Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== SUCCESS SWEETALERT CARD ===== */}
+      {successModal.show && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="success-title"
+          onClick={() => setSuccessModal({ show: false, message: '' })}
+        >
+          <div
+            className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#2C7FFF] flex items-center justify-center mb-4 shadow-lg">
+                <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 id="success-title" className={`text-xl font-black mb-2 ${modalText}`}>
+                Ticket Submitted!
+              </h3>
+              <p className={`text-sm font-medium mb-6 ${modalMuted}`}>
+                {successModal.message}
+              </p>
+              <button
+                type="button"
+                onClick={() => setSuccessModal({ show: false, message: '' })}
+                className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E] transition-colors cursor-pointer"
+              >
+                Got it, thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ApplicantPageLayout>
   );
 }
