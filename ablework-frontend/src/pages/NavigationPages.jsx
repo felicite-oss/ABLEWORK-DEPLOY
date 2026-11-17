@@ -421,16 +421,6 @@ export function Home() {
         `}</style>
       )}
 
-            {!isContrast && !isDarkMode && (
-        <style>{`
-          .contact-input::placeholder {
-            color: var(--color-text) !important;
-            opacity: 0.6 !important;
-            -webkit-text-fill-color: var(--color-text) !important;
-          }
-        `}</style>
-      )}
-
       {isDarkMode && !isContrast && (
         <style>{`
           .learn-more-btn, .learn-more-btn:hover,
@@ -2033,7 +2023,7 @@ export function Contact() {
           <form className="space-y-3 sm:space-y-4">
             <div>
               <label htmlFor="contact-name" className="sr-only">Your Name</label>
-             <input
+              <input
   type="text"
   placeholder="Your Name"
   value={name}
@@ -2047,7 +2037,7 @@ export function Contact() {
             </div>
             <div>
               <label htmlFor="contact-email" className="sr-only">Your Email</label>
-             <input
+              <input
   type="email"
   placeholder="Your Email"
   value={email}
