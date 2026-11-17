@@ -1029,11 +1029,11 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 <svg 
                   className="w-9 h-9" 
                   fill="none" 
-                  stroke="#000000" 
+                  stroke={isDark ? "#000000" : "currentColor"} 
                   strokeWidth="3" 
                   viewBox="0 0 24 24" 
                   aria-hidden="true"
-                  style={{ color: '#000000' }}
+                  style={isDark ? { color: '#000000' } : {}}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
