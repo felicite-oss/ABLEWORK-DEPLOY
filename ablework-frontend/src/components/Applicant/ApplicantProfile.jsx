@@ -1181,13 +1181,17 @@ export default function ApplicantProfile({ profile, refreshData, setProfile }) {
             <p tabIndex="0" className="text-[10px] sm:text-xs text-[#03045E] font-semibold rounded focus:outline-none focus:ring-2 focus:ring-[#2C7FFF] focus:px-1">We will hide jobs that are further away than this limit.</p>
           </div>
 
-          <div className="flex flex-col gap-1.5 sm:gap-2">
+                    <div className="flex flex-col gap-1.5 sm:gap-2">
             <label htmlFor="residential-address" tabIndex="0" className="text-xs sm:text-sm font-bold text-[#03045E] rounded focus:outline-none focus:ring-2 focus:ring-[#2C7FFF] focus:px-1 w-fit">Residential Address</label>
             <input 
               id="residential-address"
               type="text" name="residential_address" value={formData.residential_address} onChange={handleChange} required 
               aria-label="Residential Address. Enter your street address or city."
-              className="w-full p-3 sm:p-3.5 pl-3 sm:pl-4 bg-white border border-[#03045E]/20 rounded-lg sm:rounded-xl focus:border-[#2C7FFF] focus:ring-4 focus:ring-[#2C7FFF]/20 outline-none text-[#03045E] transition-all font-medium text-xs sm:text-sm placeholder:text-[#03045E]/40" 
+              style={{
+                color: isDarkScreen ? '#ffffff' : 'var(--color-text)',
+                '--placeholder-color': isDarkScreen ? 'rgba(255, 255, 255, 0.6)' : 'var(--color-primary, #2C7FFF)'
+              }}
+              className="w-full p-3 sm:p-3.5 pl-3 sm:pl-4 bg-white border border-[#03045E]/20 rounded-lg sm:rounded-xl focus:border-[#2C7FFF] focus:ring-4 focus:ring-[#2C7FFF]/20 outline-none transition-all font-medium text-xs sm:text-sm placeholder:text-[var(--placeholder-color)]" 
               placeholder="Enter your street address or city"
             />
           </div>
