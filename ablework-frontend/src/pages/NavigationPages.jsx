@@ -21,7 +21,7 @@ import gifVideo from '../assets/GIF.mp4';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import API_BASE_URL from '../../config';
+
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 let DefaultIcon = L.icon({
@@ -77,6 +77,7 @@ function SiteHeader() {
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDarkMode = mode && typeof mode === 'string' && mode.toLowerCase().includes('dark'); // <-- ADD THIS LINE
   const isAccessibilityMode = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
+
   return (
     <header className={`w-full ${isContrast ? 'bg-black border-b-2 border-[#2C7FFF]' : 'bg-white border-b-2 border-[#03045E]/15'} fixed top-0 left-0 z-50 transition-all duration-300 shadow-sm`}>
    <div className="w-full h-14 sm:h-16 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 flex items-center justify-between box-border">
@@ -135,7 +136,9 @@ function SiteHeader() {
             className={`signup-btn px-5 py-2 rounded-full text-sm font-bold border-2 transition transform duration-200 ${
               isContrast 
                 ? 'bg-[var(--color-accent)] text-[var(--color-background)] border-[var(--color-accent)] hover:brightness-125' 
-                : 'bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:brightness-125'
+                : isDarkMode 
+                  ? 'bg-[#03045E] !text-black border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:brightness-125'
+                  : 'bg-[#03045E] text-[#f4f4f4] border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:brightness-125'
             }`}
           >
             Sign Up
@@ -147,7 +150,9 @@ function SiteHeader() {
             className={`login-btn px-5 py-2 rounded-full bg-transparent text-sm font-bold border-2 transition transform duration-200 ${
               isContrast 
                 ? 'text-[var(--color-text)] border-[var(--color-text)] hover:bg-[var(--color-accent)] hover:text-[var(--color-background)] hover:border-[var(--color-accent)] hover:brightness-125' 
-                : 'text-[#03045E] border-[#03045E] hover:bg-[#2C7FFF] hover:text-[#f4f4f4] hover:border-[#2C7FFF] hover:brightness-125'
+                : isDarkMode
+                  ? '!text-black border-black hover:bg-[#2C7FFF] hover:text-[#f4f4f4] hover:border-[#2C7FFF] hover:brightness-125'
+                  : 'text-[#03045E] border-[#03045E] hover:bg-[#2C7FFF] hover:text-[#f4f4f4] hover:border-[#2C7FFF] hover:brightness-125'
             }`}
           >
             Log In
@@ -346,7 +351,7 @@ export function Home() {
   useEffect(() => {
     const fetchActiveJobs = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/jobs`);
+        const res = await fetch('http://localhost:5001/api/jobs');
         if (res.ok) {
           const data = await res.json();
           setJobs(data);
@@ -393,11 +398,18 @@ export function Home() {
   return (
    <div role="main" aria-label="Home Screen" className={`min-h-screen flex flex-col ${(isContrast || isDarkMode) ? 'dark-mode-fix bg-[var(--color-background)] text-[var(--color-text)]' : 'bg-white text-[#03045E]'}`}>
 
-             {usePlainWhiteText && (
+      {usePlainWhiteText && (
         <style>{`
-          .dark-mode-fix {
-            background-color: var(--color-background) !important;
-            color: var(--color-text) !important;
+          .dark-mode-fix, .dark-mode-fix * {
+            text-shadow: none !important;
+            filter: none !important;
+            -webkit-text-stroke: 0 !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            color: #FFFFFF !important;
+            mix-blend-mode: normal !important;
+          }
+          .dark-mode-fix *:not(.hero-bg-img) {
+            background-image: none !important;
           }
           .dark-mode-fix .leaflet-popup,
           .dark-mode-fix .leaflet-popup * {
@@ -414,11 +426,41 @@ export function Home() {
         `}</style>
       )}
 
+      {isDarkMode && !isContrast && (
+        <style>{`
+          .learn-more-btn, .learn-more-btn:hover,
+          .get-started-btn, .get-started-btn:hover,
+          .find-jobs-btn, .find-jobs-btn:hover,
+          .register-btn, .register-btn:hover {
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+          }
+        `}</style>
+      )}
+
+      {isDarkMode && isContrast && (
+        <style>{`
+          .learn-more-btn, .learn-more-btn:hover, .learn-more-btn *,
+          .get-started-btn, .get-started-btn:hover, .get-started-btn *,
+          .find-jobs-btn, .find-jobs-btn:hover, .find-jobs-btn *,
+          .register-btn, .register-btn:hover, .register-btn *,
+          .login-btn, .login-btn:hover, .login-btn * {
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+          }
+          .get-started-btn svg, .get-started-btn svg *,
+          .find-jobs-btn svg, .find-jobs-btn svg * {
+            stroke: #000000 !important;
+            color: #000000 !important;
+          }
+        `}</style>
+      )}
+
       <SiteHeader />
 
       <div className="flex-1 overflow-y-auto flex flex-col pt-16">
 
-                       {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
+                {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
         <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center">
           
           {/* Main Hero Container */}
@@ -1986,7 +2028,20 @@ export function Contact() {
           <form className="space-y-3 sm:space-y-4">
             <div>
               <label htmlFor="contact-name" className="sr-only">Your Name</label>
-           <input
+              <input
+                id="contact-name"
+                type="text"
+                placeholder="Your Name"
+                aria-label="Your Name"
+                title="Your Name"
+                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
+                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
+                }`}
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-email" className="sr-only">Your Email</label>
+              <input
                 id="contact-email"
                 type="email"
                 placeholder="Your Email"
@@ -1996,25 +2051,10 @@ export function Contact() {
                   isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
                 }`}
               />
-
-            </div>
-            <div>
-              <label htmlFor="contact-email" className="sr-only">Your Email</label>
-              <input
-  type="email"
-  placeholder="Your Email"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  style={{
-    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
-    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
-  }}
-  className="w-full p-3 border-2 border-[#03045E]/20 rounded-xl focus:outline-none ..."
-/>
             </div>
             <div>
               <label htmlFor="contact-message" className="sr-only">Your Message</label>
-           <textarea
+              <textarea
                 id="contact-message"
                 rows="5"
                 placeholder="Your Message"
