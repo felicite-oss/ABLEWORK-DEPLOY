@@ -982,11 +982,11 @@ export function ApplicantContact({ onBack, profile }) {
                 '→'
               )}
             </span>
-          </button>
+                   </button>
         </form>
       </div>
 
-      {/* CUSTOM SWEETALERT MODAL - Matches ExploreJobs */}
+      {/* CUSTOM SWEETALERT MODAL - Now inside the layout wrapper to ensure it pops exactly over this screen */}
       {sweetAlert.isOpen && (
         <div 
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
