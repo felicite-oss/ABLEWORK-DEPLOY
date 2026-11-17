@@ -421,6 +421,16 @@ export function Home() {
         `}</style>
       )}
 
+            {!isContrast && !isDarkMode && (
+        <style>{`
+          .contact-input::placeholder {
+            color: var(--color-text) !important;
+            opacity: 0.6 !important;
+            -webkit-text-fill-color: var(--color-text) !important;
+          }
+        `}</style>
+      )}
+
       {isDarkMode && !isContrast && (
         <style>{`
           .learn-more-btn, .learn-more-btn:hover,
@@ -2023,42 +2033,44 @@ export function Contact() {
           <form className="space-y-3 sm:space-y-4">
             <div>
               <label htmlFor="contact-name" className="sr-only">Your Name</label>
-              <input
-                id="contact-name"
-                type="text"
-                placeholder="Your Name"
-                aria-label="Your Name"
-                title="Your Name"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
-              />
+             <input
+  type="text"
+  placeholder="Your Name"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className="w-full p-3 border-2 border-[#03045E]/20 rounded-xl focus:outline-none ..."
+/>
             </div>
             <div>
               <label htmlFor="contact-email" className="sr-only">Your Email</label>
-              <input
-                id="contact-email"
-                type="email"
-                placeholder="Your Email"
-                aria-label="Your Email"
-                title="Your Email"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
-              />
+             <input
+  type="email"
+  placeholder="Your Email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className="w-full p-3 border-2 border-[#03045E]/20 rounded-xl focus:outline-none ..."
+/>
             </div>
             <div>
               <label htmlFor="contact-message" className="sr-only">Your Message</label>
-              <textarea
-                id="contact-message"
-                rows="5"
-                placeholder="Your Message"
-                aria-label="Your Message"
-                title="Your Message"
-                className={`w-full p-2.5 sm:p-3 bg-transparent border-2 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] ${
-                  isContrast ? 'border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-textSubtle)]' : 'border-[#03045E]/30 text-[#03045E] placeholder-[#03045E]/70'
-                }`}
-              />
+             <textarea
+  placeholder="Your Message"
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className="w-full p-3 border-2 border-[#03045E]/20 rounded-xl focus:outline-none ..."
+/>
             </div>
             <button
               type="button"
