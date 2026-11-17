@@ -164,14 +164,15 @@ const { paletteKey, palette } = useColorPalette();
     <main
       className={`min-h-screen flex flex-col ${isContrast ? 'bg-black text-white' : 'bg-[#f4f4f4] text-[#03045E]'} overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
     >
-      {isDarkMode && (
+           {!isContrast && !isDarkMode && (
         <style>{`
+          #fpEmail::placeholder,
           #fpOtp::placeholder,
           #fpNewPass::placeholder,
           #fpConfirmPass::placeholder {
-            color: #ffffff !important;
-            opacity: 1 !important;
-            -webkit-text-fill-color: #ffffff !important;
+            color: var(--color-text) !important;
+            opacity: 0.5 !important;
+            -webkit-text-fill-color: var(--color-text) !important;
           }
         `}</style>
       )}
@@ -427,7 +428,7 @@ const { paletteKey, palette } = useColorPalette();
     color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
     caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
   }}
-  className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+ className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
 />
                 </div>
               </div>
@@ -488,7 +489,7 @@ const { paletteKey, palette } = useColorPalette();
     color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
     caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
   }}
-  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
+className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
 />
               </div>
 
@@ -523,7 +524,7 @@ const { paletteKey, palette } = useColorPalette();
     color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
     caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
   }}
-  className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+ className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
 />
                   <button
                     type="button"
