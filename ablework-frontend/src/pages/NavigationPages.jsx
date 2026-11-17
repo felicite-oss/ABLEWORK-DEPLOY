@@ -393,18 +393,11 @@ export function Home() {
   return (
    <div role="main" aria-label="Home Screen" className={`min-h-screen flex flex-col ${(isContrast || isDarkMode) ? 'dark-mode-fix bg-[var(--color-background)] text-[var(--color-text)]' : 'bg-white text-[#03045E]'}`}>
 
-      {usePlainWhiteText && (
+           {usePlainWhiteText && (
         <style>{`
-          .dark-mode-fix, .dark-mode-fix * {
-            text-shadow: none !important;
-            filter: none !important;
-            -webkit-text-stroke: 0 !important;
-            -webkit-text-fill-color: #FFFFFF !important;
-            color: #FFFFFF !important;
-            mix-blend-mode: normal !important;
-          }
-          .dark-mode-fix *:not(.hero-bg-img) {
-            background-image: none !important;
+          .dark-mode-fix {
+            background-color: var(--color-background) !important;
+            color: var(--color-text) !important;
           }
           .dark-mode-fix .leaflet-popup,
           .dark-mode-fix .leaflet-popup * {
