@@ -357,235 +357,263 @@ const handleLogin = async (e) => {
         </div>
       </header>
 
-<div
-  className={`flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300`}
-  style={{
-    backgroundImage: `url(${backgroundImg})`,
-  }}
->
-<div
-  className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${containerGap} relative z-10
-    ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(,204,21,0.4)]' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
-    ${containerPadding}
-    ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} md:mt-15 md:mr-2 lg:mr-6`}
->  
-          <div className="text-center w-full -mt-2 sm:-mt-3">
-            <h1
+// --- PASTE THIS EXACTLY WHERE YOU DELETED THE WRAPPER ---
+<div className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative min-h-[110vh] md:min-h-[105vh] transition-all duration-300 overflow-hidden">
+  
+  {/* 1. BACKGROUND IMAGE */}
+  <div 
+    className="absolute inset-0 bg-no-repeat w-full h-full bg-[center_top] bg-[size:100%] md:bg-[position:left_center] md:bg-[size:70%]" 
+    style={{ backgroundImage: `url(${backgroundImg})` }}
+  ></div>
+
+  {/* 2. MOBILE CURVE */}
+  <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none block md:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
+    <defs>
+      <filter id="glass-blur-mobile">
+        <feGaussianBlur stdDeviation="8" />
+      </filter>
+    </defs>
+    <path 
+      d="M0,0 L100,0 L100,100 L0,100 Z M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100 L100,100 L100,0 Z" 
+      fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${colors?.primary || colors?.accent}B3`)} 
+      fillRule="evenodd" 
+      style={{ backdropFilter: 'blur(16px)' }}
+    />
+  </svg>
+
+  {/* 3. DESKTOP CURVE */}
+  <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden md:block" preserveAspectRatio="none" viewBox="0 0 100 100">
+    <defs>
+      <filter id="glass-blur">
+        <feGaussianBlur stdDeviation="8" />
+      </filter>
+    </defs>
+    <path 
+      d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
+      fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${colors?.primary || colors?.accent}B3`)} 
+      fillRule="evenodd" 
+      style={{ backdropFilter: 'blur(16px)' }}
+    />
+  </svg>
+
+  {/* 4. YOUR EXACT FORM CONTAINER (z-20 to sit on the curve) */}
+  <div
+    className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${containerGap} relative z-20
+      ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
+      ${containerPadding}
+      ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} md:mt-15 md:mr-2 lg:mr-6`}
+  >  
+    {/* --- YOUR EXACT FORM CONTENT --- */}
+    <div className="text-center w-full -mt-2 sm:-mt-3">
+      <h1
+        tabIndex="0"
+        aria-label="Login to AbleWork"
+        title="Login to AbleWork"
+        className={`${titleSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')} tracking-tight mb-1.5 sm:mb-2`}
+      >
+        Login to ABLEWORK
+      </h1>
+      <p
+        tabIndex="0"
+        aria-label="Welcome back! Please enter your details"
+        title="Welcome back! Please enter your details"
+        className={`${subtitleSize} ${isAccessibilityMode ? '!text-white/90' : (isContrast ? '!text-white/90' : '')}`}
+      >
+        Welcome back! Please enter your details
+      </p>
+    </div>
+
+    {errorMessage && (
+      <div
+        role="alert"
+        aria-live="assertive"
+        className={`w-full p-3 sm:p-3.5 text-xs sm:text-sm font-bold text-center ${
+          isContrast 
+            ? 'text-blue-300 bg-zinc-900 border border-blue-400' 
+            : (isDarkMode || isAccessibilityMode)
+              ? '!text-red-600 bg-zinc-900 !border-red-500 border-2' 
+              : 'text-red-500 bg-white border-2 border-red-500'
+        } rounded-xl shadow-inner`}
+      >
+        {errorMessage}
+      </div>
+    )}
+
+    <form
+      onSubmit={handleLogin}
+      className={`flex flex-col ${formGap} w-full`}
+      autoComplete="off"
+      >
+      {otpMode ? (
+        <div className="flex flex-col gap-3 sm:gap-4 animate-in fade-in zoom-in-95 duration-300">
+          <div className={`p-4 sm:p-5 rounded-xl border-2 shadow-sm flex items-center justify-center mb-2 ${isContrast || isDarkMode || isAccessibilityMode ? 'bg-black border-white' : 'bg-white border-[#2C7FFF]/30'}`}>
+            <svg className={`w-10 h-10 ${isContrast || isDarkMode || isAccessibilityMode ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          
+          <h3 tabIndex="0" role="heading" aria-level="3" aria-label="Check your inbox" title="Check your inbox" className={`${labelSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')} text-center`}>
+            Check your inbox
+          </h3>
+          <p tabIndex="0" role="text" aria-label={`We sent a 6-digit verification code to ${email}.`} title={`We sent a 6-digit verification code to ${email}.`} className={`text-xs sm:text-sm text-center font-bold px-2 ${isAccessibilityMode ? '!text-white/80' : (isContrast ? '!text-white/80' : 'text-[#03045E]/70')}`}>
+            We sent a 6-digit verification code to <span className="font-black underline">{email}</span>.
+          </p>
+
+          <div className="flex flex-col gap-1.5 sm:gap-2 mt-2">
+            <label htmlFor="otp" className={`${labelSize} sr-only`}>6-Digit Code</label>
+            <input
+              id="otp"
+              type="text"
+              maxLength="6"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+              aria-label="Enter 6-digit code"
+              className={`${inputSize} text-center tracking-[0.5em] text-2xl ${isContrast ? 'border-2 border-blue-400 bg-black text-white focus:border-blue-300' : 'border-2 border-[#03045E]/30 bg-white text-[#03045E] focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+              placeholder="------"
+              required
+            />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label
+              id="email-label"
               tabIndex="0"
-              aria-label="Login to AbleWork"
-              title="Login to AbleWork"
-              className={`${titleSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')} tracking-tight mb-1.5 sm:mb-2`}
+              aria-label="Email Address"
+              title="Email Address"
+              className={`${labelSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')}`}
+              htmlFor="email"
             >
-              Login to ABLEWORK
-            </h1>
-            <p
-              tabIndex="0"
-              aria-label="Welcome back! Please enter your details"
-              title="Welcome back! Please enter your details"
-              className={`${subtitleSize} ${isAccessibilityMode ? '!text-white/90' : (isContrast ? '!text-white/90' : '')}`}
-            >
-              Welcome back! Please enter your details
-            </p>
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+              readOnly
+              onFocus={(e) => e.target.removeAttribute('readOnly')}
+              aria-label="Enter your email"
+              title="Enter your email"
+              className={`${inputSize} ${isContrast ? 'border-2 border-blue-400 bg-black text-white focus:border-blue-300' : 'border-2 border-[#03045E]/30 bg-white text-[#03045E] focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+              placeholder="Enter your email"
+              required
+            />
           </div>
 
-                   {errorMessage && (
-            <div
-              role="alert"
-              aria-live="assertive"
-              className={`w-full p-3 sm:p-3.5 text-xs sm:text-sm font-bold text-center ${
-                isContrast 
-                  ? 'text-blue-300 bg-zinc-900 border border-blue-400' 
-                  : (isDarkMode || isAccessibilityMode)
-                    ? '!text-red-600 bg-zinc-900 !border-red-500 border-2' 
-                    : 'text-red-500 bg-white border-2 border-red-500'
-              } rounded-xl shadow-inner`}
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label
+              id="password-label"
+              tabIndex="0"
+              aria-label="Password"
+              title="Password"
+              className={`${labelSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')}`}
+              htmlFor="password"
             >
-              {errorMessage}
-            </div>
-          )}
-
-          <form
-            onSubmit={handleLogin}
-            className={`flex flex-col ${formGap} w-full`}
-            autoComplete="off"
-            >
-            {otpMode ? (
-              // ----------------------------------------
-              // 2FA OTP UI
-              // ----------------------------------------
-              <div className="flex flex-col gap-3 sm:gap-4 animate-in fade-in zoom-in-95 duration-300">
-                <div className={`p-4 sm:p-5 rounded-xl border-2 shadow-sm flex items-center justify-center mb-2 ${isContrast || isDarkMode || isAccessibilityMode ? 'bg-black border-white' : 'bg-white border-[#2C7FFF]/30'}`}>
-                  <svg className={`w-10 h-10 ${isContrast || isDarkMode || isAccessibilityMode ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                  </svg>
-                </div>
-                
-                <h3 tabIndex="0" role="heading" aria-level="3" aria-label="Check your inbox" title="Check your inbox" className={`${labelSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')} text-center`}>
-                  Check your inbox
-                </h3>
-                <p tabIndex="0" role="text" aria-label={`We sent a 6-digit verification code to ${email}.`} title={`We sent a 6-digit verification code to ${email}.`} className={`text-xs sm:text-sm text-center font-bold px-2 ${isAccessibilityMode ? '!text-white/80' : (isContrast ? '!text-white/80' : 'text-[#03045E]/70')}`}>
-                  We sent a 6-digit verification code to <span className="font-black underline">{email}</span>.
-                </p>
-
-                <div className="flex flex-col gap-1.5 sm:gap-2 mt-2">
-                  <label htmlFor="otp" className={`${labelSize} sr-only`}>6-Digit Code</label>
-                  <input
-                    id="otp"
-                    type="text"
-                    maxLength="6"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} // strictly numbers only
-                    aria-label="Enter 6-digit code"
-                    className={`${inputSize} text-center tracking-[0.5em] text-2xl ${isContrast ? 'border-2 border-blue-400 bg-black text-white focus:border-blue-300' : 'border-2 border-[#03045E]/30 bg-white text-[#03045E] focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                    placeholder="------"
-                    required
-                  />
-                </div>
-              </div>
-            ) : (
-              // ----------------------------------------
-              // STANDARD EMAIL & PASSWORD UI
-              // ----------------------------------------
-              <>
-                <div className="flex flex-col gap-1.5 sm:gap-2">
-                  <label
-                    id="email-label"
-                    tabIndex="0"
-                    aria-label="Email Address"
-                    title="Email Address"
-                    className={`${labelSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')}`}
-                    htmlFor="email"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="off"
-                    readOnly
-                    onFocus={(e) => e.target.removeAttribute('readOnly')}
-                    aria-label="Enter your email"
-                    title="Enter your email"
-                    className={`${inputSize} ${isContrast ? 'border-2 border-blue-400 bg-black text-white focus:border-blue-300' : 'border-2 border-[#03045E]/30 bg-white text-[#03045E] focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1.5 sm:gap-2">
-                  <label
-                    id="password-label"
-                    tabIndex="0"
-                    aria-label="Password"
-                    title="Password"
-                    className={`${labelSize} ${isAccessibilityMode ? '!text-white' : (isContrast ? '!text-white' : '')}`}
-                    htmlFor="password"
-                  >
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="off"
-                      readOnly
-                      onFocus={(e) => e.target.removeAttribute('readOnly')}
-                      aria-label="Enter your password"
-                      title="Enter your password"
-                      className={`${inputSize} w-full pr-10 sm:pr-12 ${isContrast ? 'border-2 border-blue-400 bg-black text-white focus:border-blue-300' : 'border-2 border-[#03045E]/30 bg-white text-[#03045E] focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                      placeholder="Enter your password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      aria-label="Show password"
-                      title="Show password"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? '!text-white hover:!text-white' : (isContrast ? 'text-white/60 hover:text-white' : 'text-[#03045E]/50 hover:text-[#2C7FFF]')}`}
-                    >
-                      {showPassword ? (
-                        <svg aria-hidden="true" className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                      ) : (
-                        <svg aria-hidden="true" className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
-                        </svg>
-                      )}
-                    </button>
-                  </div>  
-                </div>
-
-                <div className="flex justify-end mt-1 mb-1.5 sm:mb-2">
-                  <Link 
-                    to="/forgot-password" 
-                    aria-label="Forgot Password"
-                    title="Forgot Password"
-                    className={`text-xs sm:text-sm font-bold transition-all hover:underline ${
-                      isAccessibilityMode 
-                        ? '!text-white hover:!text-white' 
-                        : isContrast 
-                          ? 'text-[#2C7FFF] hover:text-white' 
-                          : 'text-[#2C7FFF] hover:text-[#03045E]'
-                    }`}
-                  >
-                    Forgot Password?
-                  </Link>
-                </div>
-              </>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              aria-label={isLoading ? (otpMode ? "Verifying..." : "Logging In") : (otpMode ? "Verify Code" : "Log In")}
-              title={isLoading ? (otpMode ? "Verifying..." : "Logging In") : (otpMode ? "Verify Code" : "Log In")}
-              className={`mt-1.5 sm:mt-2 ${tapTargetSize} ${isDarkMode ? '!bg-black !text-white border border-white font-black' : isAccessibilityMode ? '!bg-blue-400 !text-white border border-blue-400 font-black' : isContrast ? 'bg-blue-400 text-black hover:bg-blue-300 border border-blue-400 font-black hover:brightness-125' : 'bg-[#03045E] hover:bg-[#2C7FFF] text-white hover:brightness-125'} disabled:opacity-50 disabled:cursor-not-allowed rounded-xl sm:rounded-2xl shadow-md w-full transition-all duration-200 cursor-pointer`}
-            >
-              {isLoading ? (otpMode ? 'Verifying...' : 'Logging In...') : (otpMode ? 'Verify Code' : 'Log In')}
-            </button>
-            
-            {/* Added a cancel button so users can go back and fix their email if needed */}
-            {otpMode && !isLoading && (
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="off"
+                readOnly
+                onFocus={(e) => e.target.removeAttribute('readOnly')}
+                aria-label="Enter your password"
+                title="Enter your password"
+                className={`${inputSize} w-full pr-10 sm:pr-12 ${isContrast ? 'border-2 border-blue-400 bg-black text-white focus:border-blue-300' : 'border-2 border-[#03045E]/30 bg-white text-[#03045E] focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+                placeholder="Enter your password"
+                required
+              />
               <button
                 type="button"
-                onClick={() => {
-                  setOtpMode(false);
-                  setOtpCode('');
-                  setErrorMessage('');
-                }}
-                className={`text-xs sm:text-sm font-bold mt-2 hover:underline cursor-pointer ${isAccessibilityMode ? '!text-white' : (isContrast ? 'text-white' : 'text-[#03045E]')}`}
+                aria-label="Show password"
+                title="Show password"
+                onClick={() => setShowPassword(!showPassword)}
+                className={`absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition cursor-pointer ${isAccessibilityMode ? '!text-white hover:!text-white' : (isContrast ? 'text-white/60 hover:text-white' : 'text-[#03045E]/50 hover:text-[#2C7FFF]')}`}
               >
-                ← Back to Login
+                {showPassword ? (
+                  <svg aria-hidden="true" className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                ) : (
+                  <svg aria-hidden="true" className={`w-4 h-4 sm:w-5 sm:h-5 ${isAccessibilityMode ? '!text-white !stroke-white' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                  </svg>
+                )}
               </button>
-            )}
-          </form>
+            </div>  
+          </div>
 
-          <p 
-            tabIndex="0"
-            aria-label="Don't have an account? Create one"
-            title="Don't have an account? Create one"
-            className={`text-center ${isAccessibilityMode ? '!text-white/90' : (isContrast ? 'text-white/90' : 'text-[#03045E]/90')} ${footerLinkSize} pt-1`}
-          >
-            Don't have an account?{' '}
-            <Link
-              to="/register-select"
-              aria-label="Create one"
-              title="Create one"
-              className={`font-bold ${isAccessibilityMode ? '!text-white hover:!text-white underline' : (isContrast ? 'text-blue-400 hover:text-blue-300 underline' : 'text-[#2C7FFF] hover:underline')}`}
+          <div className="flex justify-end mt-1 mb-1.5 sm:mb-2">
+            <Link 
+              to="/forgot-password" 
+              aria-label="Forgot Password"
+              title="Forgot Password"
+              className={`text-xs sm:text-sm font-bold transition-all hover:underline ${
+                isAccessibilityMode 
+                  ? '!text-white hover:!text-white' 
+                  : isContrast 
+                    ? 'text-[#2C7FFF] hover:text-white' 
+                    : 'text-[#2C7FFF] hover:text-[#03045E]'
+              }`}
             >
-              Create one
+              Forgot Password?
             </Link>
-          </p>
-        </div>
-      </div>
+          </div>
+        </>
+      )}
+
+      <button
+        type="submit"
+        disabled={isLoading}
+        aria-label={isLoading ? (otpMode ? "Verifying..." : "Logging In") : (otpMode ? "Verify Code" : "Log In")}
+        title={isLoading ? (otpMode ? "Verifying..." : "Logging In") : (otpMode ? "Verify Code" : "Log In")}
+        className={`mt-1.5 sm:mt-2 ${tapTargetSize} ${isDarkMode ? '!bg-black !text-white border border-white font-black' : isAccessibilityMode ? '!bg-blue-400 !text-white border border-blue-400 font-black' : isContrast ? 'bg-blue-400 text-black hover:bg-blue-300 border border-blue-400 font-black hover:brightness-125' : 'bg-[#03045E] hover:bg-[#2C7FFF] text-white hover:brightness-125'} disabled:opacity-50 disabled:cursor-not-allowed rounded-xl sm:rounded-2xl shadow-md w-full transition-all duration-200 cursor-pointer`}
+      >
+        {isLoading ? (otpMode ? 'Verifying...' : 'Logging In...') : (otpMode ? 'Verify Code' : 'Log In')}
+      </button>
+      
+      {otpMode && !isLoading && (
+        <button
+          type="button"
+          onClick={() => {
+            setOtpMode(false);
+            setOtpCode('');
+            setErrorMessage('');
+          }}
+          className={`text-xs sm:text-sm font-bold mt-2 hover:underline cursor-pointer ${isAccessibilityMode ? '!text-white' : (isContrast ? 'text-white' : 'text-[#03045E]')}`}
+        >
+          ← Back to Login
+        </button>
+      )}
+    </form>
+
+    <p 
+      tabIndex="0"
+      aria-label="Don't have an account? Create one"
+      title="Don't have an account? Create one"
+      className={`text-center ${isAccessibilityMode ? '!text-white/90' : (isContrast ? 'text-white/90' : 'text-[#03045E]/90')} ${footerLinkSize} pt-1`}
+    >
+      Don't have an account?{' '}
+      <Link
+        to="/register-select"
+        aria-label="Create one"
+        title="Create one"
+        className={`font-bold ${isAccessibilityMode ? '!text-white hover:!text-white underline' : (isContrast ? 'text-blue-400 hover:text-blue-300 underline' : 'text-[#2C7FFF] hover:underline')}`}
+      >
+        Create one
+      </Link>
+    </p>
+  </div>
+</div>
 
       <footer
         className="py-6 sm:py-12 px-4 sm:px-6 mt-auto bg-[#03045E] text-white border-t-2 border-[#2C7FFF]/40 shadow-inner"
