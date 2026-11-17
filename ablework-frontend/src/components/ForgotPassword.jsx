@@ -165,12 +165,15 @@ const { paletteKey, palette } = useColorPalette();
       className={`min-h-screen flex flex-col ${isContrast ? 'bg-black text-white' : 'bg-[#f4f4f4] text-[#03045E]'} overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
     >
       {isDarkMode && (
-       <style>{`
-  #fpEmail::placeholder, #fpOtp::placeholder, #fpNewPass::placeholder, #fpConfirmPass::placeholder {
-    color: ${isContrast || isDarkMode ? '#ffffff' : 'var(--color-text)'} !important;
-    opacity: 0.6 !important;
-  }
-`}</style>
+        <style>{`
+          #fpOtp::placeholder,
+          #fpNewPass::placeholder,
+          #fpConfirmPass::placeholder {
+            color: #ffffff !important;
+            opacity: 1 !important;
+            -webkit-text-fill-color: #ffffff !important;
+          }
+        `}</style>
       )}
 
       {isAccessibilityMode && isDarkMode && (

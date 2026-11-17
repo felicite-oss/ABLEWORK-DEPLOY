@@ -11,7 +11,7 @@ export function AccessibilityToolbar() {
       const stored = localStorage.getItem('ui_fontsize');
       return ['normal', 'large', 'xlarge'].includes(stored) ? stored : 'normal';
     } catch {
-      return 'normal';
+      return 'normal';  
     }
   });
 
