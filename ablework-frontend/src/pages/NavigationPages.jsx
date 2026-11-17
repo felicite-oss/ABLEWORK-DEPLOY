@@ -365,7 +365,7 @@ export function Home() {
   useEffect(() => {
     const fetchActiveJobs = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/jobs');
+        const res = await fetch(`${API_BASE_URL}/api/jobs`);
         if (res.ok) {
           const data = await res.json();
           setJobs(data);
