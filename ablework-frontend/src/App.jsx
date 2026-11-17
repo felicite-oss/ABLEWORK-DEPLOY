@@ -19,7 +19,7 @@ import {
   About,
   Policy,
   Terms,
-  Contact
+  ContactSupport
 } from './pages/NavigationPages';
 import { AccessibilityProvider, AccessibilityContext } from './context/AccessibilityContext';
 import { ColorPaletteProvider } from './context/ColorPaletteContext';

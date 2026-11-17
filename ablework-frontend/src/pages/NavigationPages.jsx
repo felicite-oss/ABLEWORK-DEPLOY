@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import React from 'react';
-import { createPortal } from 'react-dom'; // <-- ADD THIS LINE
-import { Link, NavLink, useNavigate } from 'react-router-dom'; // ✅ ONLY ONE LINE
+import { createPortal } from 'react-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../context/AccessibilityContext';
 import { useColorPalette } from '../context/ColorPaletteContext';
 import { AccessibilityWelcome } from '../components/AccessibilityWelcome';
@@ -33,6 +33,7 @@ let DefaultIcon = L.icon({
   alt: ''
 });
 L.Marker.prototype.options.icon = DefaultIcon;
+
 const REPORT_REASONS = [
   'Harassment or Bullying',
   'Discriminatory Job Posting',
@@ -1416,290 +1417,282 @@ export function About() {
   );
 }
 
-// ... (Keep everything above this point: Home, About, etc.)
-
-// --- ONLY ONE CONTACT COMPONENT SHOULD EXIST ---
-export function Contact() {
-  const { mode } = useContext(AccessibilityContext);
-  const { paletteKey } = useColorPalette();
-
-  const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
-  const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
-  const isDark = isContrast || isDarkMode;
-  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
-
-  const [reasons, setReasons] = useState([]);
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
-  const [proofImage, setProofImage] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [alert, setAlert] = useState({ show: false, type: '', text: '' });
-
-  const [confirmModal, setConfirmModal] = useState({ show: false });
-  const [successModal, setSuccessModal] = useState({ show: false, message: '' });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (reasons.length === 0) {
-      setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
-      return;
-    }
-    if (!subject.trim() || !message.trim()) {
-      setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
-      return;
-    }
-
-    setAlert({ show: false, type: '', text: '' });
-    setConfirmModal({ show: true }); 
-  };
-
-  const submitTicket = async () => {
-    setConfirmModal({ show: false });
-    setIsSubmitting(true);
-    setAlert({ show: false, type: '', text: '' });
-
-    const loadingTimer = new Promise((resolve) => setTimeout(resolve, 2000));
-
-    try {
-      const formData = new FormData();
-      formData.append('userName', 'Guest User');
-      formData.append('userEmail', 'N/A');
-      formData.append('userRole', 'Guest');
-      formData.append('reasons', JSON.stringify(reasons));
-      formData.append('subject', subject);
-      formData.append('message', message);
-
-      if (proofImage) {
-        formData.append('proof_image', proofImage);
-      }
-
-      const [res] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/support/ticket`, {
-          method: 'POST',
-          body: formData
-        }),
-        loadingTimer
-      ]);
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setSuccessModal({
-          show: true,
-          message: data.message || 'Your support ticket has been submitted successfully. Our team will review it shortly.'
-        });
-        setReasons([]);
-        setSubject('');
-        setMessage('');
-        setProofImage(null);
-      } else {
-        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
-      }
-    } catch (err) {
-      console.error(err);
-      await loadingTimer;
-      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-gray-200';
-  const textColor = isDark ? 'text-white' : 'text-[#03045E]';
-  const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
-  const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
-
-  const modalBg = isDark ? 'bg-[#111111]' : 'bg-white';
-  const modalText = isDark ? 'text-white' : 'text-[#03045E]';
-  const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+export function Policy() {
+  const [openSection, setOpenSection] = useState(null);
+  const toggleSection = (id) => setOpenSection(openSection === id ? null : id);
 
   return (
-    <main
-      role="main"
-      aria-label="Contact Support Screen"
-      className={`min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ${
-        isDark ? 'bg-black text-white' : 'bg-[#f8f9fc] text-[#03045E]'
-      }`}
-    >
-      <div className="w-full max-w-6xl flex flex-col gap-8">
-        
-        <div className="text-center pt-6 pb-2">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isDark ? 'white' : '#1e1b4b' }}>
-            Help and Support
-          </h1>
+    <PageLayout title="Privacy Policy">
+      <div className="w-full space-y-6 text-sm sm:text-base leading-relaxed">
+        <div className="p-5 rounded-2xl bg-[#2C7FFF]/10 border border-[#2C7FFF]/30">
+          <p tabIndex="0" role="text" aria-label="Effective Date: [Insert Date]" title="Effective Date: [Insert Date]" className="text-xs font-extrabold text-[#2C7FFF] uppercase tracking-widest mb-2">Effective Date: [Insert Date]</p>
+          <p tabIndex="0" role="text" aria-label="ABLEWORK ('the Platform', 'we', 'us') is dedicated to safeguarding the privacy and data security of all users, specifically Persons with Disabilities (PWDs) and participating employers. This Privacy Policy outlines our practices regarding the collection, use, storage, and protection of personal data in compliance with the Republic Act No. 10173, otherwise known as the Data Privacy Act of 2012 (DPA) of the Philippines, and its Implementing Rules and Regulations (IRR)." title="ABLEWORK ('the Platform', 'we', 'us') is dedicated to safeguarding the privacy and data security of all users, specifically Persons with Disabilities (PWDs) and participating employers. This Privacy Policy outlines our practices regarding the collection, use, storage, and protection of personal data in compliance with the Republic Act No. 10173, otherwise known as the Data Privacy Act of 2012 (DPA) of the Philippines, and its Implementing Rules and Regulations (IRR)." className="text-[#03045E] font-semibold">
+            ABLEWORK ("the Platform", "we", "us") is dedicated to safeguarding the privacy and data security of all users, specifically Persons with Disabilities (PWDs) and participating employers. This Privacy Policy outlines our practices regarding the collection, use, storage, and protection of personal data in compliance with the Republic Act No. 10173, otherwise known as the Data Privacy Act of 2012 (DPA) of the Philippines, and its Implementing Rules and Regulations (IRR).
+          </p>
+          <p tabIndex="0" role="text" aria-label="By registering an account or accessing the platform, you acknowledge and consent to the data processing practices described herein." title="By registering an account or accessing the platform, you acknowledge and consent to the data processing practices described herein." className="text-[#03045E] font-semibold mt-3">
+            By registering an account or accessing the platform, you acknowledge and consent to the data processing practices described herein.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
-          
-          <div className="md:col-span-5 flex flex-col gap-4">
-            {[
-              { label: 'System Name', value: 'ABLEWORK' },
-              { label: 'Project Team', value: '5i' },
-              { label: 'Email Support', value: 'ableworksys5@gmail.com' },
-              { label: 'Office Address', value: 'Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines' },
-              { label: 'Data Custody Team', value: 'Paquio, Loueala Jean H.\nPagado, Jesie Marie D.\nAstodillo, Felicite S.\nGonzales, John Greg A.\nGamboa, John Bryan T.' },
-              { label: 'Institution', value: 'STIWNU' }
-            ].map((item, idx) => (
-              <div key={idx} className={`p-5 rounded-xl border-2 shadow-sm ${cardBg}`}>
-                <h3 className="text-sm font-black uppercase tracking-wider mb-1">{item.label}</h3>
-                <p className={`text-sm font-semibold whitespace-pre-line ${item.label === 'Email Support' ? 'text-[#2C7FFF]' : ''}`}>{item.value}</p>
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(1)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="1. Information We Collect" title="1. Information We Collect" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              1. Information We Collect
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 1 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 1 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="We collect only the personal information reasonably necessary to facilitate inclusive employment matching, account verification, and secure platform operations:" title="We collect only the personal information reasonably necessary to facilitate inclusive employment matching, account verification, and secure platform operations:" className="font-medium mb-3">We collect only the personal information reasonably necessary to facilitate inclusive employment matching, account verification, and secure platform operations:</p>
+                <div className="space-y-3 pl-4">
+                  <div>
+                    <p tabIndex="0" role="heading" aria-level="3" aria-label="For Applicants (Job Seekers):" title="For Applicants (Job Seekers):" className="font-bold mb-1">For Applicants (Job Seekers):</p>
+                    <ul className="space-y-2 pl-4">
+                      <li tabIndex="0" role="text" aria-label="Personal Identifiers: Full name, contact number, residential address, and email address." title="Personal Identifiers: Full name, contact number, residential address, and email address." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Personal Identifiers:</strong> Full name, contact number, residential address, and email address.</span></li>
+                      <li tabIndex="0" role="text" aria-label="Sensitive Personal Information (SPI): Birthdate, specific disability type/classification, required workplace accommodations, and uploaded government-issued PWD identification cards." title="Sensitive Personal Information (SPI): Birthdate, specific disability type/classification, required workplace accommodations, and uploaded government-issued PWD identification cards." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Sensitive Personal Information (SPI):</strong> Birthdate, specific disability type/classification, required workplace accommodations, and uploaded government-issued PWD identification cards.</span></li>
+                      <li tabIndex="0" role="text" aria-label="Professional Credentials: Educational background, skills, work preferences, and uploaded resumes/curriculum vitae." title="Professional Credentials: Educational background, skills, work preferences, and uploaded resumes/curriculum vitae." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Professional Credentials:</strong> Educational background, skills, work preferences, and uploaded resumes/curriculum vitae.</span></li>
+                      <li tabIndex="0" role="text" aria-label="Location Data: Approximate geographical coordinates (latitude and longitude) and user-defined travel radius preferences (in kilometers)." title="Location Data: Approximate geographical coordinates (latitude and longitude) and user-defined travel radius preferences (in kilometers)." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Location Data:</strong> Approximate geographical coordinates (latitude and longitude) and user-defined travel radius preferences (in kilometers).</span></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p tabIndex="0" role="heading" aria-level="3" aria-label="For Employers:" title="For Employers:" className="font-bold mb-1">For Employers:</p>
+                    <ul className="space-y-2 pl-4">
+                      <li tabIndex="0" role="text" aria-label="Company and Representative Details: Company name, company description, industry classification, representative full name, business email, and contact number." title="Company and Representative Details: Company name, company description, industry classification, representative full name, business email, and contact number." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Company and Representative Details:</strong> Company name, company description, industry classification, representative full name, business email, and contact number.</span></li>
+                      <li tabIndex="0" role="text" aria-label="Verification Records: Uploaded business registration documents (e.g., DTI, SEC registration, or Mayor's or Business Permit)." title="Verification Records: Uploaded business registration documents (e.g., DTI, SEC registration, or Mayor's or Business Permit)." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Verification Records:</strong> Uploaded business registration documents (e.g., DTI, SEC registration, or Mayor's or Business Permit).</span></li>
+                      <li tabIndex="0" role="text" aria-label="Job Listing Data: Job vacancies, job descriptions, required skills, guaranteed workplace accommodations, and accepted disability types." title="Job Listing Data: Job vacancies, job descriptions, required skills, guaranteed workplace accommodations, and accepted disability types." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Job Listing Data:</strong> Job vacancies, job descriptions, required skills, guaranteed workplace accommodations, and accepted disability types.</span></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p tabIndex="0" role="heading" aria-level="3" aria-label="System and Technical Metadata (All Users):" title="System and Technical Metadata (All Users):" className="font-bold mb-1">System and Technical Metadata (All Users):</p>
+                    <p tabIndex="0" role="text" aria-label="Network Internet Protocol (IP) addresses, verification attempt logs, system security timestamps, accessibility settings (e.g., high-contrast theme, font scale), and in-app notification logs." title="Network Internet Protocol (IP) addresses, verification attempt logs, system security timestamps, accessibility settings (e.g., high-contrast theme, font scale), and in-app notification logs." className="font-medium">Network Internet Protocol (IP) addresses, verification attempt logs, system security timestamps, accessibility settings (e.g., high-contrast theme, font scale), and in-app notification logs.</p>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
+        </div>
 
-          <div className="md:col-span-7">
-            <h2 className={`text-xl font-black mb-4 ${textColor}`}>Submit a Support Ticket</h2>
-            
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-              
-              {alert.show && (
-                <div role="alert" className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]">
-                  {alert.text}
-                </div>
-              )}
-
-              <fieldset>
-                <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
-                  What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
-                </legend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {REPORT_REASONS.map((reason) => {
-                    const checked = reasons.includes(reason);
-                    return (
-                      <label key={reason} className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
-                        checked ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]' : `${isDark ? 'bg-black border-white/30' : 'bg-white border-gray-200'} hover:border-[#2C7FFF]/60`
-                      }`}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={isSubmitting}
-                          onChange={() => {
-                            setReasons(prev => prev.includes(reason) ? prev.filter(r => r !== reason) : [...prev, reason]);
-                          }}
-                          className="mt-0.5 accent-[#2C7FFF]"
-                        />
-                        <span className={`text-xs font-semibold ${textColor}`}>{reason}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              <div>
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Subject / Issue Summary"
-                  disabled={isSubmitting}
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${inputBg}`}
-                />
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(2)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="2. Legal Basis and Purpose of Processing" title="2. Legal Basis and Purpose of Processing" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              2. Legal Basis and Purpose of Processing
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 2 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 2 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="In accordance with Sections 12 and 13 of the Data Privacy Act of 2012, personal and sensitive personal information is collected and processed based on explicit user consent and legitimate operational interests for the following purposes:" title="In accordance with Sections 12 and 13 of the Data Privacy Act of 2012, personal and sensitive personal information is collected and processed based on explicit user consent and legitimate operational interests for the following purposes:" className="font-medium mb-3">In accordance with Sections 12 and 13 of the Data Privacy Act of 2012, personal and sensitive personal information is collected and processed based on explicit user consent and legitimate operational interests for the following purposes:</p>
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Authenticating user credentials using cryptographic hashing (bcrypt)." title="Authenticating user credentials using cryptographic hashing (bcrypt)." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Authenticating user credentials using cryptographic hashing (bcrypt).</span></li>
+                  <li tabIndex="0" role="text" aria-label="Enforcing administrator document verification to maintain a verified, safe talent marketplace." title="Enforcing administrator document verification to maintain a verified, safe talent marketplace." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Enforcing administrator document verification to maintain a verified, safe talent marketplace.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Powering the automated, rule-based Smart Matching Engine (evaluating skill alignments, accommodation guarantees, and Haversine distance calculations)." title="Powering the automated, rule-based Smart Matching Engine (evaluating skill alignments, accommodation guarantees, and Haversine distance calculations)." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Powering the automated, rule-based Smart Matching Engine (evaluating skill alignments, accommodation guarantees, and Haversine distance calculations).</span></li>
+                  <li tabIndex="0" role="text" aria-label="Enforcing system security protocols, such as cooldown intervals and network rate-limiting against fraudulent submissions." title="Enforcing system security protocols, such as cooldown intervals and network rate-limiting against fraudulent submissions." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Enforcing system security protocols, such as cooldown intervals and network rate-limiting against fraudulent submissions.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Delivering transactional email notifications and One-Time Password (OTP) verifications via automated SMTP services." title="Delivering transactional email notifications and One-Time Password (OTP) verifications via automated SMTP services." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Delivering transactional email notifications and One-Time Password (OTP) verifications via automated SMTP services.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Facilitating AI chatbot interactions through the ABBY assistant." title="Facilitating AI chatbot interactions through the ABBY assistant." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Facilitating AI chatbot interactions through the ABBY assistant.</span></li>
+                </ul>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div>
-                <textarea
-                  rows={4}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Describe your issue, question, or report suspicious activity..."
-                  disabled={isSubmitting}
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${inputBg}`}
-                />
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(3)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="3. Processing of Sensitive Personal Information (Disability and PWD Records)" title="3. Processing of Sensitive Personal Information (Disability and PWD Records)" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              3. Processing of Sensitive Personal Information (Disability and PWD Records)
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 3 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 3 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="Disability classifications and PWD ID documents are processed strictly to verify eligibility and ensure that matched workplaces meet necessary physical and sensory accommodations. PWD IDs and business verification files are stored in restricted server storage directories and are accessible exclusively to authorized system administrators for audit and approval purposes. Disability-related details are never sold, rented, or made visible to third-party advertising networks." title="Disability classifications and PWD ID documents are processed strictly to verify eligibility and ensure that matched workplaces meet necessary physical and sensory accommodations. PWD IDs and business verification files are stored in restricted server storage directories and are accessible exclusively to authorized system administrators for audit and approval purposes. Disability-related details are never sold, rented, or made visible to third-party advertising networks." className="font-medium">Disability classifications and PWD ID documents are processed strictly to verify eligibility and ensure that matched workplaces meet necessary physical and sensory accommodations. PWD IDs and business verification files are stored in restricted server storage directories and are accessible exclusively to authorized system administrators for audit and approval purposes. Disability-related details are never sold, rented, or made visible to third-party advertising networks.</p>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div>
-                <p className={`text-xs font-bold mb-2 ${mutedText}`}>Attach Proof <span className="font-normal opacity-70">(Optional Image/PDF)</span></p>
-                <input
-                  type="file"
-                  accept="image/*,.pdf"
-                  disabled={isSubmitting}
-                  onChange={(e) => setProofImage(e.target.files[0])}
-                  className={`w-full p-2 border-2 rounded-lg text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${inputBg} file:bg-[#2C7FFF] file:text-white hover:opacity-90`}
-                />
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(4)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="4. Artificial Intelligence and Third-Party Service Providers" title="4. Artificial Intelligence and Third-Party Service Providers" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              4. Artificial Intelligence and Third-Party Service Providers
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 4 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 4 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="To deliver modern web capabilities, ABLEWORK interfaces with selected third-party service providers under data protection principles:" title="To deliver modern web capabilities, ABLEWORK interfaces with selected third-party service providers under data protection principles:" className="font-medium mb-3">To deliver modern web capabilities, ABLEWORK interfaces with selected third-party service providers under data protection principles:</p>
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Google Gemini API: Powers the ABBY conversational assistant. Real-time account metadata (e.g., application count, current verification standing) is supplied contextually during active chat queries to provide dynamic help. No passwords, credentials, or official government documents are transmitted to the AI engine." title="Google Gemini API: Powers the ABBY conversational assistant. Real-time account metadata (e.g., application count, current verification standing) is supplied contextually during active chat queries to provide dynamic help. No passwords, credentials, or official government documents are transmitted to the AI engine." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Google Gemini API:</strong> Powers the ABBY conversational assistant. Real-time account metadata (e.g., application count, current verification standing) is supplied contextually during active chat queries to provide dynamic help. No passwords, credentials, or official government documents are transmitted to the AI engine.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Email Dispatch (Nodemailer and Google SMTP): Delivers automated system alerts, application updates, and security OTPs to user-registered email addresses." title="Email Dispatch (Nodemailer and Google SMTP): Delivers automated system alerts, application updates, and security OTPs to user-registered email addresses." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Email Dispatch (Nodemailer and Google SMTP):</strong> Delivers automated system alerts, application updates, and security OTPs to user-registered email addresses.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Mapping and Geolocation Services: Processes device-derived or user-selected coordinates to calculate distance scores relative to employer workplaces." title="Mapping and Geolocation Services: Processes device-derived or user-selected coordinates to calculate distance scores relative to employer workplaces." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Mapping and Geolocation Services:</strong> Processes device-derived or user-selected coordinates to calculate distance scores relative to employer workplaces.</span></li>
+                </ul>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01] ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ backgroundColor: '#2C7FFF' }}
-              >
-                <span className="flex items-center gap-2">
-                  {isSubmitting ? (
-                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-                  ) : (
-                    <span className="w-2 h-2 rounded-full bg-white opacity-80"></span>
-                  )}
-                  {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
-                </span>
-                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </span>
-              </button>
-            </form>
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(5)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="5. Data Access, Disclosure, and Visibility" title="5. Data Access, Disclosure, and Visibility" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              5. Data Access, Disclosure, and Visibility
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 5 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 5 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Between Users: When an applicant applies for an active job vacancy, their profile details (name, contact number, resume, skills, and accommodation requests) become accessible to that specific employer." title="Between Users: When an applicant applies for an active job vacancy, their profile details (name, contact number, resume, skills, and accommodation requests) become accessible to that specific employer." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Between Users:</strong> When an applicant applies for an active job vacancy, their profile details (name, contact number, resume, skills, and accommodation requests) become accessible to that specific employer.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Administrative Access: System administrators have role-restricted access to user directories, verification documents, and audit logs to approve accounts and manage operational integrity." title="Administrative Access: System administrators have role-restricted access to user directories, verification documents, and audit logs to approve accounts and manage operational integrity." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Administrative Access:</strong> System administrators have role-restricted access to user directories, verification documents, and audit logs to approve accounts and manage operational integrity.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Legal Compliance: We do not disclose personal information to external parties unless legally mandated by a valid subpoena, court order, or regulatory authority under Philippine jurisdiction." title="Legal Compliance: We do not disclose personal information to external parties unless legally mandated by a valid subpoena, court order, or regulatory authority under Philippine jurisdiction." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Legal Compliance:</strong> We do not disclose personal information to external parties unless legally mandated by a valid subpoena, court order, or regulatory authority under Philippine jurisdiction.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(6)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="6. Data Storage, Security, and Protection Measures" title="6. Data Storage, Security, and Protection Measures" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              6. Data Storage, Security, and Protection Measures
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 6 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 6 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="ABLEWORK implements organizational, physical, and technical measures to protect stored data:" title="ABLEWORK implements organizational, physical, and technical measures to protect stored data:" className="font-medium mb-3">ABLEWORK implements organizational, physical, and technical measures to protect stored data:</p>
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Cryptographic Protection: Passwords are mathematically hashed with unique cryptographic salts using bcrypt before database storage." title="Cryptographic Protection: Passwords are mathematically hashed with unique cryptographic salts using bcrypt before database storage." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Cryptographic Protection:</strong> Passwords are mathematically hashed with unique cryptographic salts using bcrypt before database storage.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Header and Transport Security: HTTP security headers (Helmet) and Cross-Origin Resource Sharing (CORS) rules protect API communication channels." title="Header and Transport Security: HTTP security headers (Helmet) and Cross-Origin Resource Sharing (CORS) rules protect API communication channels." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Header and Transport Security:</strong> HTTP security headers (Helmet) and Cross-Origin Resource Sharing (CORS) rules protect API communication channels.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Access Segregation: Verification documents and candidate resumes are isolated within designated upload directories linked only to validated database records." title="Access Segregation: Verification documents and candidate resumes are isolated within designated upload directories linked only to validated database records." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Access Segregation:</strong> Verification documents and candidate resumes are isolated within designated upload directories linked only to validated database records.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(7)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="7. Data Retention and Account Deletion" title="7. Data Retention and Account Deletion" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              7. Data Retention and Account Deletion
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 7 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 7 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Personal data, application histories, and profile records are retained for the duration of the user's active participation on the platform." title="Personal data, application histories, and profile records are retained for the duration of the user's active participation on the platform." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Personal data, application histories, and profile records are retained for the duration of the user's active participation on the platform.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Account Deactivation: Users may deactivate their profile, rendering their account and job listings inactive (Disabled)." title="Account Deactivation: Users may deactivate their profile, rendering their account and job listings inactive (Disabled)." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Account Deactivation:</strong> Users may deactivate their profile, rendering their account and job listings inactive (Disabled).</span></li>
+                  <li tabIndex="0" role="text" aria-label="Permanent Erasure: Users retain the right to request permanent account deletion via system settings. Account deletion permanently purges user profile records, application submissions, and authentication data from the production database upon password re-verification." title="Permanent Erasure: Users retain the right to request permanent account deletion via system settings. Account deletion permanently purges user profile records, application submissions, and authentication data from the production database upon password re-verification." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Permanent Erasure:</strong> Users retain the right to request permanent account deletion via system settings. Account deletion permanently purges user profile records, application submissions, and authentication data from the production database upon password re-verification.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(8)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="8. User Rights under Republic Act No. 10173" title="8. User Rights under Republic Act No. 10173" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              8. User Rights under Republic Act No. 10173
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 8 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 8 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="As a data subject under the Philippine Data Privacy Act of 2012, you are entitled to:" title="As a data subject under the Philippine Data Privacy Act of 2012, you are entitled to:" className="font-medium mb-3">As a data subject under the Philippine Data Privacy Act of 2012, you are entitled to:</p>
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Right to be Informed: The right to know how your personal and sensitive data is gathered, stored, and utilized." title="Right to be Informed: The right to know how your personal and sensitive data is gathered, stored, and utilized." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Right to be Informed:</strong> The right to know how your personal and sensitive data is gathered, stored, and utilized.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Right to Access: The right to review your registered data, job history, and application records." title="Right to Access: The right to review your registered data, job history, and application records." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Right to Access:</strong> The right to review your registered data, job history, and application records.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Right to Rectification: The right to update or correct inaccurate profile details and submit verification documents." title="Right to Rectification: The right to update or correct inaccurate profile details and submit verification documents." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Right to Rectification:</strong> The right to update or correct inaccurate profile details and submit verification documents.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Right to Erasure or Blocking: The right to deactivate or permanently delete your account records." title="Right to Erasure or Blocking: The right to deactivate or permanently delete your account records." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Right to Erasure or Blocking:</strong> The right to deactivate or permanently delete your account records.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Right to Damages: The right to seek indemnification for damages sustained due to inaccurate, incomplete, outdated, false, or unlawfully obtained personal data." title="Right to Damages: The right to seek indemnification for damages sustained due to inaccurate, incomplete, outdated, false, or unlawfully obtained personal data." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Right to Damages:</strong> The right to seek indemnification for damages sustained due to inaccurate, incomplete, outdated, false, or unlawfully obtained personal data.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(9)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="9. Changes to This Privacy Policy" title="9. Changes to This Privacy Policy" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              9. Changes to This Privacy Policy
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 9 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 9 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="ABLEWORK reserves the right to revise this Privacy Policy to accommodate system improvements, algorithmic enhancements, or updates in legal statutes. Updates will be reflected directly on the platform with an updated effective date." title="ABLEWORK reserves the right to revise this Privacy Policy to accommodate system improvements, algorithmic enhancements, or updates in legal statutes. Updates will be reflected directly on the platform with an updated effective date." className="font-medium">ABLEWORK reserves the right to revise this Privacy Policy to accommodate system improvements, algorithmic enhancements, or updates in legal statutes. Updates will be reflected directly on the platform with an updated effective date.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(10)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="10. Contact Information and Inquiries" title="10. Contact Information and Inquiries" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              10. Contact Information and Inquiries
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 10 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 10 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" role="text" aria-label="For questions, data access requests, or privacy-related concerns regarding ABLEWORK, contact the project data custody team:" title="For questions, data access requests, or privacy-related concerns regarding ABLEWORK, contact the project data custody team:" className="font-medium mb-3">For questions, data access requests, or privacy-related concerns regarding ABLEWORK, contact the project data custody team:</p>
+                <ul className="space-y-2 pl-4">
+                  <li tabIndex="0" role="text" aria-label="Platform: ABLEWORK Capstone Project" title="Platform: ABLEWORK Capstone Project" className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Platform:</strong> ABLEWORK Capstone Project</span></li>
+                  <li tabIndex="0" role="text" aria-label="Data Custody Team and Proponents: Paquio, Loueala Jean H., Pagado, Jesie Marie D., Astodillo, Felicite S., Gonzales, John Greg A., Gamboa, John Bryan T." title="Data Custody Team and Proponents: Paquio, Loueala Jean H., Pagado, Jesie Marie D., Astodillo, Felicite S., Gonzales, John Greg A., Gamboa, John Bryan T." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Data Custody Team and Proponents:</strong> Paquio, Loueala Jean H., Pagado, Jesie Marie D., Astodillo, Felicite S., Gonzales, John Greg A., Gamboa, John Bryan T.</span></li>
+                  <li tabIndex="0" role="text" aria-label="Institution: STIWNU" title="Institution: STIWNU" className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Institution:</strong> STIWNU</span></li>
+                  <li tabIndex="0" role="text" aria-label="Official Support Email: ableworksys5i@gmail.com" title="Official Support Email: ableworksys5i@gmail.com" className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span><strong>Official Support Email:</strong> ableworksys5i@gmail.com</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {confirmModal.show && createPortal(
-        <div
-          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
-          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
-          role="dialog" aria-modal="true" aria-labelledby="confirm-title"
-          onClick={() => setConfirmModal({ show: false })}
-        >
-          <div className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`} onClick={(e) => e.stopPropagation()}>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-full bg-[#2C7FFF]/15 flex items-center justify-center mb-4">
-                <svg className="w-7 h-7 text-[#2C7FFF]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 id="confirm-title" className={`text-lg font-bold mb-2 ${modalText}`}>Confirm Submission</h3>
-              <p className={`text-sm font-medium mb-6 ${modalMuted}`}>Are you sure you want to submit this support ticket? Please review your details before proceeding.</p>
-              <div className="flex w-full gap-3">
-                <button type="button" onClick={() => setConfirmModal({ show: false })} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${isDark ? 'bg-transparent text-white border-white/30' : 'bg-transparent text-[#03045E] border-[#03045E]/30'}`}>Cancel</button>
-                <button type="button" onClick={submitTicket} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${isDark ? 'bg-white text-black border-white hover:bg-gray-200' : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'}`}>Yes, Submit</button>
-              </div>
-            </div>
-          </div>
-        </div>, document.body
-      )}
-
-      {successModal.show && createPortal(
-        <div
-          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
-          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
-          role="dialog" aria-modal="true" aria-labelledby="success-title"
-          onClick={() => setSuccessModal({ show: false, message: '' })}
-        >
-          <div className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`} onClick={(e) => e.stopPropagation()}>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg bg-[#2C7FFF]">
-                <svg className="w-9 h-9" fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 id="success-title" className={`text-xl font-black mb-2 ${modalText}`}>Ticket Submitted!</h3>
-              <p className={`text-sm font-medium mb-6 ${modalMuted}`}>{successModal.message}</p>
-              <button type="button" onClick={() => setSuccessModal({ show: false, message: '' })} className="w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors hover:opacity-90 bg-[#2C7FFF] border-[#2C7FFF] text-white">
-                Got it, thanks!
-              </button>
-            </div>
-          </div>
-        </div>, document.body
-      )}
-    </main>
+    </PageLayout>
   );
 }
 
 export function Terms() {
   const [openSection, setOpenSection] = useState(null);
   const toggleSection = (id) => setOpenSection(openSection === id ? null : id);
-
-  // ... (Keep the rest of your Terms component exactly as it is)
 
   return (
     <PageLayout title="Terms and Conditions">
@@ -2018,169 +2011,224 @@ export function Terms() {
   );
 }
 
-// --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CODE ---
-import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AccessibilityContext } from '../context/AccessibilityContext';
-import { useColorPalette } from '../context/ColorPaletteContext';
 
-// --- REPLACE YOUR CONTACT COMPONENT WITH THIS ---
-export function Contact() {
+export function ContactSupport() {
   const navigate = useNavigate();
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
 
-  const isContrast = mode?.toLowerCase().includes('contrast') || paletteKey === 'highContrast' || paletteKey === 'darkComfort';
+  const isContrast =
+    (mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast')) ||
+    paletteKey === 'highContrast' ||
+    paletteKey === 'darkComfort';
+
+  const channels = [
+    {
+      id: 'email',
+      label: 'Email Support',
+      value: 'ableworksy5@gmail.com',
+      hint: 'We reply within 24–48 hours.',
+      href: 'mailto:ableworksy5@gmail.com',
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
+          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      ),
+    },
+    {
+      id: 'phone',
+      label: 'Call / Text',
+      value: '+63 900 000 0000',
+      hint: 'Mon–Fri, 8:00 AM – 5:00 PM (PHT).',
+      href: 'tel:+639000000000',
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
+          d="M3 5a2 2 0 012-2h2.28a1 1 0 01.95.68l1.2 3.6a1 1 0 01-.27 1.02L7.6 9.9a16 16 0 006.5 6.5l1.6-1.56a1 1 0 011.02-.27l3.6 1.2a1 1 0 01.68.95V19a2 2 0 01-2 2A16 16 0 013 5z" />
+      ),
+    },
+    {
+      id: 'address',
+      label: 'Visit Us',
+      value: 'Burgos St, Bacolod City',
+      hint: 'Barangay Villamonte, 6100',
+      href: '#address',
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
+          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      ),
+    },
+  ];
+
+  const topics = [
+    'Account verification (PWD ID)',
+    'Application status & updates',
+    'Employer / job posting issues',
+    'Accessibility settings',
+    'Report a fake job or employer',
+    'Other concern',
+  ];
 
   return (
-    <main
-      role="main"
-      aria-label="Contact Support Screen"
-      className={`min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ${
-        isContrast ? 'bg-black text-white' : 'bg-[#f4f6f8] text-[#03045E]'
-      }`}
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="support-title"
+      className={`fixed inset-0 z-[9998] flex items-end sm:items-center justify-center p-0 sm:p-6 ${
+        isContrast ? 'bg-black/80' : 'bg-[#03045E]/50'
+      } backdrop-blur-sm overflow-y-auto`}
+      onClick={(e) => e.target === e.currentTarget && navigate(-1)}
     >
-      <div className="w-full max-w-6xl flex flex-col gap-8">
-        
-        {/* HEADER */}
-        <div className="text-center pt-6 pb-2">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isContrast ? 'white' : '#1e1b4b' }}>
-            Help and Support
-          </h1>
+      <div
+        className={`w-full sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-2 shadow-2xl ${
+          isContrast
+            ? 'bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)]'
+            : 'bg-white text-[#03045E] border-[#03045E]/15'
+        }`}
+      >
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 px-5 sm:px-7 pt-5 pb-4 border-b border-[#03045E]/10 bg-inherit">
+          <div>
+            <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/30 mb-2">
+              Help &amp; Support
+            </span>
+            <h2 id="support-title" className="text-xl sm:text-2xl font-black leading-tight">
+              How can we help you?
+            </h2>
+            <p className="text-xs sm:text-sm font-semibold opacity-70 mt-1">
+              Have a question, feedback, or need assistance? We're here to help you succeed.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Close support"
+            title="Close"
+            className="shrink-0 w-9 h-9 rounded-full border-2 border-[#03045E]/15 flex items-center justify-center hover:bg-[#2C7FFF]/10 hover:border-[#2C7FFF]/40 transition"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
-          
-          {/* LEFT SIDE: Information Cards */}
-          <div className="md:col-span-5 flex flex-col gap-4">
-            
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">System Name</h3>
-              <p className="text-sm font-semibold">ABLEWORK</p>
-            </div>
-
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Project Team</h3>
-              <p className="text-sm font-semibold">5i</p>
-            </div>
-
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Email Support</h3>
-              <p className="text-sm font-semibold text-[#2C7FFF]">ableworksy5@gmail.com</p>
-            </div>
-
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Office Address</h3>
-              <p className="text-sm font-semibold leading-relaxed">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
-            </div>
-
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-2">Data Custody Team</h3>
-              <ul className="text-sm font-semibold space-y-0.5">
-                <li>Paquio, Loueala Jean H.</li>
-                <li>Pagado, Jesie Marie D.</li>
-                <li>Astodillo, Felicite S.</li>
-                <li>Gonzales, John Greg A.</li>
-                <li>Gamboa, John Bryan T.</li>
-              </ul>
-            </div>
-
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Institution</h3>
-              <p className="text-sm font-semibold">STIWNU</p>
-            </div>
-
-          </div>
-
-          {/* RIGHT SIDE: Submit Ticket Form */}
-          <div className="md:col-span-7">
-            <h2 className="text-xl font-black mb-4">Submit a Support Ticket</h2>
-            
-            <form 
-              className="flex flex-col gap-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert('Support ticket submitted successfully!');
-                navigate(-1);
-              }}
+        {/* Channels */}
+        <div className="px-5 sm:px-7 py-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {channels.map((c) => (
+            <a
+              key={c.id}
+              href={c.href}
+              aria-label={`${c.label}: ${c.value}`}
+              title={`${c.label} — ${c.value}`}
+              className="flex sm:flex-col items-center sm:items-start gap-3 p-3.5 rounded-2xl border-2 border-[#03045E]/10 hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition group"
             >
-              
-              {/* Report Reasons Grid - USING YOUR REPORT_REASONS ARRAY */}
-              <div>
-                <p className="text-xs font-bold mb-2">What are you reporting? <span className="text-gray-500 font-normal">(select all that apply)</span></p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {REPORT_REASONS.map((reason) => (
-                    <label key={reason} className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                      isContrast ? 'bg-zinc-900 border-zinc-700 hover:border-zinc-500' : 'bg-white border-gray-200 hover:border-gray-300'
-                    }`}>
-                      <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#2C7FFF] focus:ring-[#2C7FFF]" />
-                      <span className="text-xs font-semibold">{reason}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+              <span className="w-10 h-10 rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {c.icon}
+                </svg>
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[11px] font-black uppercase tracking-widest opacity-60">
+                  {c.label}
+                </span>
+                <span className="block text-sm font-bold truncate">{c.value}</span>
+                <span className="block text-[11px] font-semibold opacity-60 mt-0.5">{c.hint}</span>
+              </span>
+            </a>
+          ))}
+        </div>
 
-              {/* Subject Input */}
-              <div>
-                <input
-                  type="text"
-                  placeholder="Subject / Issue Summary"
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
-                  }`}
-                  required
-                />
-              </div>
-
-              {/* Description Textarea */}
-              <div>
-                <textarea
-                  rows={4}
-                  placeholder="Describe your issue, question, or report suspicious activity..."
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
-                  }`}
-                  required
-                />
-              </div>
-
-              {/* File Attachment */}
-              <div>
-                <p className="text-xs font-bold mb-2">Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
-                <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
-                  isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'
-                }`}>
-                  <label className="px-4 py-2 bg-[#1e1b4b] text-white text-xs font-bold rounded cursor-pointer hover:bg-black transition">
-                    Choose File
-                    <input type="file" className="hidden" accept="image/*,.pdf" />
-                  </label>
-                  <span className="text-xs font-medium opacity-60">No file chosen</span>
-                </div>
-              </div>
-
-              {/* Submit Button */}
+        {/* Quick topics */}
+        <div className="px-5 sm:px-7 pb-5">
+          <p className="text-[11px] font-black uppercase tracking-widest opacity-60 mb-2">
+            Common topics
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {topics.map((t) => (
               <button
-                type="submit"
-                className="w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01]"
-                style={{ backgroundColor: '#3b82f6' }} // Exact blue from your screenshot
+                key={t}
+                type="button"
+                className="px-3 py-1.5 rounded-full text-[11px] font-bold border border-[#03045E]/15 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition"
               >
-                <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-white opacity-80"></span>
-                  Submit Request Ticket
-                </span>
-                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </span>
+                {t}
               </button>
+            ))}
+          </div>
+        </div>
 
-            </form>
+        {/* Message form */}
+        <form
+          className="px-5 sm:px-7 pb-6 space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            // wire to your existing submit handler if you have one
+            alert('Message sent!');
+          }}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label className="block">
+              <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
+                Full name
+              </span>
+              <input
+                type="text"
+                required
+                placeholder="Enter your full name"
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
+                Email address
+              </span>
+              <input
+                type="email"
+                required
+                placeholder="Enter your email address"
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent"
+              />
+            </label>
           </div>
 
-        </div>
+          <label className="block">
+            <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
+              Reason for Contact
+            </span>
+            <select
+              required
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent appearance-none"
+            >
+              <option value="">Select a reason...</option>
+              {topics.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
+              Your Message
+            </span>
+            <textarea
+              required
+              rows={4}
+              placeholder="How can we help you today?"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent resize-none"
+            />
+          </label>
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+            <p className="text-[11px] font-semibold opacity-60 leading-snug">
+              Your message is handled per our Privacy Policy.
+            </p>
+            <button
+              type="submit"
+              className="px-6 py-3 rounded-xl font-black text-sm bg-[var(--color-accent)] text-[var(--color-background)] hover:brightness-110 shadow-md transition"
+            >
+              Send Message
+            </button>
+          </div>
+        </form>
       </div>
-    </main>
+    </div>
   );
 }
 
