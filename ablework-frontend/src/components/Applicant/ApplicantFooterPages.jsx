@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -953,9 +952,8 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             </button>
         </form>
       </div>
-
       {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
-      {confirmModal.show && createPortal(
+      {confirmModal.show && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
           role="dialog"
@@ -1006,8 +1004,8 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
         document.body
       )}
 
-      {/* ===== SUCCESS SWEETALERT CARD ===== */}
-      {successModal.show && createPortal(
+         {/* ===== SUCCESS SWEETALERT CARD ===== */}
+      {successModal.show && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
           role="dialog"
@@ -1015,7 +1013,6 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
           aria-labelledby="success-title"
           onClick={() => setSuccessModal({ show: false, message: '' })}
         >
-          {/* ... keep all the inner code exactly the same ... */}
           <div
             className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
             onClick={(e) => e.stopPropagation()}
