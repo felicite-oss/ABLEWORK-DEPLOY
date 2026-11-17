@@ -5,6 +5,19 @@ import FinalLogo from '../../assets/DARK MODE.png';
 import LightLogo from '../../assets/LIGHT MODE.png';
 import API_BASE_URL from '../../../config';
 
+const REPORT_REASONS = [
+  'Harassment or Bullying',
+  'Discriminatory Job Posting',
+  'Fake or Scam Job Offer',
+  'Inappropriate or Offensive Content',
+  'Spam or Duplicate Posting',
+  'Unresponsive Employer',
+  'Misleading Company Information',
+  'Account Impersonation',
+  'Payment or Fee Request',
+  'Other'
+];
+
 
 export function EmployerPolicy({ onBack }) {
   const { mode } = useContext(AccessibilityContext);
@@ -623,6 +636,7 @@ export function EmployerContact({ onBack, profile }) {
   const isDark = isDarkMode || isContrast;
 
   // State for the form
+  const [reasons, setReasons] = useState([]);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [proofImage, setProofImage] = useState(null);
@@ -631,6 +645,10 @@ export function EmployerContact({ onBack, profile }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (reasons.length === 0) {
+      setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
+      return;
+    }
     if (!subject.trim() || !message.trim()) {
       setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
       return;
@@ -645,6 +663,7 @@ export function EmployerContact({ onBack, profile }) {
       formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
       formData.append('userEmail', profile?.email || 'N/A');
       formData.append('userRole', profile?.role || 'Employer'); 
+      formData.append('reasons', JSON.stringify(reasons));
       formData.append('subject', subject);
       formData.append('message', message);
       
@@ -661,6 +680,7 @@ export function EmployerContact({ onBack, profile }) {
 
       if (res.ok) {
         setAlert({ show: true, type: 'success', text: data.message || 'Submitted successfully!' });
+        setReasons([]);
         setSubject('');
         setMessage('');
         setProofImage(null); // Reset image
@@ -726,6 +746,43 @@ export function EmployerContact({ onBack, profile }) {
           )}
 
           <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
+            {/* REPORT REASON CHECKLIST */}
+            <fieldset>
+              <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
+                What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
+              </legend>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {REPORT_REASONS.map(reason => {
+                  const checked = reasons.includes(reason);
+                  return (
+                    <label
+                      key={reason}
+                      className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
+                        checked
+                          ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]'
+                          : `${isDark ? 'bg-black border-white/30' : 'bg-white border-[#03045E]/15'} hover:border-[#2C7FFF]/60`
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={isSubmitting}
+                        onChange={() => {
+                          setReasons(prev =>
+                            prev.includes(reason)
+                              ? prev.filter(r => r !== reason)
+                              : [...prev, reason]
+                          );
+                        }}
+                        className="mt-0.5 accent-[#2C7FFF]"
+                      />
+                      <span className={`text-xs sm:text-sm font-semibold ${textColor}`}>{reason}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+
             {/* RESTORED SUBJECT INPUT */}
             <div>
               <label htmlFor="emp-subject" className="sr-only">Subject</label>
