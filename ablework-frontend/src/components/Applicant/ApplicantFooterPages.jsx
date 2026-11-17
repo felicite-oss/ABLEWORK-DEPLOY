@@ -724,7 +724,7 @@ export function ApplicantContact({ onBack, profile }) {
     setIsSubmitting(true);
     setAlert({ show: false, type: '', text: '' });
 
-    // ADDED: 2-second artificial delay for the loading state
+    // 2-second artificial delay for the loading state
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
@@ -749,7 +749,7 @@ export function ApplicantContact({ onBack, profile }) {
       const data = await res.json();
 
       if (res.ok) {
-        // REPLACED: Standard inline alert with SweetAlert2
+        // Success SweetAlert
         Swal.fire({
           title: 'Ticket Submitted!',
           text: data.message || 'Your support ticket has been successfully submitted. Our team will review it shortly.',
@@ -770,12 +770,41 @@ export function ApplicantContact({ onBack, profile }) {
         setMessage('');
         setProofImage(null);
       } else {
-        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
+        // Server responded with an error (e.g., 400 or 500)
+        Swal.fire({
+          title: 'Submission Failed',
+          text: data.message || 'Something went wrong on our end.',
+          icon: 'error',
+          confirmButtonText: 'Try Again',
+          background: isDark ? '#111111' : '#ffffff',
+          color: isDark ? '#ffffff' : 'var(--color-text)',
+          confirmButtonColor: '#ef4444',
+          customClass: {
+            popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
+            title: 'font-black text-2xl',
+            confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
+          }
+        });
       }
     } catch (err) {
       console.error(err);
-      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
+      // Network Error SweetAlert
+      Swal.fire({
+        title: 'Network Error',
+        text: 'Could not connect to the server. Please check your internet connection and try again.',
+        icon: 'warning',
+        confirmButtonText: 'Okay',
+        background: isDark ? '#111111' : '#ffffff',
+        color: isDark ? '#ffffff' : 'var(--color-text)',
+        confirmButtonColor: 'var(--color-accent)',
+        customClass: {
+          popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
+          title: 'font-black text-2xl',
+          confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
+        }
+      });
     } finally {
+      // This will always run, stopping the spinner even if it failed
       setIsSubmitting(false);
     }
   };
