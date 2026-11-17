@@ -1416,9 +1416,9 @@ export function About() {
   );
 }
 
-// --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
-// --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
-// --- CONTACT COMPONENT ---
+// ... (Keep everything above this point: Home, About, etc.)
+
+// --- ONLY ONE CONTACT COMPONENT SHOULD EXIST ---
 export function Contact() {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
@@ -1696,9 +1696,10 @@ export function Contact() {
 }
 
 export function Terms() {
-  // ... (keep the rest of your Terms component as it is)
   const [openSection, setOpenSection] = useState(null);
   const toggleSection = (id) => setOpenSection(openSection === id ? null : id);
+
+  // ... (Keep the rest of your Terms component exactly as it is)
 
   return (
     <PageLayout title="Terms and Conditions">
