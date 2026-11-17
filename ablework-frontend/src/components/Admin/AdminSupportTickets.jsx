@@ -27,7 +27,15 @@ export function AdminSupportTickets({ onTicketResolved }) {
       const res = await fetch(`${API_BASE_URL}/api/admin/support/tickets`);
       if (res.ok) {
         const data = await res.json();
-        setTickets(data);
+        const normalized = data.map(t => {
+          let parsedReasons = t.reasons;
+          if (typeof parsedReasons === 'string') {
+            try { parsedReasons = JSON.parse(parsedReasons); } catch (e) { parsedReasons = []; }
+          }
+          if (!Array.isArray(parsedReasons)) parsedReasons = [];
+          return { ...t, reasons: parsedReasons };
+        });
+        setTickets(normalized);
       }
     } catch (err) {
       console.error("Failed to fetch tickets", err);
@@ -119,11 +127,20 @@ export function AdminSupportTickets({ onTicketResolved }) {
                 <tr key={ticket.id} className={`${isDark ? 'hover:bg-white/5' : 'hover:bg-[#f4f4f4]/50'} transition-colors`}>
                   <td className="py-4 px-6">
                     <p className={`text-sm font-black truncate max-w-[200px] sm:max-w-xs ${isDark ? 'text-white' : 'text-[#03045E]'}`}>{ticket.subject}</p>
-                    <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
-                      ticket.status === 'Open' ? 'bg-[#2C7FFF] !text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-gray-200 text-gray-600')
-                    }`}>
-                      {ticket.status}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-1 mt-1">
+                      <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+                        ticket.status === 'Open' ? 'bg-[#2C7FFF] !text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-gray-200 text-gray-600')
+                      }`}>
+                        {ticket.status}
+                      </span>
+                      {Array.isArray(ticket.reasons) && ticket.reasons.length > 0 && (
+                        <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+                          isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {ticket.reasons.length} {ticket.reasons.length === 1 ? 'reason' : 'reasons'}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="py-4 px-6">
                     <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#03045E]'}`}>{ticket.user_name}</p>
@@ -204,6 +221,27 @@ export function AdminSupportTickets({ onTicketResolved }) {
 
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto flex flex-col gap-6">
+              {Array.isArray(selectedTicket.reasons) && selectedTicket.reasons.length > 0 && (
+                <div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest block mb-2 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Report Reasons</span>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTicket.reasons.map((reason, idx) => (
+                      <span
+                        key={idx}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 text-xs font-bold ${
+                          isDark
+                            ? 'bg-zinc-900 border-white/20 text-white'
+                            : 'bg-[#2C7FFF]/10 border-[#2C7FFF]/40 text-[#03045E]'
+                        }`}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#2C7FFF]" />
+                        {reason}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <span className={`text-[10px] font-black uppercase tracking-widest block mb-2 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Message</span>
                 <div className={`p-4 rounded-xl border-2 text-sm font-medium whitespace-pre-wrap leading-relaxed shadow-sm ${

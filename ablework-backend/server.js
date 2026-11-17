@@ -2550,9 +2550,39 @@ app.get('/api/users/:id/status', async (req, res) => {
 // ---------------------------------------------------------
 // ROUTE: SUBMIT SUPPORT TICKET
 // ---------------------------------------------------------
+const SUPPORT_REASONS = new Set([
+    'Harassment or Bullying',
+    'Discriminatory Job Posting',
+    'Fake or Scam Job Offer',
+    'Inappropriate or Offensive Content',
+    'Spam or Duplicate Posting',
+    'Unresponsive Employer',
+    'Misleading Company Information',
+    'Account Impersonation',
+    'Payment or Fee Request',
+    'Other'
+]);
+
 app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) => {
     const { userId, userName, userEmail, userRole, subject, message } = req.body;
-    const imagePath = req.file ? req.file.path : null; 
+    const imagePath = req.file ? req.file.path : null;
+
+    let rawReasons = req.body.reasons;
+    if (typeof rawReasons === 'string') {
+        try { rawReasons = JSON.parse(rawReasons); } catch (e) { rawReasons = []; }
+    }
+
+    const reasons = Array.isArray(rawReasons)
+        ? rawReasons
+            .filter(r => typeof r === 'string')
+            .map(r => r.trim())
+            .filter(r => SUPPORT_REASONS.has(r))
+            .slice(0, 10)
+        : [];
+
+    if (reasons.length === 0) {
+        return res.status(400).json({ message: "Please select at least one report reason." });
+    }
 
     if (!subject || !message) {
         return res.status(400).json({ message: "Subject and message are required." });
@@ -2560,9 +2590,19 @@ app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) =
 
     try {
         await db.execute(
-            `INSERT INTO support_tickets (user_id, user_name, user_email, user_role, subject, message, image_path) 
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [userId || null, userName || 'Guest', userEmail || 'N/A', userRole || 'Guest', subject, message, imagePath]
+            `INSERT INTO support_tickets
+             (user_id, user_name, user_email, user_role, reasons, subject, message, image_path)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                userId || null,
+                userName || 'Guest',
+                userEmail || 'N/A',
+                userRole || 'Guest',
+                JSON.stringify(reasons),
+                subject,
+                message,
+                imagePath
+            ]
         );
 
         res.status(201).json({ message: "Support ticket submitted successfully. Our team will review this shortly." });
@@ -2578,7 +2618,12 @@ app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) =
 app.get('/api/admin/support/tickets', async (req, res) => {
     try {
         const [tickets] = await db.execute(`SELECT * FROM support_tickets ORDER BY created_at DESC`);
-        res.status(200).json(tickets);
+        const formatted = tickets.map(t => {
+            let parsedReasons = [];
+            try { parsedReasons = t.reasons ? JSON.parse(t.reasons) : []; } catch (e) {}
+            return { ...t, reasons: parsedReasons };
+        });
+        res.status(200).json(formatted);
     } catch (error) {
         console.error("Fetch Tickets Error:", error.message);
         res.status(500).json({ message: "Server error fetching tickets." });
