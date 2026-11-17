@@ -981,21 +981,21 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 Are you sure you want to submit this support ticket? Please review your details before proceeding.
               </p>
               <div className="flex w-full gap-3">
-                <button
+                             <button
                   type="button"
                   onClick={() => setConfirmModal({ show: false })}
-                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 transition-colors cursor-pointer ${
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${
                     isDark
-                      ? 'bg-transparent text-white border-white/30 hover:bg-white/10'
-                      : 'bg-transparent text-[#03045E] border-[#03045E]/30 hover:bg-[#03045E]/5'
+                      ? 'bg-transparent text-white border-white/30'
+                      : 'bg-transparent text-[#03045E] border-[#03045E]/30'
                   }`}
                 >
                   Cancel
                 </button>
-                <button
+                            <button
                   type="button"
                   onClick={submitTicket}
-                  className="flex-1 py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E] transition-colors cursor-pointer"
+                  className="flex-1 py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] cursor-pointer"
                 >
                   Yes, Submit
                 </button>
