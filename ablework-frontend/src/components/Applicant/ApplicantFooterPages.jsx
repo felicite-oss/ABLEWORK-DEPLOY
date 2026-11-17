@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { createPortal } from 'react-dom'; // <-- ADD THIS
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -800,196 +801,22 @@ export function ApplicantContact({ onBack, profile }) {
   const textColor = isDark ? 'text-white' : 'text-[#03045E]';
   const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
-
-  return (
-    <ApplicantPageLayout
-      title="Help and Support"
-      subtitle="Get assistance with your dashboard, applications, or report suspicious activity"
-      onBack={onBack}
-    >
-      <div className="grid md:grid-cols-2 gap-8">
-
-        {/* LEFT SIDE: INFO CARDS */}
-        <div className="space-y-6">
-          {[
-            { label: 'System Name', value: 'ABLEWORK' },
-            { label: 'Project Team', value: '5i' },
-            { label: 'Email Support', value: 'ableworksys5i@gmail.com' },
-            { label: 'Office Address', value: 'Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines' },
-            { label: 'Data Custody Team', value: 'Paquio, Loueala Jean H.\nPagado, Jesie Marie D.\nAstodillo, Felicite S.\nGonzales, John Greg A.\nGamboa, John Bryan T.' },
-            { label: 'Institution', value: 'STIWNU' }
-          ].map((item, idx) => (
-            <div key={idx} role="region" aria-label={`${item.label}: ${item.value}`} className={`p-5 rounded-2xl border-2 ${cardBg}`}>
-              <h3 tabIndex="0" className={`font-bold mb-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${textColor}`}>
-                {item.label}
-              </h3>
-              <p tabIndex="0" className={`text-sm font-semibold whitespace-pre-line focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded ${mutedText}`}>
-                {item.value}
-              </p>
-            </div>
-          ))}
+   return (
+    <>
+      <ApplicantPageLayout
+        title="Help and Support"
+        subtitle="Get assistance with your dashboard, applications, or report suspicious activity"
+        onBack={onBack}
+      >
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* ... all form fields ... */}
         </div>
+      </ApplicantPageLayout>
 
-        {/* RIGHT SIDE: SUPPORT FORM */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <h3 tabIndex="0" className={`text-lg font-bold focus:outline-none focus-visible:underline ${textColor}`}>
-            Submit a Support Ticket
-          </h3>
-          
-          {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
-          {alert.show && (
-            <div 
-              role="alert"
-              className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
-            >
-              {alert.text}
-            </div>
-          )}
-
-          {/* REPORT REASON CHECKLIST */}
-          <fieldset>
-            <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
-              What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
-            </legend>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {REPORT_REASONS.map(reason => {
-                const checked = reasons.includes(reason);
-                return (
-                  <label
-                    key={reason}
-                    className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
-                      checked
-                        ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]'
-                        : `${isDark ? 'bg-black border-white/30' : 'bg-white border-[#03045E]/15'} hover:border-[#2C7FFF]/60`
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      disabled={isSubmitting}
-                      onChange={() => {
-                        setReasons(prev =>
-                          prev.includes(reason)
-                            ? prev.filter(r => r !== reason)
-                            : [...prev, reason]
-                        );
-                      }}
-                      className="mt-0.5 accent-[#2C7FFF]"
-                    />
-                    <span className={`text-sm font-medium ${textColor}`}>{reason}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          {/* RESTORED SUBJECT INPUT */}
-        <div>
-  <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
-  <input
-    id="ticket-subject"
-    type="text"
-    value={subject}
-    onChange={(e) => setSubject(e.target.value)}
-    placeholder="Subject / Issue Summary"
-    style={{ 
-      color: isDark ? '#ffffff' : 'var(--color-text)',
-      caretColor: isDark ? '#ffffff' : 'var(--color-text)'
-    }}
-    className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
-    disabled={isSubmitting}
-  />
-</div>
-
-         <div>
-  <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
-  <textarea
-    id="ticket-message"
-    rows="4"
-    value={message}
-    onChange={(e) => setMessage(e.target.value)}
-    placeholder="Describe your issue, question, or report suspicious activity..."
-    style={{ 
-      color: isDark ? '#ffffff' : 'var(--color-text)',
-      caretColor: isDark ? '#ffffff' : 'var(--color-text)'
-    }}
-    className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
-    disabled={isSubmitting}
-  />
-</div>
-
-                  {/* PROOF IMAGE UPLOAD */}
-          <div>
-            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
-            <style>{`
-              .custom-file-input {
-                color: ${isDark ? '#ffffff' : 'var(--color-text)'} !important;
-              }
-              .custom-file-input::file-selector-button {
-                color: ${isDark ? '#ffffff' : 'var(--color-text)'} !important;
-                background-color: transparent !important;
-                border: 2px solid ${isDark ? '#ffffff' : 'var(--color-text)'} !important;
-                border-radius: 9999px;
-                padding: 0.5rem 1rem;
-                font-weight: bold;
-                margin-right: 1rem;
-                cursor: pointer;
-                transition: all 0.2s ease;
-              }
-              .custom-file-input::file-selector-button:hover {
-                background-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(3,4,94,0.1)'} !important;
-              }
-            `}</style>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => setProofImage(e.target.files[0])}
-              className={`custom-file-input w-full p-2 border-2 rounded-xl text-sm cursor-pointer ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
-              disabled={isSubmitting}
-            />
-          </div>
-
-                   <button
-            type="submit"
-            disabled={isSubmitting}
-            aria-label="Submit Request Ticket"
-            className={`group relative overflow-hidden w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-lg flex items-center justify-between disabled:opacity-70 disabled:cursor-not-allowed ${
-              isDark 
-                ? 'bg-white text-black border-white hover:bg-gray-200' 
-                : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:shadow-[#2C7FFF]/30 hover:-translate-y-0.5'
-            }`}
-          >
-            <span className="flex items-center gap-2 z-10">
-              {/* Loading Spinner replaces the dot when submitting */}
-              {isSubmitting ? (
-                <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
-              )}
-              {isSubmitting ? 'Processing...' : 'Submit Request Ticket'}
-            </span>
-            
-            <span className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 z-10 ${isSubmitting ? 'bg-transparent' : 'bg-white/20 group-hover:bg-white/30 group-hover:translate-x-1'}`}>
-              {isSubmitting ? (
-                 <svg className="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                '→'
-              )}
-            </span>
-                   </button>
-        </form>
-      </div>
-
-      {/* CUSTOM SWEETALERT MODAL - Now inside the layout wrapper to ensure it pops exactly over this screen */}
-      {sweetAlert.isOpen && (
+      {/* CUSTOM SWEETALERT MODAL - Rendered via Portal to guarantee it overlays everything */}
+      {sweetAlert.isOpen && createPortal(
         <div 
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
           aria-labelledby="sweetAlertTitle"
@@ -1043,10 +870,10 @@ export function ApplicantContact({ onBack, profile }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body // <-- THIS IS THE MAGIC TRICK
       )}
-
-    </ApplicantPageLayout>
+    </>
   );
 }
 
