@@ -358,16 +358,15 @@ const handleLogin = async (e) => {
       </header>
 
 // --- PASTE THIS EXACTLY WHERE YOU DELETED THE WRAPPER ---
-<div
-  className={`flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative min-h-[110vh] md:min-h-[105vh] transition-all duration-300 overflow-hidden bg-[#f4f4f4]`}
->
+<div className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative min-h-[110vh] md:min-h-[105vh] transition-all duration-300 overflow-hidden bg-[#f4f4f4]">
+  
   {/* 1. BACKGROUND IMAGE */}
   <div 
-    className="absolute inset-0 bg-no-repeat w-full h-full bg-[center_top] bg-[size:100%] md:bg-[position:left_center] md:bg-[size:70%]" 
+    className="absolute inset-0 bg-no-repeat w-full h-full bg-[left_center] bg-[size:100%] md:bg-[position:left_center] md:bg-[size:70%]" 
     style={{ backgroundImage: `url(${backgroundImg})` }}
   ></div>
 
-  {/* 2. THE EXACT HOME PAGE CURVE (MOBILE) */}
+  {/* 2. MOBILE CURVE OVERLAY (Exact match to Home) */}
   <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none block md:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
     <defs>
       <filter id="glass-blur-mobile">
@@ -382,7 +381,7 @@ const handleLogin = async (e) => {
     />
   </svg>
 
-  {/* 3. THE EXACT HOME PAGE CURVE (DESKTOP) */}
+  {/* 3. DESKTOP CURVE OVERLAY (Exact match to Home) */}
   <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden md:block" preserveAspectRatio="none" viewBox="0 0 100 100">
     <defs>
       <filter id="glass-blur">
@@ -397,14 +396,15 @@ const handleLogin = async (e) => {
     />
   </svg>
 
-  {/* 4. YOUR EXACT FORM CONTAINER (Untouched) */}
+  {/* 4. YOUR EXACT FORM CONTAINER (Added z-20 so it sits on the curve) */}
   <div
     className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${containerGap} relative z-20
       ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
       ${containerPadding}
       ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} md:mt-15 md:mr-2 lg:mr-6`}
   >  
-    {/* ... LEAVE EVERYTHING HERE EXACTLY AS IT WAS ... */}
+    
+    {/* --- YOUR EXACT FORM AND BUTTONS ARE COMPLETELY UNTOUCHED BELOW --- */}
     <div className="text-center w-full -mt-2 sm:-mt-3">
       <h1
         tabIndex="0"
