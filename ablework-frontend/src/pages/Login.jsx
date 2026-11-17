@@ -357,18 +357,52 @@ const handleLogin = async (e) => {
         </div>
       </header>
 
-<div
-  className={`flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300`}
-  style={{
-    backgroundImage: `url(${backgroundImg})`,
-  }}
->
-<div
-  className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${containerGap} relative z-10
-    ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(,204,21,0.4)]' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
-    ${containerPadding}
-    ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} md:mt-15 md:mr-2 lg:mr-6`}
->  
+// --- PASTE THIS IN PLACE OF THE OLD WRAPPER ---
+<div className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative overflow-hidden min-h-[110vh] md:min-h-[105vh] transition-all duration-300">
+  
+  {/* 1. Background Image (Moved to its own absolute container) */}
+  <div 
+    className="absolute inset-0 bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left"
+    style={{ backgroundImage: `url(${backgroundImg})` }}
+  ></div>
+
+  {/* 2. The Curve Overlay (Matches Home/NavigationPages) */}
+  <svg 
+    className="absolute inset-0 w-full h-full z-0 pointer-events-none" 
+    preserveAspectRatio="none" 
+    viewBox="0 0 100 100"
+  >
+    <defs>
+      <filter id="glass-blur-login">
+        <feGaussianBlur stdDeviation="8" />
+      </filter>
+    </defs>
+    {/* Mobile Curve */}
+    <path 
+      d="M0,0 L100,0 L100,100 L0,100 Z M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100 L100,100 L100,0 Z" 
+      fill={(isContrast || isDarkMode) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(244, 244, 244, 0.85)" : `${colors?.primary || '#2C7FFF'}B3`)} 
+      fillRule="evenodd" 
+      style={{ backdropFilter: 'blur(16px)' }}
+      className="block md:hidden"
+    />
+    {/* Desktop Curve */}
+    <path 
+      d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
+      fill={(isContrast || isDarkMode) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(244, 244, 244, 0.85)" : `${colors?.primary || '#2C7FFF'}B3`)} 
+      fillRule="evenodd" 
+      style={{ backdropFilter: 'blur(16px)' }}
+      className="hidden md:block"
+    />
+  </svg>
+
+  {/* 3. Your Form Container (keeps z-10 so it sits above the curve) */}
+  <div
+    className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${containerGap} relative z-10
+      ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
+      ${containerPadding}
+      ${isAssist ? 'min-h-[auto] sm:min-h-[660px]' : 'min-h-[auto] sm:min-h-[600px]'} md:mt-15 md:mr-2 lg:mr-6`}
+  >  
+    {/* ... Leave all your form inputs and text exactly as they are inside here ... */}
           <div className="text-center w-full -mt-2 sm:-mt-3">
             <h1
               tabIndex="0"
