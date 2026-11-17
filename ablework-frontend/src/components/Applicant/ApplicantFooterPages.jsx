@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { createPortal } from 'react-dom'; // <-- ADD THIS
+import { createPortal } from 'react-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -809,7 +809,7 @@ export function ApplicantContact({ onBack, profile }) {
         onBack={onBack}
       >
         <div className="grid md:grid-cols-2 gap-8">
-          {/* ... all form fields ... */}
+          {/* ... all your form content stays exactly the same inside here ... */}
         </div>
       </ApplicantPageLayout>
 
@@ -871,7 +871,7 @@ export function ApplicantContact({ onBack, profile }) {
             </div>
           </div>
         </div>,
-        document.body // <-- THIS IS THE MAGIC TRICK
+        document.body
       )}
     </>
   );
