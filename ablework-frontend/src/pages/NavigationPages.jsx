@@ -1418,220 +1418,143 @@ export function About() {
 
 // --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
 export function Contact() {
-  const navigate = useNavigate();
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
 
-  const isContrast =
-    (mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast')) ||
-    paletteKey === 'highContrast' ||
-    paletteKey === 'darkComfort';
-
-  const channels = [
-    {
-      id: 'email',
-      label: 'Email Support',
-      value: 'ableworksy5@gmail.com',
-      hint: 'We reply within 24–48 hours.',
-      href: 'mailto:ableworksy5@gmail.com',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
-          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      ),
-    },
-    {
-      id: 'phone',
-      label: 'Call / Text',
-      value: '+63 900 000 0000',
-      hint: 'Mon–Fri, 8:00 AM – 5:00 PM (PHT).',
-      href: 'tel:+639000000000',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
-          d="M3 5a2 2 0 012-2h2.28a1 1 0 01.95.68l1.2 3.6a1 1 0 01-.27 1.02L7.6 9.9a16 16 0 006.5 6.5l1.6-1.56a1 1 0 011.02-.27l3.6 1.2a1 1 0 01.68.95V19a2 2 0 01-2 2A16 16 0 013 5z" />
-      ),
-    },
-    {
-      id: 'address',
-      label: 'Visit Us',
-      value: 'Burgos St, Bacolod City',
-      hint: 'Barangay Villamonte, 6100',
-      href: '#address',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
-          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      ),
-    },
-  ];
-
-  const topics = [
-    'Account verification (PWD ID)',
-    'Application status & updates',
-    'Employer / job posting issues',
-    'Accessibility settings',
-    'Report a fake job or employer',
-    'Other concern',
-  ];
+  const isContrast = mode?.toLowerCase().includes('contrast') || paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="support-title"
-      className={`fixed inset-0 z-[9998] flex items-end sm:items-center justify-center p-0 sm:p-6 ${
-        isContrast ? 'bg-black/80' : 'bg-[#03045E]/50'
-      } backdrop-blur-sm overflow-y-auto`}
-      onClick={(e) => e.target === e.currentTarget && navigate(-1)}
+      className={`min-h-screen w-full pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ${
+        isContrast ? 'bg-black text-white' : 'bg-[#f8f9fc] text-[#03045E]'
+      }`}
     >
-      <div
-        className={`w-full sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-2 shadow-2xl ${
-          isContrast
-            ? 'bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)]'
-            : 'bg-white text-[#03045E] border-[#03045E]/15'
-        }`}
-      >
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 px-5 sm:px-7 pt-5 pb-4 border-b border-[#03045E]/10 bg-inherit">
-          <div>
-            <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/30 mb-2">
-              Help &amp; Support
-            </span>
-            <h2 id="support-title" className="text-xl sm:text-2xl font-black leading-tight">
-              How can we help you?
-            </h2>
-            <p className="text-xs sm:text-sm font-semibold opacity-70 mt-1">
-              Have a question, feedback, or need assistance? We're here to help you succeed.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Close support"
-            title="Close"
-            className="shrink-0 w-9 h-9 rounded-full border-2 border-[#03045E]/15 flex items-center justify-center hover:bg-[#2C7FFF]/10 hover:border-[#2C7FFF]/40 transition cursor-pointer"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Channels */}
-        <div className="px-5 sm:px-7 py-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {channels.map((c) => (
-            <a
-              key={c.id}
-              href={c.href}
-              aria-label={`${c.label}: ${c.value}`}
-              title={`${c.label} — ${c.value}`}
-              className="flex sm:flex-col items-center sm:items-start gap-3 p-3.5 rounded-2xl border-2 border-[#03045E]/10 hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition group"
-            >
-              <span className="w-10 h-10 rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {c.icon}
-                </svg>
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[11px] font-black uppercase tracking-widest opacity-60">
-                  {c.label}
-                </span>
-                <span className="block text-sm font-bold truncate">{c.value}</span>
-                <span className="block text-[11px] font-semibold opacity-60 mt-0.5">{c.hint}</span>
-              </span>
-            </a>
-          ))}
-        </div>
-
-        {/* Quick topics */}
-        <div className="px-5 sm:px-7 pb-5">
-          <p className="text-[11px] font-black uppercase tracking-widest opacity-60 mb-2">
-            Common topics
+      <div className="w-full max-w-5xl flex flex-col items-center">
+        
+        {/* HEADER */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight mb-3" style={{ color: isContrast ? 'white' : '#03045E' }}>
+            Contact Us
+          </h1>
+          <h2 className="text-2xl sm:text-4xl font-bold mb-4" style={{ color: isContrast ? 'white' : '#03045E' }}>
+            Get in Touch
+          </h2>
+          <p className="text-sm sm:text-base font-semibold opacity-80">
+            Have a question, feedback, or need assistance? We're here to help you succeed.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {topics.map((t) => (
-              <button
-                key={t}
-                type="button"
-                className="px-3 py-1.5 rounded-full text-[11px] font-bold border border-[#03045E]/15 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition cursor-pointer"
-              >
-                {t}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Message form */}
-        <form
-          className="px-5 sm:px-7 pb-6 space-y-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            alert('Message sent successfully! We will get back to you soon.');
-            navigate(-1);
-          }}
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="block">
-              <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-                Full name
-              </span>
-              <input
-                type="text"
-                required
-                placeholder="Enter your full name"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent"
-              />
-            </label>
-            <label className="block">
-              <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-                Email address
-              </span>
-              <input
-                type="email"
-                required
-                placeholder="Enter your email address"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent"
-              />
-            </label>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 w-full">
+          
+          {/* LEFT SIDE: Contact Information */}
+          <div className="md:col-span-5">
+            <div className={`p-6 sm:p-8 rounded-2xl shadow-sm border-2 ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-100'}`}>
+              <h3 className="text-xl font-bold mb-6" style={{ color: isContrast ? 'white' : '#03045E' }}>
+                Contact Information
+              </h3>
+
+              <div className="space-y-6">
+                {/* Email */}
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-blue-50 text-[#2C7FFF]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">EMAIL</p>
+                    <p className="text-sm font-bold text-gray-700">ableworksy5@gmail.com</p>
+                  </div>
+                </div>
+
+                {/* Phone */}
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-blue-50 text-[#2C7FFF]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.95.68l1.2 3.6a1 1 0 01-.27 1.02L7.6 9.9a16 16 0 006.5 6.5l1.6-1.56a1 1 0 011.02-.27l3.6 1.2a1 1 0 01.68.95V19a2 2 0 01-2 2A16 16 0 013 5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">PHONE</p>
+                    <p className="text-sm font-bold text-gray-700">+63 900 000 0000</p>
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-blue-50 text-[#2C7FFF]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">ADDRESS</p>
+                    <p className="text-sm font-bold leading-relaxed text-gray-700">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <label className="block">
-            <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-              Reason for Contact
-            </span>
-            <select
-              required
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent appearance-none"
-            >
-              <option value="">Select a reason...</option>
-              {topics.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </label>
+          {/* RIGHT SIDE: Send Us a Message */}
+          <div className="md:col-span-7">
+            <div className={`relative rounded-2xl overflow-hidden border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-blue-100'}`}>
+              
+              {/* The Blue Curved Background */}
+              <div className="absolute top-0 right-0 w-48 h-48 bg-[#2C7FFF]" style={{ borderBottomLeftRadius: '100%' }}></div>
 
-          <label className="block">
-            <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-              Your Message
-            </span>
-            <textarea
-              required
-              rows={4}
-              placeholder="How can we help you today?"
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent resize-none"
-            />
-          </label>
+              <div className="relative z-10 p-6 sm:p-8">
+                <h3 className="text-xl font-bold mb-6" style={{ color: isContrast ? 'white' : '#03045E' }}>
+                  Send Us a Message
+                </h3>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-            <p className="text-[11px] font-semibold opacity-60 leading-snug">
-              Your message is handled per our Privacy Policy.
-            </p>
-            <button
-              type="submit"
-              className="px-6 py-3 rounded-xl font-black text-sm bg-[var(--color-accent)] text-[var(--color-background)] hover:brightness-110 shadow-md transition cursor-pointer"
-            >
-              Send Message
-            </button>
+                <form 
+                  className="space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    alert('Message sent successfully!');
+                  }}
+                >
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold mb-1 text-gray-700">Your Name</label>
+                      <input type="text" required placeholder="Enter your full name" className="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-[#2C7FFF] bg-white text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1 text-gray-700">Your Email</label>
+                      <input type="email" required placeholder="Enter your email address" className="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-[#2C7FFF] bg-white text-sm" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-gray-700">Reason for Contact</label>
+                    <select required className="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-[#2C7FFF] bg-white text-sm text-gray-500 appearance-none">
+                      <option value="">Select a reason...</option>
+                      <option value="account">Account Verification (PWD ID)</option>
+                      <option value="app">Application Status</option>
+                      <option value="job">Job Posting Issues</option>
+                      <option value="other">Other concern</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-gray-700">Your Message</label>
+                    <textarea required rows={4} placeholder="How can we help you today?" className="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-[#2C7FFF] bg-white text-sm resize-none"></textarea>
+                  </div>
+
+                  <button type="submit" className="w-full py-3.5 rounded-xl font-bold text-white text-base transition-colors bg-[#2C7FFF] hover:bg-blue-600">
+                    Send Message
+                  </button>
+
+                </form>
+              </div>
+
+            </div>
           </div>
-        </form>
+
+        </div>
       </div>
     </div>
   );
