@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import Swal from 'sweetalert2'; // <-- ADD THIS
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -707,10 +706,12 @@ export function ApplicantContact({ onBack, profile }) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [proofImage, setProofImage] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+  // ADDED: Custom modal state for the ExploreJobs-style SweetAlert
+  const [sweetAlert, setSweetAlert] = useState({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null });
 
-   const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     if (reasons.length === 0) {
       setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
@@ -721,118 +722,77 @@ export function ApplicantContact({ onBack, profile }) {
       return;
     }
 
-    // 1. ADDED: Confirmation SweetAlert pop-up
-    const confirmResult = await Swal.fire({
+    // 1. Trigger the confirmation pop-up
+    setSweetAlert({
+      isOpen: true,
       title: 'Submit Ticket?',
       text: 'Are you sure you want to submit this support ticket? Please ensure your details are accurate.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, submit it!',
-      cancelButtonText: 'Cancel',
-      background: isDark ? '#111111' : '#ffffff',
-      color: isDark ? '#ffffff' : 'var(--color-text)',
-      confirmButtonColor: 'var(--color-accent)',
-      cancelButtonColor: isDark ? '#333333' : '#64748b',
-      customClass: {
-        popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
-        title: 'font-black text-2xl',
-        confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform',
-        cancelButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
+      type: 'confirm',
+      onConfirm: async () => {
+        setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null }); // Close modal
+        setIsSubmitting(true);
+        setAlert({ show: false, type: '', text: '' });
+
+        // 2-second artificial delay for the loading state
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        try {
+          const formData = new FormData();
+          formData.append('userId', profile?.user_id || profile?.id || '');
+          formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
+          formData.append('userEmail', profile?.email || 'N/A');
+          formData.append('userRole', profile?.role || 'Applicant'); 
+          formData.append('reasons', JSON.stringify(reasons));
+          formData.append('subject', subject);
+          formData.append('message', message);
+          
+          if (proofImage) {
+            formData.append('proof_image', proofImage);
+          }
+
+          const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            setSweetAlert({
+              isOpen: true,
+              title: 'Ticket Submitted!',
+              text: data.message || 'Your support ticket has been successfully submitted. Our team will review it shortly.',
+              type: 'success',
+              onConfirm: () => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })
+            });
+            
+            setReasons([]);
+            setSubject('');
+            setMessage('');
+            setProofImage(null);
+          } else {
+            setSweetAlert({
+              isOpen: true,
+              title: 'Submission Failed',
+              text: data.message || 'Something went wrong on our end.',
+              type: 'error',
+              onConfirm: () => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })
+            });
+          }
+        } catch (err) {
+          console.error(err);
+          setSweetAlert({
+            isOpen: true,
+            title: 'Network Error',
+            text: 'Could not connect to the server. Please check your internet connection and try again.',
+            type: 'warning',
+            onConfirm: () => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })
+          });
+        } finally {
+          setIsSubmitting(false);
+        }
       }
     });
-
-    // If the user clicks "Cancel" or clicks outside the modal, stop here
-    if (!confirmResult.isConfirmed) {
-      return; 
-    }
-
-    // 2. Proceed with loading state and submission
-    setIsSubmitting(true);
-    setAlert({ show: false, type: '', text: '' });
-
-    // 2-second artificial delay for the loading state
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    try {
-      const formData = new FormData();
-      formData.append('userId', profile?.user_id || profile?.id || '');
-      formData.append('userName', profile ? `${profile.firstname || profile.company_name || ''} ${profile.lastname || ''}`.trim() : 'Guest User');
-      formData.append('userEmail', profile?.email || 'N/A');
-      formData.append('userRole', profile?.role || 'Applicant'); 
-      formData.append('reasons', JSON.stringify(reasons));
-      formData.append('subject', subject);
-      formData.append('message', message);
-      
-      if (proofImage) {
-        formData.append('proof_image', proofImage);
-      }
-
-      const res = await fetch(`${API_BASE_URL}/api/support/ticket`, {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // Success SweetAlert
-        Swal.fire({
-          title: 'Ticket Submitted!',
-          text: data.message || 'Your support ticket has been successfully submitted. Our team will review it shortly.',
-          icon: 'success',
-          confirmButtonText: 'Awesome',
-          background: isDark ? '#111111' : '#ffffff',
-          color: isDark ? '#ffffff' : 'var(--color-text)',
-          confirmButtonColor: 'var(--color-accent)',
-          customClass: {
-            popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
-            title: 'font-black text-2xl',
-            confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
-          }
-        });
-        
-        setReasons([]);
-        setSubject('');
-        setMessage('');
-        setProofImage(null);
-      } else {
-        // Server responded with an error (e.g., 400 or 500)
-        Swal.fire({
-          title: 'Submission Failed',
-          text: data.message || 'Something went wrong on our end.',
-          icon: 'error',
-          confirmButtonText: 'Try Again',
-          background: isDark ? '#111111' : '#ffffff',
-          color: isDark ? '#ffffff' : 'var(--color-text)',
-          confirmButtonColor: '#ef4444',
-          customClass: {
-            popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
-            title: 'font-black text-2xl',
-            confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
-          }
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      // Network Error SweetAlert
-      Swal.fire({
-        title: 'Network Error',
-        text: 'Could not connect to the server. Please check your internet connection and try again.',
-        icon: 'warning',
-        confirmButtonText: 'Okay',
-        background: isDark ? '#111111' : '#ffffff',
-        color: isDark ? '#ffffff' : 'var(--color-text)',
-        confirmButtonColor: 'var(--color-accent)',
-        customClass: {
-          popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
-          title: 'font-black text-2xl',
-          confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
-        }
-      });
-    } finally {
-      // This will always run, stopping the spinner even if it failed
-      setIsSubmitting(false);
-    }
   };
 
   // Adaptive colors for the form
@@ -1025,6 +985,67 @@ export function ApplicantContact({ onBack, profile }) {
           </button>
         </form>
       </div>
+
+      {/* CUSTOM SWEETALERT MODAL - Matches ExploreJobs */}
+      {sweetAlert.isOpen && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sweetAlertTitle"
+        >
+          <div className={`w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl border-2 ${isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-[#03045E]/15'} animate-in zoom-in-95 duration-200`}>
+            
+            {/* Icon Area based on Type */}
+            <div className="flex justify-center mb-6">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center border-4 ${
+                sweetAlert.type === 'success' ? 'border-green-500 text-green-500' : 
+                sweetAlert.type === 'error' ? 'border-red-500 text-red-500' : 
+                sweetAlert.type === 'warning' ? 'border-amber-500 text-amber-500' : 
+                'border-[#2C7FFF] text-[#2C7FFF]'
+              }`}>
+                {sweetAlert.type === 'success' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                {sweetAlert.type === 'error' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>}
+                {sweetAlert.type === 'warning' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
+                {sweetAlert.type === 'confirm' && <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+              </div>
+            </div>
+
+            <h3 id="sweetAlertTitle" className={`text-2xl font-black text-center mb-3 ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
+              {sweetAlert.title}
+            </h3>
+            <p className={`text-center text-sm sm:text-base font-semibold mb-8 ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}>
+              {sweetAlert.text}
+            </p>
+
+            <div className="flex gap-3 w-full">
+              {sweetAlert.type === 'confirm' && (
+                <button
+                  onClick={() => setSweetAlert({ isOpen: false, title: '', text: '', type: 'notice', onConfirm: null })}
+                  className={`flex-1 py-3.5 px-4 font-bold text-sm rounded-xl border-2 transition-all cursor-pointer ${
+                    isDark 
+                      ? 'border-white/20 text-white hover:bg-white/10' 
+                      : 'border-[#03045E]/15 text-[#03045E] hover:bg-[#f4f4f4]'
+                  }`}
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                onClick={sweetAlert.onConfirm}
+                className={`flex-1 py-3.5 px-4 font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer text-white ${
+                  sweetAlert.type === 'error' ? 'bg-red-500 hover:bg-red-600' : 
+                  sweetAlert.type === 'success' ? 'bg-green-500 hover:bg-green-600' : 
+                  'bg-[#2C7FFF] hover:bg-[#1a6bed]'
+                }`}
+              >
+                {sweetAlert.type === 'confirm' ? 'Yes, Submit' : 'Okay'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </ApplicantPageLayout>
   );
 }
