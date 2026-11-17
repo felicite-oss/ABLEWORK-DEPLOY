@@ -1024,16 +1024,18 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
             onClick={(e) => e.stopPropagation()}
           >
-                       <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-[#2C7FFF] flex items-center justify-center mb-4 shadow-lg">
+                           <div className="flex flex-col items-center text-center">
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg"
+                style={{ backgroundColor: 'var(--color-primary, #2C7FFF)' }}
+              >
                 <svg 
                   className="w-9 h-9" 
                   fill="none" 
-                  stroke={isDark ? "#000000" : "currentColor"} 
+                  stroke="var(--color-background, #ffffff)" 
                   strokeWidth="3" 
                   viewBox="0 0 24 24" 
                   aria-hidden="true"
-                  style={isDark ? { color: '#000000' } : {}}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
@@ -1047,12 +1049,12 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
               <button
                 type="button"
                 onClick={() => setSuccessModal({ show: false, message: '' })}
-                className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${
-                  isDark 
-                    ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
-                    : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
-                }`}
-                style={isDark ? { color: '#000000' } : {}}
+                className="w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors hover:opacity-90"
+                style={{ 
+                  backgroundColor: 'var(--color-primary, #2C7FFF)', 
+                  borderColor: 'var(--color-primary, #2C7FFF)', 
+                  color: 'var(--color-background, #ffffff)' 
+                }}
               >
                 Got it, thanks!
               </button>
