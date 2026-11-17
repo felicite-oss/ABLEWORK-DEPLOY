@@ -831,7 +831,11 @@ export default function ApplicantProfile({ profile, refreshData, setProfile }) {
                 onKeyDown={handleSkillKeyDown}
                 aria-label={skills.length === 0 ? "Add a skill" : "Add more..."}
                 placeholder={skills.length === 0 ? "Type a skill and press Enter..." : "Add more..."}
-                className="flex-1 min-w-[120px] outline-none bg-transparent text-xs sm:text-sm font-medium text-[#03045E] placeholder:text-gray-400 p-1"
+                style={{
+                  color: isDarkScreen ? '#ffffff' : 'var(--color-text)',
+                  '--placeholder-color': isDarkScreen ? 'rgba(255, 255, 255, 0.6)' : 'var(--color-primary, #2C7FFF)'
+                }}
+                className="flex-1 min-w-[120px] outline-none bg-transparent text-xs sm:text-sm font-medium placeholder:text-[var(--placeholder-color)] p-1"
               />
             </div>
             
@@ -877,7 +881,11 @@ export default function ApplicantProfile({ profile, refreshData, setProfile }) {
                 onKeyDown={handleAccomKeyDown}
                 aria-label={accommodations.length === 0 ? "Add an accommodation" : "Add more..."}
                 placeholder={accommodations.length === 0 ? "Type an accommodation and press Enter..." : "Add more..."}
-                className="flex-1 min-w-[120px] outline-none bg-transparent text-xs sm:text-sm font-medium text-[#03045E] placeholder:text-gray-400 p-1"
+                style={{
+                  color: isDarkScreen ? '#ffffff' : 'var(--color-text)',
+                  '--placeholder-color': isDarkScreen ? 'rgba(255, 255, 255, 0.6)' : 'var(--color-primary, #2C7FFF)'
+                }}
+                className="flex-1 min-w-[120px] outline-none bg-transparent text-xs sm:text-sm font-medium placeholder:text-[var(--placeholder-color)] p-1"
               />
             </div>
 

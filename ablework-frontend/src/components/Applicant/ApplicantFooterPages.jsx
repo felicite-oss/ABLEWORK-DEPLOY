@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -952,10 +953,11 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             </button>
         </form>
       </div>
-      {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
-      {confirmModal.show && (
+         {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
+      {confirmModal.show && createPortal(
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="confirm-title"
@@ -1004,10 +1006,11 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
         document.body
       )}
 
-         {/* ===== SUCCESS SWEETALERT CARD ===== */}
-      {successModal.show && (
+          {/* ===== SUCCESS SWEETALERT CARD ===== */}
+      {successModal.show && createPortal(
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="success-title"
