@@ -911,14 +911,19 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   />
 </div>
 
-          {/* PROOF IMAGE UPLOAD */}
+                    {/* PROOF IMAGE UPLOAD */}
           <div>
             <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
             <input
               type="file"
               accept="image/*,.pdf"
               onChange={(e) => setProofImage(e.target.files[0])}
-              className={`w-full p-2 border-2 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#2C7FFF] file:text-white hover:file:bg-[#03045E] cursor-pointer ${inputBg}`}
+              style={{
+                color: isDark ? '#ffffff' : '#03045e', // Forces "No file chosen" text color
+                '--file-btn-bg': isDark ? '#ffffff' : 'var(--color-primary, #2C7FFF)',
+                '--file-btn-text': isDark ? '#000000' : 'var(--color-buttonText, #ffffff)',
+              }}
+              className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${inputBg} file:bg-[var(--file-btn-bg)] file:text-[var(--file-btn-text)] hover:opacity-90`}
               disabled={isSubmitting}
             />
           </div>
