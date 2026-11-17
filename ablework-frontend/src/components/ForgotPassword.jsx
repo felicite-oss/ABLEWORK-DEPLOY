@@ -165,15 +165,12 @@ const { paletteKey, palette } = useColorPalette();
       className={`min-h-screen flex flex-col ${isContrast ? 'bg-black text-white' : 'bg-[#f4f4f4] text-[#03045E]'} overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
     >
       {isDarkMode && (
-        <style>{`
-          #fpOtp::placeholder,
-          #fpNewPass::placeholder,
-          #fpConfirmPass::placeholder {
-            color: #ffffff !important;
-            opacity: 1 !important;
-            -webkit-text-fill-color: #ffffff !important;
-          }
-        `}</style>
+       <style>{`
+  #fpEmail::placeholder, #fpOtp::placeholder, #fpNewPass::placeholder, #fpConfirmPass::placeholder {
+    color: ${isContrast || isDarkMode ? '#ffffff' : 'var(--color-text)'} !important;
+    opacity: 0.6 !important;
+  }
+`}</style>
       )}
 
       {isAccessibilityMode && isDarkMode && (
@@ -413,18 +410,22 @@ const { paletteKey, palette } = useColorPalette();
                     </svg>
                   </span>
                   <input
-                    id="fpEmail"
-                    name="fpEmail"
-                    type="email"
-                    title="Email Address"
-                    aria-label="Enter your registered email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="off"
-                    placeholder="Enter your registered email"
-                    className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                  />
+  id="fpEmail"
+  name="fpEmail"
+  type="email"
+  title="Email Address"
+  aria-label="Enter your registered email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  required
+  autoComplete="off"
+  placeholder="Enter your registered email"
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className={`w-full ${inputSize} pl-10 sm:pl-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+/>
                 </div>
               </div>
 <button
@@ -468,20 +469,24 @@ const { paletteKey, palette } = useColorPalette();
 >
                   6-Digit Recovery Code
                 </label>
-                <input
-                  id="fpOtp"
-                  name="fpOtp"
-                  type="text"
-                  title="6-Digit Recovery Code"
-                  inputMode="numeric"
-                  maxLength="6"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  required
-                  autoComplete="off"
-                  placeholder="000000"
-                  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
-                />
+<input
+  id="fpOtp"
+  name="fpOtp"
+  type="text"
+  title="6-Digit Recovery Code"
+  inputMode="numeric"
+  maxLength="6"
+  value={otpCode}
+  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+  required
+  autoComplete="off"
+  placeholder="000000"
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className={`w-full ${inputSize} text-center tracking-[0.4em] sm:tracking-[0.6em] ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition font-black`}
+/>
               </div>
 
               <div className="flex flex-col gap-1.5 sm:gap-2">
@@ -500,19 +505,23 @@ const { paletteKey, palette } = useColorPalette();
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </span>
-                  <input
-                    id="fpNewPass"
-                    name="fpNewPass"
-                    type={showPassword ? "text" : "password"}
-                    title="New Password"
-                    aria-label="Enter new password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                    placeholder="Enter new password"
-                    className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                  />
+                 <input
+  id="fpNewPass"
+  name="fpNewPass"
+  type={showPassword ? "text" : "password"}
+  title="New Password"
+  aria-label="Enter new password"
+  value={newPassword}
+  onChange={(e) => setNewPassword(e.target.value)}
+  required
+  autoComplete="new-password"
+  placeholder="Enter new password"
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+/>
                   <button
                     type="button"
                     title="Show password"
@@ -549,19 +558,23 @@ const { paletteKey, palette } = useColorPalette();
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </span>
-                  <input
-                    id="fpConfirmPass"
-                    name="fpConfirmPass"
-                    type={showConfirmPassword ? "text" : "password"}
-                    title="Confirm New Password"
-                    aria-label="Confirm new password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                    placeholder="Confirm new password"
-                    className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 text-white placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white text-[#03045E] placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
-                  />
+                 <input
+  id="fpConfirmPass"
+  name="fpConfirmPass"
+  type={showConfirmPassword ? "text" : "password"}
+  title="Confirm New Password"
+  aria-label="Confirm new password"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
+  required
+  autoComplete="new-password"
+  placeholder="Confirm new password"
+  style={{
+    color: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)',
+    caretColor: (isContrast || isDarkMode) ? '#ffffff' : 'var(--color-text)'
+  }}
+  className={`w-full ${inputSize} pl-10 sm:pl-12 pr-10 sm:pr-12 ${(isContrast || isDarkMode) ? 'border-2 border-blue-400 bg-zinc-800 placeholder:text-gray-400 focus:border-blue-300' : 'border-2 border-[#03045E]/20 bg-white placeholder:text-gray-400 focus:border-[#2C7FFF]'} rounded-lg sm:rounded-xl focus:outline-none shadow-sm transition`}
+/>
                   <button
                     type="button"
                     title="Show confirm password"
