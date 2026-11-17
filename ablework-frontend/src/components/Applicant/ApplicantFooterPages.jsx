@@ -947,7 +947,7 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   )}
   {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
 </span>
-            <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+                     <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-[#03045E]">
               →
             </span>
             </button>
@@ -992,10 +992,14 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 >
                   Cancel
                 </button>
-                            <button
+                              <button
                   type="button"
                   onClick={submitTicket}
-                  className="flex-1 py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] cursor-pointer"
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${
+                    isDark 
+                      ? 'bg-[#2C7FFF] text-black border-[#2C7FFF]' 
+                      : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
+                  }`}
                 >
                   Yes, Submit
                 </button>
