@@ -33,7 +33,6 @@ let DefaultIcon = L.icon({
   alt: ''
 });
 L.Marker.prototype.options.icon = DefaultIcon;
-
 const REPORT_REASONS = [
   'Harassment or Bullying',
   'Discriminatory Job Posting',
@@ -1965,223 +1964,163 @@ import { useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../context/AccessibilityContext';
 import { useColorPalette } from '../context/ColorPaletteContext';
 
-export function ContactSupport() {
+// --- REPLACE YOUR CONTACT COMPONENT WITH THIS ---
+export function Contact() {
   const navigate = useNavigate();
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
 
-  const isContrast =
-    (mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast')) ||
-    paletteKey === 'highContrast' ||
-    paletteKey === 'darkComfort';
-
-  const channels = [
-    {
-      id: 'email',
-      label: 'Email Support',
-      value: 'ableworksy5@gmail.com',
-      hint: 'We reply within 24–48 hours.',
-      href: 'mailto:ableworksy5@gmail.com',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
-          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      ),
-    },
-    {
-      id: 'phone',
-      label: 'Call / Text',
-      value: '+63 900 000 0000',
-      hint: 'Mon–Fri, 8:00 AM – 5:00 PM (PHT).',
-      href: 'tel:+639000000000',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
-          d="M3 5a2 2 0 012-2h2.28a1 1 0 01.95.68l1.2 3.6a1 1 0 01-.27 1.02L7.6 9.9a16 16 0 006.5 6.5l1.6-1.56a1 1 0 011.02-.27l3.6 1.2a1 1 0 01.68.95V19a2 2 0 01-2 2A16 16 0 013 5z" />
-      ),
-    },
-    {
-      id: 'address',
-      label: 'Visit Us',
-      value: 'Burgos St, Bacolod City',
-      hint: 'Barangay Villamonte, 6100',
-      href: '#address',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2"
-          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      ),
-    },
-  ];
-
-  const topics = [
-    'Account verification (PWD ID)',
-    'Application status & updates',
-    'Employer / job posting issues',
-    'Accessibility settings',
-    'Report a fake job or employer',
-    'Other concern',
-  ];
+  const isContrast = mode?.toLowerCase().includes('contrast') || paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="support-title"
-      className={`fixed inset-0 z-[9998] flex items-end sm:items-center justify-center p-0 sm:p-6 ${
-        isContrast ? 'bg-black/80' : 'bg-[#03045E]/50'
-      } backdrop-blur-sm overflow-y-auto`}
-      onClick={(e) => e.target === e.currentTarget && navigate(-1)}
+    <main
+      role="main"
+      aria-label="Contact Support Screen"
+      className={`min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ${
+        isContrast ? 'bg-black text-white' : 'bg-[#f4f6f8] text-[#03045E]'
+      }`}
     >
-      <div
-        className={`w-full sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-2 shadow-2xl ${
-          isContrast
-            ? 'bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)]'
-            : 'bg-white text-[#03045E] border-[#03045E]/15'
-        }`}
-      >
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 px-5 sm:px-7 pt-5 pb-4 border-b border-[#03045E]/10 bg-inherit">
-          <div>
-            <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/30 mb-2">
-              Help &amp; Support
-            </span>
-            <h2 id="support-title" className="text-xl sm:text-2xl font-black leading-tight">
-              How can we help you?
-            </h2>
-            <p className="text-xs sm:text-sm font-semibold opacity-70 mt-1">
-              Have a question, feedback, or need assistance? We're here to help you succeed.
-            </p>
+      <div className="w-full max-w-6xl flex flex-col gap-8">
+        
+        {/* HEADER */}
+        <div className="text-center pt-6 pb-2">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isContrast ? 'white' : '#1e1b4b' }}>
+            Help and Support
+          </h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
+          
+          {/* LEFT SIDE: Information Cards */}
+          <div className="md:col-span-5 flex flex-col gap-4">
+            
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-sm font-black uppercase tracking-wider mb-1">System Name</h3>
+              <p className="text-sm font-semibold">ABLEWORK</p>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Project Team</h3>
+              <p className="text-sm font-semibold">5i</p>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Email Support</h3>
+              <p className="text-sm font-semibold text-[#2C7FFF]">ableworksy5@gmail.com</p>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Office Address</h3>
+              <p className="text-sm font-semibold leading-relaxed">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-sm font-black uppercase tracking-wider mb-2">Data Custody Team</h3>
+              <ul className="text-sm font-semibold space-y-0.5">
+                <li>Paquio, Loueala Jean H.</li>
+                <li>Pagado, Jesie Marie D.</li>
+                <li>Astodillo, Felicite S.</li>
+                <li>Gonzales, John Greg A.</li>
+                <li>Gamboa, John Bryan T.</li>
+              </ul>
+            </div>
+
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Institution</h3>
+              <p className="text-sm font-semibold">STIWNU</p>
+            </div>
+
           </div>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Close support"
-            title="Close"
-            className="shrink-0 w-9 h-9 rounded-full border-2 border-[#03045E]/15 flex items-center justify-center hover:bg-[#2C7FFF]/10 hover:border-[#2C7FFF]/40 transition"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
 
-        {/* Channels */}
-        <div className="px-5 sm:px-7 py-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {channels.map((c) => (
-            <a
-              key={c.id}
-              href={c.href}
-              aria-label={`${c.label}: ${c.value}`}
-              title={`${c.label} — ${c.value}`}
-              className="flex sm:flex-col items-center sm:items-start gap-3 p-3.5 rounded-2xl border-2 border-[#03045E]/10 hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition group"
+          {/* RIGHT SIDE: Submit Ticket Form */}
+          <div className="md:col-span-7">
+            <h2 className="text-xl font-black mb-4">Submit a Support Ticket</h2>
+            
+            <form 
+              className="flex flex-col gap-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                alert('Support ticket submitted successfully!');
+                navigate(-1);
+              }}
             >
-              <span className="w-10 h-10 rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {c.icon}
-                </svg>
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[11px] font-black uppercase tracking-widest opacity-60">
-                  {c.label}
-                </span>
-                <span className="block text-sm font-bold truncate">{c.value}</span>
-                <span className="block text-[11px] font-semibold opacity-60 mt-0.5">{c.hint}</span>
-              </span>
-            </a>
-          ))}
-        </div>
+              
+              {/* Report Reasons Grid - USING YOUR REPORT_REASONS ARRAY */}
+              <div>
+                <p className="text-xs font-bold mb-2">What are you reporting? <span className="text-gray-500 font-normal">(select all that apply)</span></p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {REPORT_REASONS.map((reason) => (
+                    <label key={reason} className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                      isContrast ? 'bg-zinc-900 border-zinc-700 hover:border-zinc-500' : 'bg-white border-gray-200 hover:border-gray-300'
+                    }`}>
+                      <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#2C7FFF] focus:ring-[#2C7FFF]" />
+                      <span className="text-xs font-semibold">{reason}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-        {/* Quick topics */}
-        <div className="px-5 sm:px-7 pb-5">
-          <p className="text-[11px] font-black uppercase tracking-widest opacity-60 mb-2">
-            Common topics
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {topics.map((t) => (
+              {/* Subject Input */}
+              <div>
+                <input
+                  type="text"
+                  placeholder="Subject / Issue Summary"
+                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${
+                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
+                  }`}
+                  required
+                />
+              </div>
+
+              {/* Description Textarea */}
+              <div>
+                <textarea
+                  rows={4}
+                  placeholder="Describe your issue, question, or report suspicious activity..."
+                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${
+                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
+                  }`}
+                  required
+                />
+              </div>
+
+              {/* File Attachment */}
+              <div>
+                <p className="text-xs font-bold mb-2">Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
+                <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
+                  isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'
+                }`}>
+                  <label className="px-4 py-2 bg-[#1e1b4b] text-white text-xs font-bold rounded cursor-pointer hover:bg-black transition">
+                    Choose File
+                    <input type="file" className="hidden" accept="image/*,.pdf" />
+                  </label>
+                  <span className="text-xs font-medium opacity-60">No file chosen</span>
+                </div>
+              </div>
+
+              {/* Submit Button */}
               <button
-                key={t}
-                type="button"
-                className="px-3 py-1.5 rounded-full text-[11px] font-bold border border-[#03045E]/15 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition"
+                type="submit"
+                className="w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01]"
+                style={{ backgroundColor: '#3b82f6' }} // Exact blue from your screenshot
               >
-                {t}
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-white opacity-80"></span>
+                  Submit Request Ticket
+                </span>
+                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
               </button>
-            ))}
+
+            </form>
           </div>
+
         </div>
-
-        {/* Message form */}
-        <form
-          className="px-5 sm:px-7 pb-6 space-y-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            // wire to your existing submit handler if you have one
-            alert('Message sent!');
-          }}
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="block">
-              <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-                Full name
-              </span>
-              <input
-                type="text"
-                required
-                placeholder="Enter your full name"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent"
-              />
-            </label>
-            <label className="block">
-              <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-                Email address
-              </span>
-              <input
-                type="email"
-                required
-                placeholder="Enter your email address"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent"
-              />
-            </label>
-          </div>
-
-          <label className="block">
-            <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-              Reason for Contact
-            </span>
-            <select
-              required
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent appearance-none"
-            >
-              <option value="">Select a reason...</option>
-              {topics.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="block text-[11px] font-black uppercase tracking-widest opacity-60 mb-1">
-              Your Message
-            </span>
-            <textarea
-              required
-              rows={4}
-              placeholder="How can we help you today?"
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#03045E]/15 focus:border-[var(--color-accent)] focus:outline-none text-sm font-semibold bg-transparent resize-none"
-            />
-          </label>
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-            <p className="text-[11px] font-semibold opacity-60 leading-snug">
-              Your message is handled per our Privacy Policy.
-            </p>
-            <button
-              type="submit"
-              className="px-6 py-3 rounded-xl font-black text-sm bg-[var(--color-accent)] text-[var(--color-background)] hover:brightness-110 shadow-md transition"
-            >
-              Send Message
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
+    </main>
   );
 }
 
