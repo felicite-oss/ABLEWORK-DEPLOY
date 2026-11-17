@@ -950,8 +950,8 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
 
       {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
       {confirmModal.show && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in"
+              <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
           role="dialog"
           aria-modal="true"
           aria-labelledby="confirm-title"
@@ -1000,8 +1000,8 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
 
       {/* ===== SUCCESS SWEETALERT CARD ===== */}
       {successModal.show && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in"
+                <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
           role="dialog"
           aria-modal="true"
           aria-labelledby="success-title"
