@@ -509,11 +509,11 @@ export default function ApplicantOverview({ profile, matchesCount, matches = [],
             <p className="text-xs sm:text-sm font-semibold text-[#03045E]/70 mt-1 max-w-xs sm:max-w-sm">
               Please update your home address in your profile settings to enable the Job Discovery Map.
             </p>
-                      <button 
+            <button 
               onClick={() => setActiveTab('settings')} 
               aria-label="Update your location in profile settings" 
               className="mt-4 px-4 py-2 sm:px-5 sm:py-2.5 bg-[#2C7FFF] font-bold text-xs sm:text-sm rounded-lg transition-colors shadow-sm cursor-pointer"
-              style={{ color: isDark ? '#000000' : '#ffffff' }}
+              style={{ color: '#000000' }}
             >
               Update Location
             </button>
