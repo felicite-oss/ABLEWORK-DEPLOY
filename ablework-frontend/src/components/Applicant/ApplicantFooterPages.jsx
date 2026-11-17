@@ -1024,9 +1024,17 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-col items-center text-center">
-                         <div className="w-16 h-16 rounded-full bg-[#2C7FFF] flex items-center justify-center mb-4 shadow-lg">
-                             <svg className="w-9 h-9 text-black" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
+                       <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#2C7FFF] flex items-center justify-center mb-4 shadow-lg">
+                <svg 
+                  className="w-9 h-9" 
+                  fill="none" 
+                  stroke="#000000" 
+                  strokeWidth="3" 
+                  viewBox="0 0 24 24" 
+                  aria-hidden="true"
+                  style={{ color: '#000000' }}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -1036,14 +1044,15 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
               <p className={`text-sm font-medium mb-6 ${modalMuted}`}>
                 {successModal.message}
               </p>
-                           <button
+              <button
                 type="button"
                 onClick={() => setSuccessModal({ show: false, message: '' })}
                 className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${
                   isDark 
-                    ? 'bg-[#2C7FFF] text-black border-[#2C7FFF]' 
+                    ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
                     : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
                 }`}
+                style={isDark ? { color: '#000000' } : {}}
               >
                 Got it, thanks!
               </button>
