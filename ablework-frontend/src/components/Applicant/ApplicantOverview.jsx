@@ -502,18 +502,22 @@ export default function ApplicantOverview({ profile, matchesCount, matches = [],
           </div>
         ) : (
           <div role="region" aria-label="Map unavailable" className="h-[300px] sm:h-[400px] w-full rounded-xl sm:rounded-2xl border-2 border-dashed border-[#03045E]/30 bg-[#f4f4f4] flex flex-col items-center justify-center text-center p-4 sm:p-6">
-            <div aria-hidden="true" className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 sm:mb-4 border border-[#03045E]/20 text-[#2C7FFF]">
+            <div 
+              aria-hidden="true" 
+              className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 sm:mb-4 border border-[#03045E]/20"
+              style={{ color: 'var(--color-primary, #2C7FFF)' }}
+            >
               <svg aria-hidden="true" className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
             <p className="text-base sm:text-lg font-extrabold text-[#03045E]">Map Unavailable</p>
             <p className="text-xs sm:text-sm font-semibold text-[#03045E]/70 mt-1 max-w-xs sm:max-w-sm">
               Please update your home address in your profile settings to enable the Job Discovery Map.
             </p>
-                       <button 
+            <button 
               onClick={() => setActiveTab('settings')} 
               aria-label="Update your location in profile settings" 
               className="mt-4 px-4 py-2 sm:px-5 sm:py-2.5 bg-[#2C7FFF] font-bold text-xs sm:text-sm rounded-lg transition-colors shadow-sm cursor-pointer"
-              style={{ color: '#000000' }}
+              style={{ color: isDarkMode ? '#000000' : '#ffffff' }}
             >
               Update Location
             </button>
