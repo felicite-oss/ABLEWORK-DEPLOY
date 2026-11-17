@@ -192,7 +192,7 @@ function AppRoutes() {
               <Route path="/about" element={<About />} />
               <Route path="/policy" element={<Policy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/contact" element={<Contact />} />
+              <Route path="/contact" element={<ContactSupport />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
             </Routes>
           </main>
