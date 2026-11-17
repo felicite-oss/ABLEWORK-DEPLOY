@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import Swal from 'sweetalert2'; // <-- ADD THIS
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -723,6 +724,9 @@ export function ApplicantContact({ onBack, profile }) {
     setIsSubmitting(true);
     setAlert({ show: false, type: '', text: '' });
 
+    // ADDED: 2-second artificial delay for the loading state
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
       const formData = new FormData();
       formData.append('userId', profile?.user_id || profile?.id || '');
@@ -745,11 +749,26 @@ export function ApplicantContact({ onBack, profile }) {
       const data = await res.json();
 
       if (res.ok) {
-        setAlert({ show: true, type: 'success', text: data.message || 'Submitted successfully!' });
+        // REPLACED: Standard inline alert with SweetAlert2
+        Swal.fire({
+          title: 'Ticket Submitted!',
+          text: data.message || 'Your support ticket has been successfully submitted. Our team will review it shortly.',
+          icon: 'success',
+          confirmButtonText: 'Awesome',
+          background: isDark ? '#111111' : '#ffffff',
+          color: isDark ? '#ffffff' : 'var(--color-text)',
+          confirmButtonColor: 'var(--color-accent)',
+          customClass: {
+            popup: 'rounded-3xl border-2 border-[var(--color-border)] shadow-2xl',
+            title: 'font-black text-2xl',
+            confirmButton: 'font-bold px-8 py-3 rounded-xl border-2 border-transparent hover:scale-105 transition-transform'
+          }
+        });
+        
         setReasons([]);
         setSubject('');
         setMessage('');
-        setProofImage(null); // Reset image
+        setProofImage(null);
       } else {
         setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
       }
@@ -915,22 +934,38 @@ export function ApplicantContact({ onBack, profile }) {
             />
           </div>
 
-          <button
+                   <button
             type="submit"
             disabled={isSubmitting}
             aria-label="Submit Request Ticket"
-            className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
+            className={`group relative overflow-hidden w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-lg flex items-center justify-between disabled:opacity-70 disabled:cursor-not-allowed ${
               isDark 
                 ? 'bg-white text-black border-white hover:bg-gray-200' 
-                : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+                : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF] hover:shadow-[#2C7FFF]/30 hover:-translate-y-0.5'
             }`}
           >
-            <span className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
-              {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
+            <span className="flex items-center gap-2 z-10">
+              {/* Loading Spinner replaces the dot when submitting */}
+              {isSubmitting ? (
+                <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
+              )}
+              {isSubmitting ? 'Processing...' : 'Submit Request Ticket'}
             </span>
-            <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
-              →
+            
+            <span className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 z-10 ${isSubmitting ? 'bg-transparent' : 'bg-white/20 group-hover:bg-white/30 group-hover:translate-x-1'}`}>
+              {isSubmitting ? (
+                 <svg className="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                '→'
+              )}
             </span>
           </button>
         </form>
