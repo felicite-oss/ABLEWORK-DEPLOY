@@ -992,7 +992,7 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 >
                   Cancel
                 </button>
-                              <button
+                                  <button
                   type="button"
                   onClick={submitTicket}
                   className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${
@@ -1026,7 +1026,7 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
           >
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-[#2C7FFF] flex items-center justify-center mb-4 shadow-lg">
-                <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
+                             <svg className={`w-9 h-9 ${isDark ? 'text-black' : 'text-white'}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -1036,10 +1036,14 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
               <p className={`text-sm font-medium mb-6 ${modalMuted}`}>
                 {successModal.message}
               </p>
-              <button
+                           <button
                 type="button"
                 onClick={() => setSuccessModal({ show: false, message: '' })}
-                className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-2 border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E] transition-colors cursor-pointer"
+                className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${
+                  isDark 
+                    ? 'bg-[#2C7FFF] text-black border-[#2C7FFF]' 
+                    : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
+                }`}
               >
                 Got it, thanks!
               </button>
