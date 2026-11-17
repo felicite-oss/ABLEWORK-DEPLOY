@@ -22,6 +22,8 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-le
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import API_BASE_URL from '../../config';
+import Contact from './Contact'; 
+import { Contact } from './Contact'; // <-- ADD THIS LINE (Check your actual file path)
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 let DefaultIcon = L.icon({
@@ -393,37 +395,11 @@ export function Home() {
   return (
    <div role="main" aria-label="Home Screen" className={`min-h-screen flex flex-col ${(isContrast || isDarkMode) ? 'dark-mode-fix bg-[var(--color-background)] text-[var(--color-text)]' : 'bg-white text-[#03045E]'}`}>
 
-           {usePlainWhiteText && (
+             {usePlainWhiteText && (
         <style>{`
           .dark-mode-fix {
             background-color: var(--color-background) !important;
             color: var(--color-text) !important;
-          }
-          .dark-mode-fix .leaflet-popup,
-          .dark-mode-fix .leaflet-popup * {
-            color: #000000 !important;
-            -webkit-text-fill-color: #000000 !important;
-            text-shadow: none !important;
-            stroke: #000000 !important;
-          }
-          .dark-mode-fix .leaflet-popup svg,
-          .dark-mode-fix .leaflet-popup svg * {
-            stroke: #000000 !important;
-            color: #000000 !important;
-          }
-        `}</style>
-      )}      {usePlainWhiteText && (
-        <style>{`
-          .dark-mode-fix, .dark-mode-fix * {
-            text-shadow: none !important;
-            filter: none !important;
-            -webkit-text-stroke: 0 !important;
-            -webkit-text-fill-color: #FFFFFF !important;
-            color: #FFFFFF !important;
-            mix-blend-mode: normal !important;
-          }
-          .dark-mode-fix *:not(.hero-bg-img) {
-            background-image: none !important;
           }
           .dark-mode-fix .leaflet-popup,
           .dark-mode-fix .leaflet-popup * {
