@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import React from 'react';
-import { createPortal } from 'react-dom';
+import { createPortal } from 'react-dom'; // <-- ADD THIS LINE
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AccessibilityContext } from '../context/AccessibilityContext';
 import { useColorPalette } from '../context/ColorPaletteContext';
@@ -22,7 +23,6 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-le
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import API_BASE_URL from '../../config';
-import { Contact } from './pages/NavigationPages';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -1418,114 +1418,190 @@ export function About() {
 }
 
 // --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
+// --- PASTE THIS EXACTLY WHERE YOU DELETED THE OLD CONTACT COMPONENT ---
 export function Contact() {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
 
-  const isContrast = mode?.toLowerCase().includes('contrast') || paletteKey === 'highContrast' || paletteKey === 'darkComfort';
+  const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
+  const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
+  const isDark = isContrast || isDarkMode;
+  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
+
+  const [reasons, setReasons] = useState([]);
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [proofImage, setProofImage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+
+  // SweetAlert-style modals
+  const [confirmModal, setConfirmModal] = useState({ show: false });
+  const [successModal, setSuccessModal] = useState({ show: false, message: '' });
+
+  // Step 1: validate, then open the SweetAlert confirmation card
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (reasons.length === 0) {
+      setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
+      return;
+    }
+    if (!subject.trim() || !message.trim()) {
+      setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
+      return;
+    }
+
+    setAlert({ show: false, type: '', text: '' });
+    setConfirmModal({ show: true }); // open confirmation card
+  };
+
+  // Step 2: actual submission after the user confirms
+  const submitTicket = async () => {
+    setConfirmModal({ show: false });
+    setIsSubmitting(true);
+    setAlert({ show: false, type: '', text: '' });
+
+    const loadingTimer = new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      const formData = new FormData();
+      formData.append('userName', 'Guest User');
+      formData.append('userEmail', 'N/A');
+      formData.append('userRole', 'Guest');
+      formData.append('reasons', JSON.stringify(reasons));
+      formData.append('subject', subject);
+      formData.append('message', message);
+
+      if (proofImage) {
+        formData.append('proof_image', proofImage);
+      }
+
+      const [res] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/support/ticket`, {
+          method: 'POST',
+          body: formData
+        }),
+        loadingTimer
+      ]);
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccessModal({
+          show: true,
+          message: data.message || 'Your support ticket has been submitted successfully. Our team will review it shortly.'
+        });
+        setReasons([]);
+        setSubject('');
+        setMessage('');
+        setProofImage(null);
+      } else {
+        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
+      }
+    } catch (err) {
+      console.error(err);
+      await loadingTimer;
+      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-gray-200';
+  const textColor = isDark ? 'text-white' : 'text-[#03045E]';
+  const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+  const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
+
+  const modalBg = isDark ? 'bg-[#111111]' : 'bg-white';
+  const modalText = isDark ? 'text-white' : 'text-[#03045E]';
+  const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
 
   return (
     <main
       role="main"
       aria-label="Contact Support Screen"
       className={`min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ${
-        isContrast ? 'bg-black text-white' : 'bg-[#f8f9fc] text-[#03045E]'
+        isDark ? 'bg-black text-white' : 'bg-[#f8f9fc] text-[#03045E]'
       }`}
     >
       <div className="w-full max-w-6xl flex flex-col gap-8">
         
         {/* HEADER */}
         <div className="text-center pt-6 pb-2">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isContrast ? 'white' : '#1e1b4b' }}>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isDark ? 'white' : '#1e1b4b' }}>
             Help and Support
           </h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
           
-          {/* LEFT SIDE: Information Cards */}
+          {/* LEFT SIDE: Information Cards (Kept your exact layout) */}
           <div className="md:col-span-5 flex flex-col gap-4">
-            
-            {/* System Name */}
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">System Name</h3>
-              <p className="text-sm font-semibold">ABLEWORK</p>
-            </div>
-
-            {/* Project Team */}
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Project Team</h3>
-              <p className="text-sm font-semibold">5i</p>
-            </div>
-
-            {/* Email Support */}
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Email Support</h3>
-              <p className="text-sm font-semibold text-[#2C7FFF]">ableworksy5@gmail.com</p>
-            </div>
-
-            {/* Office Address */}
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Office Address</h3>
-              <p className="text-sm font-semibold leading-relaxed">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
-            </div>
-
-            {/* Data Custody Team */}
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-2">Data Custody Team</h3>
-              <ul className="text-sm font-semibold space-y-0.5">
-                <li>Paquio, Loueala Jean H.</li>
-                <li>Pagado, Jesie Marie D.</li>
-                <li>Astodillo, Felicite S.</li>
-                <li>Gonzales, John Greg A.</li>
-                <li>Gamboa, John Bryan T.</li>
-              </ul>
-            </div>
-
-            {/* Institution */}
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-sm font-black uppercase tracking-wider mb-1">Institution</h3>
-              <p className="text-sm font-semibold">STIWNU</p>
-            </div>
-
+            {[
+              { label: 'System Name', value: 'ABLEWORK' },
+              { label: 'Project Team', value: '5i' },
+              { label: 'Email Support', value: 'ableworksys5@gmail.com' },
+              { label: 'Office Address', value: 'Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines' },
+              { label: 'Data Custody Team', value: 'Paquio, Loueala Jean H.\nPagado, Jesie Marie D.\nAstodillo, Felicite S.\nGonzales, John Greg A.\nGamboa, John Bryan T.' },
+              { label: 'Institution', value: 'STIWNU' }
+            ].map((item, idx) => (
+              <div key={idx} className={`p-5 rounded-xl border-2 shadow-sm ${cardBg}`}>
+                <h3 className="text-sm font-black uppercase tracking-wider mb-1">{item.label}</h3>
+                <p className={`text-sm font-semibold whitespace-pre-line ${item.label === 'Email Support' ? 'text-[#2C7FFF]' : ''}`}>{item.value}</p>
+              </div>
+            ))}
           </div>
 
-          {/* RIGHT SIDE: Submit Ticket Form */}
+          {/* RIGHT SIDE: Submit Ticket Form (UPDATED) */}
           <div className="md:col-span-7">
-            <h2 className="text-xl font-black mb-4">Submit a Support Ticket</h2>
+            <h2 className={`text-xl font-black mb-4 ${textColor}`}>Submit a Support Ticket</h2>
             
-            <form 
-              className="flex flex-col gap-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert('Support ticket submitted successfully!');
-              }}
-            >
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               
-              {/* Report Reasons Grid */}
-              <div>
-                <p className="text-xs font-bold mb-2">What are you reporting? <span className="text-gray-500 font-normal">(select all that apply)</span></p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {REPORT_REASONS.map((reason) => (
-                    <label key={reason} className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                      isContrast ? 'bg-zinc-900 border-zinc-700 hover:border-zinc-500' : 'bg-white border-gray-200 hover:border-gray-300'
-                    }`}>
-                      <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#2C7FFF] focus:ring-[#2C7FFF]" />
-                      <span className="text-xs font-semibold">{reason}</span>
-                    </label>
-                  ))}
+              {/* ACCESSIBLE ALERT BANNER */}
+              {alert.show && (
+                <div role="alert" className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]">
+                  {alert.text}
                 </div>
-              </div>
+              )}
+
+              {/* Report Reasons Grid */}
+              <fieldset>
+                <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
+                  What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
+                </legend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {REPORT_REASONS.map((reason) => {
+                    const checked = reasons.includes(reason);
+                    return (
+                      <label key={reason} className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
+                        checked ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]' : `${isDark ? 'bg-black border-white/30' : 'bg-white border-gray-200'} hover:border-[#2C7FFF]/60`
+                      }`}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={isSubmitting}
+                          onChange={() => {
+                            setReasons(prev => prev.includes(reason) ? prev.filter(r => r !== reason) : [...prev, reason]);
+                          }}
+                          className="mt-0.5 accent-[#2C7FFF]"
+                        />
+                        <span className={`text-xs font-semibold ${textColor}`}>{reason}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
 
               {/* Subject Input */}
               <div>
                 <input
                   type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
                   placeholder="Subject / Issue Summary"
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
-                  }`}
-                  required
+                  disabled={isSubmitting}
+                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${inputBg}`}
                 />
               </div>
 
@@ -1533,37 +1609,40 @@ export function Contact() {
               <div>
                 <textarea
                   rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   placeholder="Describe your issue, question, or report suspicious activity..."
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
-                  }`}
-                  required
+                  disabled={isSubmitting}
+                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${inputBg}`}
                 />
               </div>
 
               {/* File Attachment */}
               <div>
-                <p className="text-xs font-bold mb-2">Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
-                <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
-                  isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'
-                }`}>
-                  <label className="px-4 py-2 bg-[#1e1b4b] text-white text-xs font-bold rounded cursor-pointer hover:bg-black transition">
-                    Choose File
-                    <input type="file" className="hidden" accept="image/*,.pdf" />
-                  </label>
-                  <span className="text-xs font-medium opacity-60">No file chosen</span>
-                </div>
+                <p className={`text-xs font-bold mb-2 ${mutedText}`}>Attach Proof <span className="font-normal opacity-70">(Optional Image/PDF)</span></p>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  disabled={isSubmitting}
+                  onChange={(e) => setProofImage(e.target.files[0])}
+                  className={`w-full p-2 border-2 rounded-lg text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${inputBg} file:bg-[#2C7FFF] file:text-white hover:opacity-90`}
+                />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01]"
-                style={{ backgroundColor: '#3b82f6' }}
+                disabled={isSubmitting}
+                className={`w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01] ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{ backgroundColor: '#2C7FFF' }}
               >
                 <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-white opacity-80"></span>
-                  Submit Request Ticket
+                  {isSubmitting ? (
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                  ) : (
+                    <span className="w-2 h-2 rounded-full bg-white opacity-80"></span>
+                  )}
+                  {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
                 </span>
                 <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -1571,12 +1650,61 @@ export function Contact() {
                   </svg>
                 </span>
               </button>
-
             </form>
           </div>
-
         </div>
       </div>
+
+      {/* ===== CONFIRMATION MODAL ===== */}
+      {confirmModal.show && createPortal(
+        <div
+          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
+          role="dialog" aria-modal="true" aria-labelledby="confirm-title"
+          onClick={() => setConfirmModal({ show: false })}
+        >
+          <div className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`} onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-full bg-[#2C7FFF]/15 flex items-center justify-center mb-4">
+                <svg className="w-7 h-7 text-[#2C7FFF]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 id="confirm-title" className={`text-lg font-bold mb-2 ${modalText}`}>Confirm Submission</h3>
+              <p className={`text-sm font-medium mb-6 ${modalMuted}`}>Are you sure you want to submit this support ticket? Please review your details before proceeding.</p>
+              <div className="flex w-full gap-3">
+                <button type="button" onClick={() => setConfirmModal({ show: false })} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${isDark ? 'bg-transparent text-white border-white/30' : 'bg-transparent text-[#03045E] border-[#03045E]/30'}`}>Cancel</button>
+                <button type="button" onClick={submitTicket} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${isDark ? 'bg-white text-black border-white hover:bg-gray-200' : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'}`}>Yes, Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>, document.body
+      )}
+
+      {/* ===== SUCCESS MODAL ===== */}
+      {successModal.show && createPortal(
+        <div
+          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
+          role="dialog" aria-modal="true" aria-labelledby="success-title"
+          onClick={() => setSuccessModal({ show: false, message: '' })}
+        >
+          <div className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`} onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg bg-[#2C7FFF]">
+                <svg className="w-9 h-9" fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 id="success-title" className={`text-xl font-black mb-2 ${modalText}`}>Ticket Submitted!</h3>
+              <p className={`text-sm font-medium mb-6 ${modalMuted}`}>{successModal.message}</p>
+              <button type="button" onClick={() => setSuccessModal({ show: false, message: '' })} className="w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors hover:opacity-90 bg-[#2C7FFF] border-[#2C7FFF] text-white">
+                Got it, thanks!
+              </button>
+            </div>
+          </div>
+        </div>, document.body
+      )}
     </main>
   );
 }
