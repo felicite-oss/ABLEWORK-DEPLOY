@@ -852,28 +852,36 @@ export function ApplicantContact({ onBack, profile }) {
           {/* RESTORED SUBJECT INPUT */}
           <div>
             <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
-            <input
-              id="ticket-subject"
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder="Subject / Issue Summary"
-              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
-              disabled={isSubmitting}
-            />
+           <input
+  id="ticket-subject"
+  type="text"
+  value={subject}
+  onChange={(e) => setSubject(e.target.value)}
+  placeholder="Subject / Issue Summary"
+  style={{ 
+    color: isDark ? '#ffffff' : 'var(--color-text)',
+    caretColor: isDark ? '#ffffff' : 'var(--color-text)'
+  }}
+  className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30 placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 placeholder-[#03045E]/50'}`}
+  disabled={isSubmitting}
+/>
           </div>
 
           <div>
             <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
-            <textarea
-              id="ticket-message"
-              rows="4"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Describe your issue, question, or report suspicious activity..."
-              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${inputBg}`}
-              disabled={isSubmitting}
-            />
+           <textarea
+  id="ticket-message"
+  rows="4"
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  placeholder="Describe your issue, question, or report suspicious activity..."
+  style={{ 
+    color: isDark ? '#ffffff' : 'var(--color-text)',
+    caretColor: isDark ? '#ffffff' : 'var(--color-text)'
+  }}
+  className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] ${isDark ? 'bg-black border-white/30 placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 placeholder-[#03045E]/50'}`}
+  disabled={isSubmitting}
+/>
           </div>
 
           {/* PROOF IMAGE UPLOAD */}
