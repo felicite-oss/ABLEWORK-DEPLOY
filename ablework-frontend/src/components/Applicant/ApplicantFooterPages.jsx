@@ -693,7 +693,7 @@ export function ApplicantTerms({ onBack }) {
 }
 
 
-export function ApplicantContact({ onBack, profile }) {
+export function ApplicantContact({ onBack, profile, reportedUserId }) {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
   // paletteKey is used indirectly via isHighContrastOrDarkComfort

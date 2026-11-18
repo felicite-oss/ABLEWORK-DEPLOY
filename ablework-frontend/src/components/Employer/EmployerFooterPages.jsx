@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { createPortal } from 'react-dom';
+import ReactDOM from 'react-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -902,8 +902,8 @@ export function EmployerContact({ onBack, profile, reportedUserId }) {
         </form>
       </div>
 
-      {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
-      {confirmModal.show && createPortal(
+{/* ===== CONFIRMATION SWEETALERT CARD ===== */}
+      {confirmModal.show && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
           style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
@@ -958,8 +958,8 @@ export function EmployerContact({ onBack, profile, reportedUserId }) {
         document.body
       )}
 
-      {/* ===== SUCCESS SWEETALERT CARD ===== */}
-      {successModal.show && createPortal(
+{/* ===== SUCCESS SWEETALERT CARD ===== */}
+      {successModal.show && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
           style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
