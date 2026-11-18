@@ -2170,47 +2170,34 @@ export function ContactSupport() {
   };
 
   return (
-    <main
-      role="main"
-      aria-label="Contact Support Screen"
-      className={`min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ${
-        isContrast ? 'bg-black text-white' : 'bg-[#f4f6f8] text-[#03045E]'
-      }`}
-    >
-      <div className="w-full max-w-6xl flex flex-col gap-8">
+    <PageLayout title="Help and Support">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
         
-        {/* HEADER */}
-        <div className="text-center pt-6 pb-2">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: isContrast ? 'white' : '#1e1b4b' }}>
-            Help and Support
-          </h1>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
           
           {/* LEFT SIDE: Information Cards */}
           <div className="md:col-span-5 flex flex-col gap-4">
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-200 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-1">System Name</h3>
               <p className="text-sm font-semibold">ABLEWORK</p>
             </div>
 
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-200 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-1">Project Team</h3>
               <p className="text-sm font-semibold">5i</p>
             </div>
 
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-200 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-1">Email Support</h3>
               <p className="text-sm font-semibold text-[#2C7FFF]">ableworksy5@gmail.com</p>
             </div>
 
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-200 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-1">Office Address</h3>
               <p className="text-sm font-semibold leading-relaxed">Burgos Street, Barangay Villamonte, Bacolod City, 6100 Negros Occidental, Philippines</p>
             </div>
 
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-200 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-2">Data Custody Team</h3>
               <ul className="text-sm font-semibold space-y-0.5">
                 <li>Paquio, Loueala Jean H.</li>
@@ -2221,7 +2208,7 @@ export function ContactSupport() {
               </ul>
             </div>
 
-            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'}`}>
+            <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-200 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-1">Institution</h3>
               <p className="text-sm font-semibold">STIWNU</p>
             </div>
@@ -2229,7 +2216,7 @@ export function ContactSupport() {
 
           {/* RIGHT SIDE: Submit Ticket Form */}
           <div className="md:col-span-7">
-            <h2 className="text-xl font-black mb-4">Submit a Support Ticket</h2>
+            <h2 className={`text-xl font-black mb-4 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>Submit a Support Ticket</h2>
             
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
               
@@ -2242,13 +2229,13 @@ export function ContactSupport() {
 
               {/* Report Reasons Grid */}
               <fieldset>
-                <legend className="text-xs font-bold mb-2">What are you reporting? <span className="text-gray-500 font-normal">(select all that apply)</span></legend>
+                <legend className={`text-xs font-bold mb-2 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>What are you reporting? <span className="text-gray-500 font-normal">(select all that apply)</span></legend>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {REPORT_REASONS.map((reason) => {
                     const checked = reasons.includes(reason);
                     return (
                       <label key={reason} className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                        checked ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]' : isContrast ? 'bg-zinc-900 border-zinc-700 hover:border-zinc-500' : 'bg-white border-gray-200 hover:border-gray-300'
+                        checked ? 'bg-[#2C7FFF]/10 border-[#2C7FFF]' : isContrast ? 'bg-zinc-900 border-zinc-700 hover:border-zinc-500 text-white' : 'bg-white border-gray-200 hover:border-gray-300 text-[#03045E]'
                       }`}>
                         <input 
                           type="checkbox" 
@@ -2275,7 +2262,7 @@ export function ContactSupport() {
                   disabled={isSubmitting}
                   placeholder="Subject / Issue Summary"
                   className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
+                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-[#03045E]'
                   }`}
                 />
               </div>
@@ -2289,18 +2276,18 @@ export function ContactSupport() {
                   disabled={isSubmitting}
                   placeholder="Describe your issue, question, or report suspicious activity..."
                   className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-gray-800'
+                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-[#03045E]'
                   }`}
                 />
               </div>
 
               {/* File Attachment */}
               <div>
-                <p className="text-xs font-bold mb-2">Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
+                <p className={`text-xs font-bold mb-2 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
                 <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
                   isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'
                 }`}>
-                  <label className="px-4 py-2 bg-[#1e1b4b] text-white text-xs font-bold rounded cursor-pointer hover:bg-black transition">
+                  <label className="px-4 py-2 bg-[#03045E] text-white text-xs font-bold rounded cursor-pointer hover:bg-[#2C7FFF] transition">
                     Choose File
                     <input 
                       type="file" 
@@ -2310,7 +2297,7 @@ export function ContactSupport() {
                       onChange={(e) => setProofImage(e.target.files[0])}
                     />
                   </label>
-                  <span className="text-xs font-medium opacity-60">
+                  <span className={`text-xs font-medium opacity-60 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>
                     {proofImage ? proofImage.name : 'No file chosen'}
                   </span>
                 </div>
@@ -2321,7 +2308,7 @@ export function ContactSupport() {
                 type="submit"
                 disabled={isSubmitting}
                 className="w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01] disabled:opacity-50"
-                style={{ backgroundColor: '#3b82f6' }}
+                style={{ backgroundColor: '#2C7FFF' }}
               >
                 <span className="flex items-center gap-2">
                   {isSubmitting ? (
@@ -2372,7 +2359,7 @@ export function ContactSupport() {
         </div>,
         document.body
       )}
-    </main>
+    </PageLayout>
   );
 }
 
