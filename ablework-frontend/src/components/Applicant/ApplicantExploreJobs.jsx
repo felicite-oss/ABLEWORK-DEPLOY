@@ -172,8 +172,9 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
   const [selectedAccs, setSelectedAccs] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [distanceOpen, setDistanceOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const jobsPerPage = 12;
+const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 10;
+  const jobListingsRef = useRef(null);
   const [expandedJobs, setExpandedJobs] = useState([]);
   const [activeTab, setActiveTab] = useState('available'); 
   const [weeklyUsage, setWeeklyUsage] = useState({ used: 0, softCap: 25, hardCap: 40 });
@@ -507,17 +508,17 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
     setCoverLetter('');
   };
 
-  const handleNextPage = () => {
+const handleNextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentPage(prev => Math.min(prev + 1, totalPages));
+      jobListingsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentPage(prev => Math.max(prev - 1, 1));
+      jobListingsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -811,7 +812,7 @@ export default function ApplicantExploreJobs({ profile, jobs, applications = [],
       </div>
     )}
 
-    <section role="region" aria-label="Job listings" className="flex flex-col gap-4 sm:gap-8">
+   <section ref={jobListingsRef} role="region" aria-label="Job listings" className="flex flex-col gap-4 sm:gap-8 scroll-mt-24">
       {filteredJobs.length > 0 ? (
         <div className="flex flex-col gap-6 w-full">
           <div role="list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full items-stretch">
