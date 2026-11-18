@@ -2317,30 +2317,30 @@ export function ContactSupport() {
               </div>
 
               {/* Submit Button */}
-             <button
+<button
                 type="submit"
                 disabled={isSubmitting}
                 aria-label="Submit Request Ticket"
-                style={isDarkMode ? { color: '#000000' } : undefined}
-className={`dark-black-btn group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
+                style={isDarkMode ? { color: '#ffffff' } : undefined}
+                className={`dark-white-btn group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
                   isDarkMode
-                    ? 'bg-white !text-black border-white hover:bg-gray-200'
+                    ? 'bg-[#2C7FFF] !text-white border-[#2C7FFF] hover:bg-[#2C7FFF]/90'
                     : isContrast 
                       ? 'bg-white text-black border-white hover:bg-gray-200' 
                       : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
                 }`}
               >
-                <span className="flex items-center gap-2" style={isDarkMode ? { color: '#000000' } : undefined}>
+                <span className="flex items-center gap-2" style={isDarkMode ? { color: '#ffffff' } : undefined}>
                   {isSubmitting ? (
                     <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                   ) : (
-                    <span className={`w-2 h-2 rounded-full ${isContrast ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
+                    <span className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-white' : isContrast ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
                   )}
                   {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
                 </span>
                 <span 
-                  style={isDarkMode ? { color: '#000000' } : undefined}
-                  className={`w-7 h-7 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-1 ${isDarkMode ? 'bg-black/10 !text-black' : 'bg-white/20 text-[#03045E]'}`}
+                  style={isDarkMode ? { color: '#ffffff' } : undefined}
+                  className={`w-7 h-7 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-1 ${isDarkMode ? 'bg-white/20 !text-white' : 'bg-white/20 text-[#03045E]'}`}
                 >
                   →
                 </span>
@@ -2359,13 +2359,13 @@ className={`dark-black-btn group w-full py-4 px-6 font-extrabold text-sm rounded
               <p className="text-sm font-medium mb-6 opacity-70">Are you sure you want to submit this support ticket?</p>
               <div className="flex w-full gap-3">
                 <button type="button" onClick={() => setConfirmModal({ show: false })} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'border-white/30 text-white' : 'border-[#03045E]/30 text-[#03045E]'}`}>Cancel</button>
-              <button
+            <button
                   type="button"
                   onClick={submitTicket}
-                  style={isDarkMode ? { color: '#000000' } : undefined}
-                  className={`dark-black-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${
+                  style={isDarkMode ? { color: '#ffffff' } : undefined}
+                  className={`dark-white-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${
                     isDarkMode
-                      ? 'bg-white !text-black border-white'
+                      ? 'bg-[#2C7FFF] !text-white border-[#2C7FFF]'
                       : isContrast
                         ? 'bg-white text-black border-white'
                         : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
@@ -2387,13 +2387,13 @@ className={`dark-black-btn group w-full py-4 px-6 font-extrabold text-sm rounded
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-black mb-2">Ticket Submitted!</h3>
               <p className="text-sm font-medium mb-6 opacity-70">{successModal.message}</p>
-             <button
+<button
                 type="button"
                 onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }}
-                style={isDarkMode ? { color: '#000000' } : undefined}
-               className={`dark-black-btn w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${
+                style={isDarkMode ? { color: '#ffffff' } : undefined}
+                className={`dark-white-btn w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${
                   isDarkMode
-                    ? 'bg-white !text-black border-white'
+                    ? 'bg-[#2C7FFF] !text-white border-[#2C7FFF]'
                     : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
                 }`}
               >
