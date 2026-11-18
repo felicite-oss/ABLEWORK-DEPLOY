@@ -2290,18 +2290,18 @@ export function ContactSupport() {
                 />
               </div>
 
-                          {/* File Attachment */}
+              {/* File Attachment */}
               <div>
                 <label className={`block text-xs font-bold mb-1 ${isContrast ? 'text-white/70' : 'text-[#03045E]/70'}`}>Attach Proof (Optional Image/PDF)</label>
-                <input
+                               <input
                   type="file"
                   accept="image/*,.pdf"
                   onChange={(e) => setProofImage(e.target.files[0])}
                   disabled={isSubmitting}
                   className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors hover:opacity-90 ${
                     isContrast 
-                      ? 'bg-black border-white/30 text-white placeholder-white/40 file:bg-white file:!text-black' 
-                      : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50 file:bg-[#2C7FFF] file:text-white'
+                      ? 'bg-black border-white/30 !text-black file:bg-white file:!text-black' 
+                      : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] file:bg-[#2C7FFF] file:text-white'
                   }`}
                   style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
                 />
@@ -2319,7 +2319,7 @@ export function ContactSupport() {
                 }`}
                 style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
               >
-                <span className={`flex items-center gap-2 ${isContrast ? '!text-black' : ''}`}>
+                <span className="flex items-center gap-2">
                   {isSubmitting ? (
                     <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                   ) : (
@@ -2328,8 +2328,8 @@ export function ContactSupport() {
                   {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
                 </span>
                 <span className={`w-7 h-7 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-1 ${
-                  isContrast ? 'bg-black/10 !text-black' : 'bg-white/20 text-[#03045E]'
-                }`}>
+                  isContrast ? 'bg-black/10 text-black' : 'bg-white/20 text-[#03045E]'
+                }`} style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}>
                   →
                 </span>
               </button>
@@ -2347,14 +2347,7 @@ export function ContactSupport() {
               <p className="text-sm font-medium mb-6 opacity-70">Are you sure you want to submit this support ticket?</p>
               <div className="flex w-full gap-3">
                 <button type="button" onClick={() => setConfirmModal({ show: false })} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'border-white/30 text-white' : 'border-[#03045E]/30 text-[#03045E]'}`}>Cancel</button>
-               <button 
-  type="button" 
-  onClick={submitTicket} 
-  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${isContrast ? 'bg-white !text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`}
-  style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
->
-  Yes, Submit
-</button>
+                <button type="button" onClick={submitTicket} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'bg-white !text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`} style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}>Yes, Submit</button>
               </div>
             </div>
           </div>
@@ -2369,14 +2362,7 @@ export function ContactSupport() {
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-black mb-2">Ticket Submitted!</h3>
               <p className="text-sm font-medium mb-6 opacity-70">{successModal.message}</p>
-            <button 
-  type="button" 
-  onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }} 
-  className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${isContrast ? 'bg-white !text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`}
-  style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
->
-  Got it, thanks!
-</button>
+              <button type="button" onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }} className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'bg-white !text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`} style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}>Got it, thanks!</button>
             </div>
           </div>
         </div>,
