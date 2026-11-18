@@ -192,12 +192,13 @@ function SiteHeader() {
         </button>
       </div>
 
-      <div
+<div
         id="site-mobile-menu"
+        aria-hidden={!isOpen}
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-b-2 ${
           isContrast ? 'bg-black border-[#2C7FFF]' : 'bg-white border-[#03045E]/20'
         } ${
-          isOpen ? 'max-h-96 opacity-100 shadow-xl' : 'max-h-0 opacity-0'
+          isOpen ? 'max-h-96 opacity-100 shadow-xl' : 'hidden max-h-0 opacity-0 pointer-events-none'
         }`}
       >
         <div className={`w-full ${isContrast ? 'bg-black' : 'bg-white'}`}>
