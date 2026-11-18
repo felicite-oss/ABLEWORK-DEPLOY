@@ -448,8 +448,7 @@ const penaltyMap = {
         </div>
       )}
 
-      {/* UPDATED LOGGING OUT SCREEN */}
-      {isLoggingOut && (
+        {isLoggingOut && (
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300"
           style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)', filter: 'none' }}
@@ -465,8 +464,9 @@ const penaltyMap = {
             <div className="relative px-4 pt-6 pb-5 sm:px-8 sm:pt-10 sm:pb-8 flex flex-col items-center text-center">
               <div className="relative mb-3 sm:mb-5">
                 <div className={`w-14 h-14 sm:w-24 sm:h-24 rounded-full flex items-center justify-center ${isDark ? 'bg-transparent border-4 border-white' : 'bg-transparent border-4 border-[#2C7FFF]'}`}>
-                  <svg className={`w-7 h-7 sm:w-12 sm:h-12 animate-spin ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                  <svg className={`w-7 h-7 sm:w-12 sm:h-12 animate-spin [animation-direction:reverse] ${isDark ? 'text-white' : 'text-[#2C7FFF]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M12 12H4a8 8 0 018-8v8z"></path>
                   </svg>
                 </div>
                 <div className={`absolute -top-1 -right-1 w-4 h-4 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[9px] sm:text-xs font-bold ${isDark ? 'bg-white text-black' : 'bg-[#03045E] text-white'}`}>✓</div>
@@ -1400,102 +1400,133 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
           {(activeTab === 'Employers' || activeTab === 'Applicants') && (
             <div className="flex flex-col gap-3 sm:gap-6 animate-in fade-in duration-300 mt-6">
               <div className="flex flex-col gap-2.5 sm:gap-4">
-                              {filterList(activeTab === 'Employers' ? employers : applicants).length > 0 ? (
-                  <div className={`w-full overflow-x-auto rounded-xl border-2 ${bdrMain} ${cardBg}`}>
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className={`border-b-2 ${isDark ? 'border-white/15 bg-white/5' : 'border-[#03045E]/15 bg-[#f4f4f4]'}`}>
-                          <th className={`p-3 sm:p-4 text-xs font-black uppercase tracking-wider ${txtMuted}`}>User Info</th>
-                          <th className={`p-3 sm:p-4 text-xs font-black uppercase tracking-wider ${txtMuted}`}>Details</th>
-                          <th className={`p-3 sm:p-4 text-xs font-black uppercase tracking-wider ${txtMuted}`}>Registered</th>
-                          <th className={`p-3 sm:p-4 text-xs font-black uppercase tracking-wider ${txtMuted} text-right`}>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filterList(activeTab === 'Employers' ? employers : applicants).map(user => (
-                          <tr key={user.user_id} className={`border-b last:border-0 ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-[#03045E]/10 hover:bg-gray-50'} transition-colors ${listFilter === 'Disabled' ? 'opacity-70' : ''}`}>
-                            
-                            {/* Column 1: Avatar & Name */}
-                            <td className="p-3 sm:p-4 align-middle">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 border-2 font-black text-sm ${isDark ? 'bg-white text-black border-white' : 'bg-[#03045E] text-white border-[#03045E]'}`}>
-                                  {activeTab === 'Employers' ? (user.company_name?.[0] || 'E') : (user.firstname?.[0] || 'A')}
-                                </div>
-                                <div className="min-w-0">
-                                  <h3 className={`text-sm font-black truncate ${txtMain}`}>
-                                    {activeTab === 'Employers' ? user.company_name : `${user.firstname} ${user.lastname}`}
-                                  </h3>
-                                  <p className={`text-xs font-bold truncate ${txtMuted}`}>{user.email}</p>
-                                </div>
-                              </div>
-                            </td>
+                {filterList(activeTab === 'Employers' ? employers : applicants).length > 0 ? (
+                  filterList(activeTab === 'Employers' ? employers : applicants).map(user => (
+                    <div key={user.user_id} className={`${cardBg} p-3 sm:p-7 rounded-xl sm:rounded-2xl shadow-sm border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-6 transition-all hover:shadow-md ${listFilter === 'Disabled' ? 'opacity-70' : ''}`}>
 
-                            {/* Column 2: Details (Disability/Industry) */}
-                            <td className="p-3 sm:p-4 align-middle">
-                              <div className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-bold border ${isDark ? 'bg-white/5 border-white/10 text-white/80' : 'bg-gray-100 border-gray-200 text-gray-700'}`}>
-                                {activeTab === 'Employers' ? 'Industry:' : 'Disability:'} <span className={`ml-1 ${txtMain}`}>{activeTab === 'Employers' ? (user.industry || 'N/A') : (user.disability_type || 'N/A')}</span>
-                              </div>
-                            </td>
+                      <div className="flex items-start gap-2.5 sm:gap-4 flex-1 min-w-0 w-full">
+                        <div
+                          className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 border-2 font-black text-sm sm:text-lg ${isDark ? 'bg-white text-black border-white' : 'bg-[#03045E] text-white border-[#03045E]'}`}
+                        >
+                          {activeTab === 'Employers' ? (user.company_name?.[0] || 'E') : (user.firstname?.[0] || 'A')}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`text-sm sm:text-xl font-black tracking-tight truncate ${txtMain}`}>
+                            {activeTab === 'Employers' ? user.company_name : `${user.firstname} ${user.lastname}`}
+                          </h3>
+                          <div className={`flex flex-wrap items-center gap-1 sm:gap-2 text-[9px] sm:text-sm font-bold mt-1 ${txtMuted}`}>
+                            <span className={`${surfaceBg} px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-sm sm:rounded-md border ${isDark ? 'border-white/10' : 'border-[#03045E]/10'}`}>
+                              {activeTab === 'Employers' ? 'Industry:' : 'Disability:'} <strong className={txtMain}>{activeTab === 'Employers' ? (user.industry || 'N/A') : (user.disability_type || 'N/A')}</strong>
+                            </span>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="truncate w-full sm:w-auto">Email: <strong className={txtMain}>{user.email}</strong></span>
+                          </div>
+                          <div
+                            className={`flex items-center gap-1 sm:gap-1.5 text-[8px] sm:text-[11px] font-black uppercase tracking-wider mt-1 sm:mt-2.5 ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}
+                          >
+                            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Registered: {new Date(user.created_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
 
-                            {/* Column 3: Registered Date */}
-                            <td className="p-3 sm:p-4 align-middle whitespace-nowrap">
-                              <div className={`text-xs font-bold ${txtMuted}`}>
-                                {new Date(user.created_at).toLocaleDateString()}
-                              </div>
-                            </td>
+                      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1.5 sm:gap-2 w-full md:w-auto shrink-0 items-stretch sm:items-center justify-stretch sm:justify-end">
+                        <div className="flex flex-row gap-1.5 sm:gap-2 w-full sm:w-auto">
+                          {activeTab === 'Employers' && user.verification_document && (
+                            <button
+                              onClick={() => setEmployerModal({ isOpen: true, user: user })}
+                              className={`flex-1 min-w-0 text-center px-2 sm:px-4 py-2 sm:py-2.5 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 transition flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm cursor-pointer ${isDark ? 'bg-black text-white border-white hover:bg-white hover:text-black' : 'bg-[#2C7FFF]/10 text-[#2c7fff] border-[#2c7fff]'}`}
+                            >
+                              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                              </svg>
+                              <span className="truncate">View Business Document</span>
+                            </button>
+                          )}
 
-                            {/* Column 4: Actions */}
-                            <td className="p-3 sm:p-4 align-middle text-right">
-                              <div className="flex items-center justify-end gap-2 flex-wrap">
-                                
-                                {/* Document View Buttons */}
-                                {activeTab === 'Employers' && user.verification_document && (
-                                  <button onClick={() => setEmployerModal({ isOpen: true, user: user })} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 transition flex items-center gap-1.5 cursor-pointer ${isDark ? 'bg-black text-white border-white hover:bg-white hover:text-black' : 'bg-[#2C7FFF]/10 text-[#2c7fff] border-[#2c7fff]'}`}>
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    View Doc
-                                  </button>
-                                )}
-                                {activeTab === 'Applicants' && user.pwd_document_path && (
-                                  <button onClick={() => setPwdModal({ isOpen: true, user: user })} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 transition flex items-center gap-1.5 cursor-pointer ${isDark ? 'bg-black text-white border-white hover:bg-white hover:text-black' : 'bg-[#2C7FFF]/10 text-[#2c7fff] border-[#2c7fff]'}`}>
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
-                                    View ID
-                                  </button>
-                                )}
+                          {activeTab === 'Applicants' && user.pwd_document_path && (
+                            <button
+                              onClick={() => setPwdModal({ isOpen: true, user: user })}
+                              className={`flex-1 min-w-0 text-center px-2 sm:px-4 py-2 sm:py-2.5 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 transition flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm cursor-pointer ${isDark ? 'bg-black text-white border-white hover:bg-white hover:text-black' : 'bg-[#2C7FFF]/10 text-[#2c7fff] border-[#2c7fff]'}`}
+                            >
+                              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                              </svg>
+                              <span className="truncate">View PWD ID</span>
+                            </button>
+                          )}
 
-                                {/* Status Action Buttons */}
-                                {listFilter === 'Pending' && (
-                                  <>
-                                    <button onClick={() => setRejectModal({ isOpen: true, userId: user.user_id, reason: '' })} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 transition cursor-pointer shadow-sm flex items-center gap-1.5 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}>
-                                      Reject
-                                    </button>
-                                    <button onClick={() => setConfirmPopup({ isOpen: true, type: 'approve', userId: user.user_id, reason: null, loading: false })} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 shadow-sm transition cursor-pointer flex items-center gap-1.5 bg-[#10b981] text-white border-[#10b981]`}>
-                                      Approve
-                                    </button>
-                                  </>
-                                )}
-                                {listFilter === 'Approved' && (
-                                  <button onClick={() => openDisableModal(user)} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 shadow-sm cursor-pointer flex items-center gap-1.5 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}>
-                                    Disable
-                                  </button>
-                                )}
-                                {listFilter === 'Rejected' && (
-                                  <button onClick={() => setConfirmPopup({ isOpen: true, type: 'approve', userId: user.user_id, reason: null, loading: false })} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 shadow-sm transition cursor-pointer flex items-center gap-1.5 bg-[#D1FAE5] text-[#047857] border-[#10B981]`}>
-                                    Re-evaluate
-                                  </button>
-                                )}
-                                {listFilter === 'Disabled' && (
-                                  <button onClick={() => setConfirmPopup({ isOpen: true, type: 'restore', userId: user.user_id, reason: null, loading: false })} className={`px-3 py-1.5 font-black text-xs rounded-md border-2 shadow-sm cursor-pointer flex items-center gap-1.5 bg-[#2C7FFF] text-white border-[#2C7FFF]`}>
-                                    Restore
-                                  </button>
-                                )}
+                          {(!user.verification_document && !user.pwd_document_path) && (
+                            <div className={`flex-1 min-w-0 text-center px-2 sm:px-4 py-2 sm:py-2.5 ${surfaceBg} ${isDark ? 'text-white/50 border-white/10' : 'text-[#03045E]/50 border-[#03045E]/10'} font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 flex items-center justify-center gap-1.5 sm:gap-2`}>
+                              No Document Attached
+                            </div>
+                          )}
+                        </div>
 
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        {(listFilter === 'Pending' || listFilter === 'Approved' || listFilter === 'Rejected' || listFilter === 'Disabled') && (
+                          <div className="flex flex-row gap-1.5 sm:gap-2 w-full sm:w-auto">
+                            {listFilter === 'Pending' && (
+                              <>
+                                <button
+                                  onClick={() => setRejectModal({ isOpen: true, userId: user.user_id, reason: '' })}
+                                  className={`flex-1 min-w-0 px-3 sm:px-4 py-2 sm:py-2 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-1.5 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
+                                >
+                                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                  </svg>
+                                  <span className="whitespace-nowrap">Reject</span>
+                                </button>
+                                <button
+                                  onClick={() => setConfirmPopup({ isOpen: true, type: 'approve', userId: user.user_id, reason: null, loading: false })}
+                                  className={`flex-1 min-w-0 px-3 sm:px-4 py-2 sm:py-2 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5 bg-[#10b981] text-white border-[#10b981]`}
+                                >
+                                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path>
+                                  </svg>
+                                  <span className="whitespace-nowrap">Approve</span>
+                                </button>
+                              </>
+                            )}
+                            {listFilter === 'Approved' && (
+                              <button
+                                onClick={() => openDisableModal(user)}
+                                className={`flex-1 min-w-0 py-2 sm:py-2.5 px-3 sm:px-4 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 shadow-sm cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
+                              >
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                </svg>
+                                <span className="truncate">Disable Account</span>
+                              </button>
+                            )}
+                            {listFilter === 'Rejected' && (
+                              <button
+                                onClick={() => setConfirmPopup({ isOpen: true, type: 'approve', userId: user.user_id, reason: null, loading: false })}
+                                className={`flex-1 min-w-0 py-2 sm:py-2.5 px-3 sm:px-4 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 bg-[#D1FAE5] text-[#047857] border-[#10B981]`}
+                              >
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                <span className="whitespace-nowrap">Approve (Re-evaluate)</span>
+                              </button>
+                            )}
+                            {listFilter === 'Disabled' && (
+                              <button
+                                onClick={() => setConfirmPopup({ isOpen: true, type: 'restore', userId: user.user_id, reason: null, loading: false })}
+                                className={`flex-1 min-w-0 py-2 sm:py-2.5 px-3 sm:px-4 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 shadow-sm cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 bg-[#2C7FFF] text-white border-[#2C7FFF]`}
+                              >
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                <span className="truncate">Restore Account</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
                 ) : (
                   <div className={`p-8 sm:p-16 text-center border-2 border-dashed ${isDark ? 'border-white/20 bg-black' : 'border-[#03045E]/20 bg-white'} rounded-xl sm:rounded-2xl shadow-sm flex flex-col items-center justify-center`}>
                     <div className={`w-12 h-12 sm:w-14 sm:h-14 ${isDark ? 'bg-white/10 text-white border-white/30' : 'bg-[#2C7FFF]/15 text-[#2C7FFF] border-[#2C7FFF]/30'} rounded-lg flex items-center justify-center mb-3 sm:mb-4 border-2`}>
