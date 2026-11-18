@@ -2038,6 +2038,7 @@ app.put('/api/admin/users/:id/account-status', async (req, res) => {
     }
 });
 
+
 app.get('/api/setup-admin', async (req, res) => {
     try {
         const adminEmail = "admin@ablework.com";
@@ -2710,13 +2711,10 @@ app.get('/api/admin/support/tickets', async (req, res) => {
         const conditions = [];
         const params = [];
 
-        // Filter by reported user if provided
         if (reported_user_id) {
             params.push(reported_user_id);
             conditions.push(`reported_user_id = ?`);
         }
-        
-        // Filter by status if provided (e.g., 'Open')
         if (status) {
             params.push(status);
             conditions.push(`status = ?`);
@@ -2725,14 +2723,20 @@ app.get('/api/admin/support/tickets', async (req, res) => {
         if (conditions.length > 0) {
             query += ` WHERE ` + conditions.join(' AND ');
         }
-        
         query += ` ORDER BY created_at DESC`;
 
         const [tickets] = await db.execute(query, params);
         
         const formatted = tickets.map(t => {
             let parsedReasons = [];
-            try { parsedReasons = t.reasons ? JSON.parse(t.reasons) : []; } catch (e) {}
+            if (t.reasons) {
+                // If it's a comma-separated string, split it. If it's JSON, parse it.
+                try {
+                    parsedReasons = JSON.parse(t.reasons);
+                } catch (e) {
+                    parsedReasons = String(t.reasons).split(',').map(r => r.trim()).filter(Boolean);
+                }
+            }
             return { ...t, reasons: parsedReasons };
         });
         

@@ -28,10 +28,18 @@ export function AdminSupportTickets({ onTicketResolved }) {
         const data = await res.json();
         const normalized = data.map(t => {
           let parsedReasons = t.reasons;
+          
+          // Robust parsing logic to handle both JSON arrays and comma-separated strings from the DB
           if (typeof parsedReasons === 'string') {
-            try { parsedReasons = JSON.parse(parsedReasons); } catch (e) { parsedReasons = []; }
+            try {
+              parsedReasons = JSON.parse(parsedReasons);
+            } catch (e) {
+              parsedReasons = parsedReasons.split(',').map(r => r.trim()).filter(Boolean);
+            }
           }
+          
           if (!Array.isArray(parsedReasons)) parsedReasons = [];
+          
           return { ...t, reasons: parsedReasons };
         });
         setTickets(normalized);
@@ -134,6 +142,7 @@ export function AdminSupportTickets({ onTicketResolved }) {
                         {ticket.status}
                       </span>
                     </div>
+                    {/* Tags for reasons shown in the list view */}
                     {Array.isArray(ticket.reasons) && ticket.reasons.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1.5 max-w-xs">
                         {ticket.reasons.slice(0, 3).map((r, i) => (
@@ -228,24 +237,26 @@ export function AdminSupportTickets({ onTicketResolved }) {
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto flex flex-col gap-6">
               
-              {/* DISPLAY REPORT REASONS CLEARLY */}
+              {/* DISPLAY REPORT REASONS CLEARLY INSIDE THE MODAL */}
               {Array.isArray(selectedTicket.reasons) && selectedTicket.reasons.length > 0 && (
-                <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-[#2C7FFF]/5 border-[#2C7FFF]/20'}`}>
-                  <span className={`text-[10px] font-black uppercase tracking-widest block mb-3 ${isDark ? 'text-white/60' : 'text-[#03045E]/80'}`}>Report Reasons Selected:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTicket.reasons.map((reason, idx) => (
-                      <span
-                        key={idx}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 text-xs font-bold ${
-                          isDark
-                            ? 'bg-black border-white/20 text-white'
-                            : 'bg-white border-[#2C7FFF]/40 text-[#03045E]'
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#2C7FFF]" />
-                        {reason}
-                      </span>
-                    ))}
+                <div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest block mb-2 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>Report Reasons Selected:</span>
+                  <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-[#2C7FFF]/5 border-[#2C7FFF]/20'}`}>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTicket.reasons.map((reason, idx) => (
+                        <span
+                          key={idx}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 text-xs font-bold ${
+                            isDark
+                              ? 'bg-black border-white/20 text-white'
+                              : 'bg-white border-[#2C7FFF]/40 text-[#03045E]'
+                          }`}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2C7FFF]" />
+                          {reason}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -281,7 +292,7 @@ export function AdminSupportTickets({ onTicketResolved }) {
               )}
             </div>
 
-          {/* Modal Footer */}
+            {/* Modal Footer */}
             {selectedTicket.status === 'Open' && (
               <div className={`p-6 border-t-2 flex flex-col sm:flex-row justify-end gap-3 mt-auto ${isDark ? 'border-white/10 bg-zinc-900' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
                 <button
