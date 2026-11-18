@@ -1114,10 +1114,10 @@ export default function EmployerDashboard() {
               {activeTab === 'employer-policy' && <EmployerPolicy onBack={() => handleTabChange('overview')} />}
               {activeTab === 'employer-terms' && <EmployerTerms onBack={() => handleTabChange('overview')} />}
               {activeTab === 'employer-contact' && (
-                <EmployerContact 
-                  onBack={() => setActiveTab('employer-dashboard')} 
-                  profile={employerProfile} 
-                  reportedUserId={selectedApplicant?.user_id || selectedApplicant?.id} // 👈 Pass applicant's ID
+                <ApplicantContact 
+                 onBack={() => setActiveTab('overview')} 
+                  profile={applicantProfile} 
+                  reportedUserId={selectedEmployer?.user_id || selectedEmployer?.id} 
                 />
               )}
             </div>
