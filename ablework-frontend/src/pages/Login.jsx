@@ -358,11 +358,10 @@ const handleLogin = async (e) => {
       </header>
 
 // --- PASTE THIS EXACTLY WHERE YOU DELETED THE WRAPPER ---
-<div className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative min-h-[110vh] md:min-h-[105vh] transition-all duration-300 overflow-hidden">
-  
-  {/* 1. BACKGROUND IMAGE */}
+<div className="flex-grow pt-14 sm:pt-16 pb-12 flex flex-col items-center md:items-end justify-center px-3 sm:px-6 md:px-10 w-full box-border relative min-h-[110vh] md:min-h-[105vh] transition-all duration-300 overflow-hidden">
+ {/* 1. BACKGROUND IMAGE */}
   <div 
-    className="absolute inset-0 bg-no-repeat w-full h-full bg-[center_top] bg-[size:100%] md:bg-[position:left_center] md:bg-[size:70%]" 
+    className="absolute inset-x-0 top-14 sm:top-16 md:top-0 bottom-0 bg-no-repeat w-full bg-[center_top] bg-[size:100%] md:bg-[position:left_center] md:bg-[size:70%]" 
     style={{ backgroundImage: `url(${backgroundImg})` }}
   ></div>
 

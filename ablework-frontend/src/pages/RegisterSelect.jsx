@@ -160,8 +160,8 @@ const containerMaxWidth = 'max-w-[94%] sm:max-w-md md:max-w-xl lg:max-w-2xl';
         </div>
       </header>
 
-  <div
-  className={`flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300`}
+<div
+  className={`flex-grow pt-16 sm:pt-20 pb-8 sm:pb-12 flex flex-col items-center md:items-end justify-start md:justify-center px-3 sm:px-6 md:px-10 w-full box-border relative bg-no-repeat bg-[center_top] md:bg-left bg-[size:600px_auto] md:bg-[size:1100px_auto] min-h-screen md:min-h-[105vh] transition-all duration-300`}
   style={{
     backgroundImage: `url(${backgroundImg})`,
   }}

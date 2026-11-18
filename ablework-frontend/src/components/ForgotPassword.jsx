@@ -274,11 +274,11 @@ const { paletteKey, palette } = useColorPalette();
           </button>
         </div>
 
-        <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-b-2 ${
-            isContrast ? 'bg-black border-[#2C7FFF]' : 'bg-white border-[#03045E]/20'
-          } ${
-            isOpen ? 'max-h-96 opacity-100 shadow-xl' : 'max-h-0 opacity-0'
+       <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen
+              ? `max-h-96 opacity-100 shadow-xl border-b-2 ${isContrast ? 'bg-black border-[#2C7FFF]' : 'bg-white border-[#03045E]/20'}`
+              : 'max-h-0 opacity-0 border-b-0'
           }`}
         >
           <div className={`w-full ${isContrast ? 'bg-black' : 'bg-white'}`}>
@@ -347,7 +347,7 @@ const { paletteKey, palette } = useColorPalette();
         </div>
       </header>
 <div
-  className="flex-grow pt-20 pb-12 flex flex-col items-center md:items-end justify-center p-3 sm:p-6 md:p-10 w-full box-border relative bg-no-repeat bg-center bg-[size:600px_auto] md:bg-[size:1100px_auto] md:bg-left min-h-[110vh] md:min-h-[105vh] transition-all duration-300"
+  className="flex-grow pt-16 sm:pt-20 pb-8 sm:pb-12 flex flex-col items-center md:items-end justify-start md:justify-center px-3 sm:px-6 md:px-10 w-full box-border relative bg-no-repeat bg-[center_top] md:bg-left bg-[size:600px_auto] md:bg-[size:1100px_auto] min-h-screen md:min-h-[105vh] transition-all duration-300"
   style={{ backgroundImage: `url(${backgroundImg})` }}
 >
 <div
