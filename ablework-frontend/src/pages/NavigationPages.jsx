@@ -1686,17 +1686,17 @@ export function Policy() {
           </div>
         </div>
 
-        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
-          <button onClick={() => toggleSection(10)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
-            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="10. Contact Information and Inquiries" title="10. Contact Information and Inquiries" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+<div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(11)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="11. Contact Information and Inquiries" title="11. Contact Information and Inquiries" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
               <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
-              10. Contact Information and Inquiries
+              11. Contact Information and Inquiries
             </h2>
-            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 10 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 11 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 10 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 11 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
             <div className="overflow-hidden">
               <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
                 <p tabIndex="0" role="text" aria-label="For questions, data access requests, or privacy-related concerns regarding ABLEWORK, contact the project data custody team:" title="For questions, data access requests, or privacy-related concerns regarding ABLEWORK, contact the project data custody team:" className="font-medium mb-3">For questions, data access requests, or privacy-related concerns regarding ABLEWORK, contact the project data custody team:</p>
