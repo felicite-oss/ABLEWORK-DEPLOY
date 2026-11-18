@@ -1321,8 +1321,9 @@ export default function ApplicantDashboard() {
 
               {activeTab === 'applicant-contact' && (
                 <ApplicantContact 
-                  onBack={() => handleTabChange('overview')} 
-                  profile={profile} 
+                  onBack={() => setActiveTab('applicant-jobs')} 
+                  profile={applicantProfile} 
+                  reportedUserId={selectedEmployer?.user_id || selectedEmployer?.id} 
                 />
               )}
             </div>

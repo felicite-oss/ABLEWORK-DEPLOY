@@ -39,7 +39,7 @@ export default function AdminDashboard() {
   const [employerModal, setEmployerModal] = useState({ isOpen: false, user: null });
   const [rejectModal, setRejectModal] = useState({ isOpen: false, userId: null, reason: '' });
   const [approveModal, setApproveModal] = useState({ isOpen: false, userId: null });
-  const [disableModal, setDisableModal] = useState({ isOpen: false, userId: null });
+  const [disableModal, setDisableModal] = useState({ isOpen: false, userId: null, user: null, reasons: [], days: 7 });
   const [restoreModal, setRestoreModal] = useState({ isOpen: false, userId: null });
   const [confirmPopup, setConfirmPopup] = useState({ isOpen: false, type: null, userId: null, reason: null, loading: false });
   const [approveLoading, setApproveLoading] = useState(false);
@@ -220,11 +220,29 @@ export default function AdminDashboard() {
     }
   };
 
+  const openDisableModal = async (user) => {
+    let reasons = [];
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/support/tickets?reported_user_id=${user.user_id}&status=Open`);
+      if (res.ok) {
+        const tickets = await res.json();
+        reasons = tickets.flatMap(t => {
+          let r = t.reasons;
+          if (typeof r === 'string') { try { r = JSON.parse(r); } catch { r = []; } }
+          return Array.isArray(r) ? r : [];
+        });
+        reasons = [...new Set(reasons)];
+      }
+    } catch (e) { console.error(e); }
+
+    setDisableModal({ isOpen: true, userId: user.user_id, user, reasons, days: 7 });
+  };
+
   const confirmDisable = () => {
     if (disableModal.userId) {
       setDisableLoading(true);
       setTimeout(() => {
-        handleAccountStatus(disableModal.userId, 'Disabled');
+        handleAccountStatus(disableModal.userId, 'Disabled', Number(disableModal.days), disableModal.reasons);
         setDisableLoading(false);
       }, 2000);
     }
@@ -269,15 +287,19 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAccountStatus = async (userId, newStatus) => {
+  const handleAccountStatus = async (userId, newStatus, penaltyDays = null, reasons = []) => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/account-status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ account_status: newStatus })
+        body: JSON.stringify({
+          account_status: newStatus,
+          penalty_days: penaltyDays,
+          reasons
+        })
       });
       if (res.ok) {
-        setDisableModal({ isOpen: false, userId: null });
+        setDisableModal({ isOpen: false, userId: null, user: null, reasons: [], days: 7 });
         setRestoreModal({ isOpen: false, userId: null });
         fetchAdminData(true);
       }
@@ -1411,7 +1433,7 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                             )}
                             {listFilter === 'Approved' && (
                               <button
-                                onClick={() => setConfirmPopup({ isOpen: true, type: 'disable', userId: user.user_id, reason: null, loading: false })}
+                                onClick={() => openDisableModal(user)}
                                 className={`flex-1 min-w-0 py-2 sm:py-2.5 px-3 sm:px-4 font-black text-[10px] sm:text-sm rounded-md sm:rounded-lg border-2 shadow-sm cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
                               >
                                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -1690,8 +1712,111 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     >
                       ✓ Approve Employer Permit
                     </button>
+                                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DISABLE ACCOUNT MODAL — with report reasons + penalty days */}
+          {disableModal.isOpen && disableModal.user && (
+            <div
+              className="fixed inset-0 z-[99999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-300"
+              style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }}
+            >
+              <div className={`relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border-2 ${isDark ? 'bg-black border-white' : 'bg-white border-[#DC2626]'}`}>
+                <div className="h-2 w-full bg-[#DC2626]" />
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 ${isDark ? 'border-white' : 'border-[#DC2626]'}`}>
+                      <svg className={`w-6 h-6 ${isDark ? 'text-white' : 'text-[#DC2626]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className={`text-xl font-black ${isDark ? 'text-white' : 'text-[#03045E]'}`}>Disable Account</h2>
+                      <p className={`text-xs font-bold truncate ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}>
+                        {disableModal.user.company_name || `${disableModal.user.firstname} ${disableModal.user.lastname}`}
+                      </p>
+                    </div>
                   </div>
 
+                  {disableModal.reasons.length > 0 ? (
+                    <div className={`p-3 rounded-lg border-2 mb-4 ${isDark ? 'bg-zinc-900 border-white/20' : 'bg-amber-50 border-amber-300'}`}>
+                      <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${isDark ? 'text-white/60' : 'text-amber-800'}`}>
+                        Report Reasons ({disableModal.reasons.length})
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {disableModal.reasons.map((r, i) => (
+                          <span key={i} className={`px-2 py-0.5 rounded text-[10px] font-bold border ${isDark ? 'bg-black text-white border-white/20' : 'bg-white text-amber-900 border-amber-300'}`}>
+                            {r}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`p-3 rounded-lg border-2 mb-4 ${isDark ? 'bg-zinc-900 border-white/20' : 'bg-gray-50 border-gray-300'}`}>
+                      <p className={`text-[10px] font-bold ${isDark ? 'text-white/60' : 'text-gray-600'}`}>
+                        No open support tickets with reasons found for this user.
+                      </p>
+                    </div>
+                  )}
+
+                  <label className={`text-[10px] font-black uppercase tracking-widest block mb-2 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>
+                    Penalty Duration (Days)
+                  </label>
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {[3, 7, 14, 30].map(d => (
+                      <button
+                        key={d}
+                        onClick={() => setDisableModal({ ...disableModal, days: d })}
+                        className={`py-2 rounded-lg font-black text-sm border-2 transition cursor-pointer ${
+                          Number(disableModal.days) === d
+                            ? (isDark ? 'bg-white text-black border-white' : 'bg-[#DC2626] text-white border-[#DC2626]')
+                            : (isDark ? 'bg-black text-white border-white/30' : 'bg-white text-[#03045E] border-[#03045E]/30')
+                        }`}
+                      >
+                        {d}d
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="number"
+                    min="1"
+                    value={disableModal.days}
+                    onChange={(e) => setDisableModal({ ...disableModal, days: e.target.value })}
+                    className={`w-full px-4 py-3 rounded-lg border-2 font-bold text-sm mb-4 outline-none ${isDark ? 'bg-black text-white border-white/30 focus:border-white' : 'bg-white text-[#03045E] border-[#03045E]/30 focus:border-[#2C7FFF]'}`}
+                  />
+                  <p className={`text-[10px] font-bold mb-5 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>
+                    Account disabled for <strong className={isDark ? 'text-white' : 'text-[#DC2626]'}>{disableModal.days} day{Number(disableModal.days) !== 1 ? 's' : ''}</strong>. Auto-restored after expiry.
+                  </p>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setDisableModal({ isOpen: false, userId: null, user: null, reasons: [], days: 7 })}
+                      disabled={disableLoading}
+                      className={`flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider border-2 transition cursor-pointer disabled:opacity-50 ${isDark ? 'text-white border-white hover:bg-white hover:text-black' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white'}`}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={confirmDisable}
+                      disabled={disableLoading}
+                      className="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider border-2 bg-[#DC2626] text-white border-[#DC2626] hover:bg-[#b91c1c] transition cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2"
+                    >
+                      {disableLoading ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                          </svg>
+                          Processing...
+                        </>
+                      ) : (
+                        'Disable Account'
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

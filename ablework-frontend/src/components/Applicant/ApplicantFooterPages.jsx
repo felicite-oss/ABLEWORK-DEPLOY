@@ -748,6 +748,14 @@ const [successModal, setSuccessModal] = useState({ show: false, message: '' });
       formData.append('reasons', JSON.stringify(reasons));
       formData.append('subject', subject);
       formData.append('message', message);
+      
+      // 🚨 ADD THIS LINE:
+      // This tells the backend which user is being reported so the Admin can see their reasons.
+      // It will use the explicitly passed reportedUserId, or fallback to the profile ID.
+      const targetReportedId = reportedUserId || profile?.user_id || profile?.id;
+      if (targetReportedId) {
+        formData.append('reported_user_id', targetReportedId);
+      }
 
       if (proofImage) {
         formData.append('proof_image', proofImage);

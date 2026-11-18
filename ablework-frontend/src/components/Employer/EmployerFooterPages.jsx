@@ -627,7 +627,7 @@ export function EmployerTerms({ onBack }) {
   );
 }
 
-export function EmployerContact({ onBack, profile }) {
+export function EmployerContact({ onBack, profile, reportedUserId }) {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
   
@@ -677,6 +677,13 @@ export function EmployerContact({ onBack, profile }) {
       formData.append('reasons', JSON.stringify(reasons));
       formData.append('subject', subject);
       formData.append('message', message);
+      
+      // 🚨 ADD THESE 4 LINES:
+      // Links this ticket to the user being reported so Admin can see their reasons.
+      const targetReportedId = reportedUserId || profile?.user_id || profile?.id;
+      if (targetReportedId) {
+        formData.append('reported_user_id', targetReportedId);
+      }
 
       if (proofImage) {
         formData.append('proof_image', proofImage);

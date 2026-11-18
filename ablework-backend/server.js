@@ -432,8 +432,27 @@ app.post('/api/auth/login', async (req, res) => {
         if (users.length === 0) return res.status(401).json({ error: "Invalid credentials." });
         const user = users[0];
 
+        // --- NEW: Auto-restore expired penalties ---
+        if (user.account_status === 'Disabled' && user.disabled_until) {
+            if (new Date() > new Date(user.disabled_until)) {
+                // Penalty expired! Restore the account.
+                await db.execute(
+                    `UPDATE users SET account_status = 'Active', disabled_until = NULL, disable_reasons = NULL WHERE id = ?`,
+                    [user.id]
+                );
+                user.account_status = 'Active'; // Update the local object to pass the check below
+            }
+        }
+
         if (user.account_status === 'Disabled') {
-            return res.status(403).json({ error: "This account has been disabled. Please contact support." });
+            let errorMsg = "This account has been disabled. Please contact support.";
+            if (user.disabled_until) {
+                const unlockDate = new Date(user.disabled_until).toLocaleDateString('en-US', { 
+                    month: 'long', day: 'numeric', year: 'numeric' 
+                });
+                errorMsg = `This account is temporarily disabled until ${unlockDate} due to a platform violation.`;
+            }
+            return res.status(403).json({ error: errorMsg });
         }
 
         const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -1943,15 +1962,120 @@ app.put('/api/admin/users/:id/verify', async (req, res) => {
 });
 
 app.put('/api/admin/users/:id/account-status', async (req, res) => {
-    const userId = req.params.id;
-    const { account_status } = req.body;
+    const { id } = req.params;
+    const { account_status, penalty_days, reasons } = req.body;
+
     try {
-        await db.execute(`UPDATE users SET account_status = ? WHERE id = ?`, [account_status, userId]);
-        res.status(200).json({ message: `Account is now ${account_status}.` });
+        if (account_status === 'Disabled') {
+            const days = Number(penalty_days) || 7;
+            const disabledUntil = new Date();
+            disabledUntil.setDate(disabledUntil.getDate() + days);
+
+            // MySQL: Use '?' placeholders, 'id' column (not 'user_id'), and JSON.stringify for JSON columns
+            await db.execute(
+                `UPDATE users 
+                 SET account_status = 'Disabled',
+                     disabled_until = ?,
+                     disable_reasons = ?
+                 WHERE id = ?`,
+                [disabledUntil, JSON.stringify(reasons || []), id]
+            );
+
+            // Send notification to the disabled user
+            const reasonText = reasons && reasons.length > 0 
+                ? `Reasons: ${reasons.join(', ')}.` 
+                : '';
+            
+            await sendNotification(
+                id, 
+                'Account Disabled', 
+                `Your account has been disabled for ${days} days due to a violation of our terms. ${reasonText} It will automatically be restored after this period.`, 
+                'system'
+            );
+
+        } else {
+            // Restore / Active
+            await db.execute(
+                `UPDATE users 
+                 SET account_status = ?, disabled_until = NULL, disable_reasons = NULL
+                 WHERE id = ?`,
+                [account_status, id]
+            );
+
+            if (account_status === 'Active') {
+                await sendNotification(
+                    id, 
+                    'Account Restored', 
+                    'Your account access has been restored. You can now use all platform features again.', 
+                    'system'
+                );
+            }
+        }
+
+        res.status(200).json({ success: true, message: `Account status updated to ${account_status}.` });
     } catch (error) {
-        res.status(500).json({ message: "Failed to update account status." });
+        console.error("Account Status Update Error:", error.message);
+        res.status(500).json({ message: 'Failed to update account status' });
     }
 });
+
+// ---------------------------------------------------------
+// ROUTE: ADMIN - DISABLE USER WITH PENALTY & RESOLVE TICKET
+// ---------------------------------------------------------
+app.put('/api/admin/users/:id/disable-with-penalty', async (req, res) => {
+    const { id } = req.params;
+    const { penalty_days, reasons, ticket_id } = req.body;
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+        const days = Number(penalty_days) || 7;
+        const disabledUntil = new Date();
+        disabledUntil.setDate(disabledUntil.getDate() + days);
+
+        // 1. Disable the user
+        await connection.execute(
+            `UPDATE users 
+             SET account_status = 'Disabled',
+                 disabled_until = ?,
+                 disable_reasons = ?
+             WHERE id = ?`,
+            [disabledUntil, JSON.stringify(reasons || []), id]
+        );
+
+        // 2. Resolve the ticket (if provided)
+        if (ticket_id) {
+            await connection.execute(
+                `UPDATE support_tickets SET status = 'Resolved' WHERE id = ?`,
+                [ticket_id]
+            );
+        }
+
+        await connection.commit();
+
+        // 3. Notify the user
+        const reasonText = reasons && reasons.length > 0 
+            ? `Reasons: ${reasons.join(', ')}.` 
+            : '';
+
+        await sendNotification(
+            id, 
+            'Account Disabled', 
+            `Your account has been disabled for ${days} days due to a violation of our terms. ${reasonText} It will automatically be restored after this period.`, 
+            'system'
+        );
+
+        res.status(200).json({ success: true, message: `User disabled for ${days} days and ticket resolved.` });
+    } catch (error) {
+        await connection.rollback();
+        console.error("Disable With Penalty Error:", error.message);
+        res.status(500).json({ message: 'Failed to disable user with penalty.' });
+    } finally {
+        connection.release();
+    }
+});
+
 
 app.get('/api/setup-admin', async (req, res) => {
     try {
@@ -2564,7 +2688,8 @@ const SUPPORT_REASONS = new Set([
 ]);
 
 app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) => {
-    const { userId, userName, userEmail, userRole, subject, message } = req.body;
+    // Added reported_user_id to the destructuring
+    const { userId, userName, userEmail, userRole, subject, message, reported_user_id } = req.body;
     const imagePath = req.file ? req.file.path : null;
 
     let rawReasons = req.body.reasons;
@@ -2591,8 +2716,8 @@ app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) =
     try {
         await db.execute(
             `INSERT INTO support_tickets
-             (user_id, user_name, user_email, user_role, reasons, subject, message, image_path)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+             (user_id, user_name, user_email, user_role, reasons, subject, message, image_path, reported_user_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 userId || null,
                 userName || 'Guest',
@@ -2601,7 +2726,8 @@ app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) =
                 JSON.stringify(reasons),
                 subject,
                 message,
-                imagePath
+                imagePath,
+                reported_user_id || null // Save the reported user ID!
             ]
         );
 
@@ -2616,13 +2742,39 @@ app.post('/api/support/ticket', upload.single('proof_image'), async (req, res) =
 // ROUTE: ADMIN - FETCH ALL SUPPORT TICKETS
 // ---------------------------------------------------------
 app.get('/api/admin/support/tickets', async (req, res) => {
+    const { reported_user_id, status } = req.query;
+
     try {
-        const [tickets] = await db.execute(`SELECT * FROM support_tickets ORDER BY created_at DESC`);
+        let query = `SELECT * FROM support_tickets`;
+        const conditions = [];
+        const params = [];
+
+        // Filter by reported user if provided
+        if (reported_user_id) {
+            params.push(reported_user_id);
+            conditions.push(`reported_user_id = ?`);
+        }
+        
+        // Filter by status if provided (e.g., 'Open')
+        if (status) {
+            params.push(status);
+            conditions.push(`status = ?`);
+        }
+
+        if (conditions.length > 0) {
+            query += ` WHERE ` + conditions.join(' AND ');
+        }
+        
+        query += ` ORDER BY created_at DESC`;
+
+        const [tickets] = await db.execute(query, params);
+        
         const formatted = tickets.map(t => {
             let parsedReasons = [];
             try { parsedReasons = t.reasons ? JSON.parse(t.reasons) : []; } catch (e) {}
             return { ...t, reasons: parsedReasons };
         });
+        
         res.status(200).json(formatted);
     } catch (error) {
         console.error("Fetch Tickets Error:", error.message);
@@ -2720,9 +2872,33 @@ const autoRejectStaleApplications = async () => {
     }
 };
 
+// ---------------------------------------------------------
+// AUTOMATED ACCOUNT RESTORATION (Runs every hour)
+// ---------------------------------------------------------
+const autoRestoreExpiredAccounts = async () => {
+    try {
+        const [result] = await db.execute(`
+            UPDATE users
+            SET account_status = 'Active', disabled_until = NULL, disable_reasons = NULL
+            WHERE account_status = 'Disabled'
+              AND disabled_until IS NOT NULL
+              AND disabled_until < NOW()
+        `);
+        
+        if (result.affectedRows > 0) {
+            console.log(`Auto-restored ${result.affectedRows} accounts whose penalty expired.`);
+        }
+    } catch (error) {
+        console.error("Auto-Restore Error:", error.message);
+    }
+};
+
 // Run immediately on server start, then every 24 hours
 autoRejectStaleApplications();
 setInterval(autoRejectStaleApplications, 24 * 60 * 60 * 1000);
+
+autoRestoreExpiredAccounts();
+setInterval(autoRestoreExpiredAccounts, 60 * 60 * 1000); // Every hour
 
 // =========================================================
 // Global error handler — MUST be registered after all routes,
