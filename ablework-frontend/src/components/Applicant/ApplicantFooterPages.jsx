@@ -931,7 +931,10 @@ export function ApplicantContact({ onBack, profile, reportedUserId }) {
               )}
               {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
             </span>
-            <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-white">
+            <span
+              style={{ color: '#03045E' }}
+              className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-[#03045E]"
+            >
               →
             </span>
           </button>
