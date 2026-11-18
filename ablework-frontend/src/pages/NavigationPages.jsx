@@ -2172,6 +2172,12 @@ export function ContactSupport() {
 
   return (
     <PageLayout title="Help and Support">
+      <style>{`
+        .dark-mode .dark-black-btn,
+        .dark-mode .dark-black-btn * {
+          color: #000000 !important;
+        }
+      `}</style>
       {/* CHANGED: max-w-6xl to max-w-[1700px] to match the header/footer width */}
      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 py-6 sm:py-10 px-3 sm:px-6 md:px-10">
         
@@ -2316,7 +2322,7 @@ export function ContactSupport() {
                 disabled={isSubmitting}
                 aria-label="Submit Request Ticket"
                 style={isDarkMode ? { color: '#000000' } : undefined}
-                className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
+className={`dark-black-btn group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
                   isDarkMode
                     ? 'bg-white !text-black border-white hover:bg-gray-200'
                     : isContrast 
@@ -2357,7 +2363,7 @@ export function ContactSupport() {
                   type="button"
                   onClick={submitTicket}
                   style={isDarkMode ? { color: '#000000' } : undefined}
-                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${
+                  className={`dark-black-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${
                     isDarkMode
                       ? 'bg-white !text-black border-white'
                       : isContrast
@@ -2385,7 +2391,7 @@ export function ContactSupport() {
                 type="button"
                 onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }}
                 style={isDarkMode ? { color: '#000000' } : undefined}
-                className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${
+               className={`dark-black-btn w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${
                   isDarkMode
                     ? 'bg-white !text-black border-white'
                     : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
