@@ -1643,11 +1643,37 @@ export function Policy() {
 
         <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
           <button onClick={() => toggleSection(9)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
-            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="9. Changes to This Privacy Policy" title="9. Changes to This Privacy Policy" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="9. Support Tickets and Administrative Review" title="9. Support Tickets and Administrative Review" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
               <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
-              9. Changes to This Privacy Policy
+              9. Support Tickets and Administrative Review
             </h2>
             <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 9 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div className={`grid transition-all duration-300 ease-in-out ${openSection === 9 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
+                <p tabIndex="0" className="font-medium mb-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1">
+                  When a user submits a Support Ticket reporting another user or job posting, the submitted details (including reasons, detailed messages, and attached proof) are collected and stored securely.
+                </p>
+                <ul className="space-y-2 pl-4">
+                  <li className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span tabIndex="0" className="transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1">This data is accessible exclusively to system administrators for the purpose of reviewing compliance with our community standards.</span></li>
+                  <li className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span tabIndex="0" className="transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1">The identity of the reporting user is kept strictly confidential from the reported party.</span></li>
+                  <li className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span tabIndex="0" className="transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1">Data collected through Support Tickets is used solely for dispute resolution and maintaining platform integrity, and is never used for marketing purposes.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+          <button onClick={() => toggleSection(10)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="10. Changes to This Privacy Policy" title="10. Changes to This Privacy Policy" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+              <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
+              10. Changes to This Privacy Policy
+            </h2>
+            <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 10 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -1937,11 +1963,11 @@ export function Terms() {
           </div>
         </div>
 
-        <div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
+<div className="border border-[#03045E]/15 rounded-2xl overflow-hidden bg-white">
           <button onClick={() => toggleSection(12)} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#f4f4f4] transition-colors">
-            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="12. Account Suspension or Termination" title="12. Account Suspension or Termination" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
+            <h2 tabIndex="0" role="heading" aria-level="2" aria-label="12. Platform Violations and Account Suspension" title="12. Platform Violations and Account Suspension" className="text-lg font-bold text-[#03045E] flex items-center gap-2 text-left">
               <span className="w-2 h-2 rounded-full bg-[#2C7FFF]"></span>
-              12. Account Suspension or Termination
+              12. Platform Violations and Account Suspension
             </h2>
             <svg className={`w-5 h-5 text-[#03045E] shrink-0 transition-transform duration-300 ${openSection === 12 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -1950,15 +1976,56 @@ export function Terms() {
           <div className={`grid transition-all duration-300 ease-in-out ${openSection === 12 ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
             <div className="overflow-hidden">
               <div className="p-4 sm:p-5 border-t border-[#03045E]/10 text-[#03045E]">
-                <p tabIndex="0" role="text" aria-label="ABLEWORK may suspend, restrict, or terminate an account if the user:" title="ABLEWORK may suspend, restrict, or terminate an account if the user:" className="font-medium mb-3">ABLEWORK may suspend, restrict, or terminate an account if the user:</p>
-                <ul className="space-y-2 pl-4">
-                  <li tabIndex="0" role="text" aria-label="Violates these Terms and Conditions." title="Violates these Terms and Conditions." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Violates these Terms and Conditions.</span></li>
-                  <li tabIndex="0" role="text" aria-label="Provides false or fraudulent information." title="Provides false or fraudulent information." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Provides false or fraudulent information.</span></li>
-                  <li tabIndex="0" role="text" aria-label="Misuses personal data or system features." title="Misuses personal data or system features." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Misuses personal data or system features.</span></li>
-                  <li tabIndex="0" role="text" aria-label="Attempts unauthorized access." title="Attempts unauthorized access." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Attempts unauthorized access.</span></li>
-                  <li tabIndex="0" role="text" aria-label="Engages in harmful, abusive, or unlawful activities." title="Engages in harmful, abusive, or unlawful activities." className="font-medium flex gap-2"><span className="text-[#2C7FFF] font-black shrink-0">•</span><span>Engages in harmful, abusive, or unlawful activities.</span></li>
-                </ul>
-                <p tabIndex="0" role="text" aria-label="Users may contact the system administrator regarding account concerns or requests for account review." title="Users may contact the system administrator regarding account concerns or requests for account review." className="font-medium mt-3">Users may contact the system administrator regarding account concerns or requests for account review.</p>
+                <p tabIndex="0" className="font-medium mb-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1">
+                  To ensure a safe and inclusive environment, ABLEWORK enforces a strict penalty system for platform violations. If an account is reported via a Support Ticket, administrators will manually review the evidence. If the violation is verified, the offending account will be disabled for a specific duration based on the severity of the offense:
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pl-2 mb-4">
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#DC2626] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Fake or Scam Job Offer:</strong> 30 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#DC2626] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Payment or Fee Request:</strong> 30 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#f59e0b] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Harassment or Bullying:</strong> 14 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#f59e0b] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Discriminatory Job Posting:</strong> 14 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#2C7FFF] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Inappropriate or Offensive Content:</strong> 7 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#2C7FFF] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Account Impersonation:</strong> 7 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#2C7FFF] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Misleading Company Information:</strong> 7 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#6B7280] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Spam or Duplicate Posting:</strong> 3 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#6B7280] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Unresponsive Employer:</strong> 3 Days</span>
+                  </div>
+                  <div className="font-medium flex items-start gap-2">
+                    <span className="text-[#6B7280] font-black shrink-0 mt-0.5">•</span>
+                    <span tabIndex="0" className="leading-tight transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] rounded-lg p-1 -m-1"><strong>Other Violations:</strong> 3 Days</span>
+                  </div>
+                </div>
+
+                <p tabIndex="0" className="font-medium mt-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C7FFF] focus-visible:ring-offset-2 rounded-lg p-1 -m-1">
+                  If an account is reported for multiple violations simultaneously, the system will automatically enforce the longest applicable penalty. Once the penalty duration expires, the account will be automatically restored to Active status. Severe or repeated violations may result in permanent termination.
+                </p>
               </div>
             </div>
           </div>
