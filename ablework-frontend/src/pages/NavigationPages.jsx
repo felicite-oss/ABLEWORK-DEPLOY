@@ -2290,7 +2290,7 @@ export function ContactSupport() {
                 />
               </div>
 
-              {/* File Attachment */}
+                          {/* File Attachment */}
               <div>
                 <label className={`block text-xs font-bold mb-1 ${isContrast ? 'text-white/70' : 'text-[#03045E]/70'}`}>Attach Proof (Optional Image/PDF)</label>
                 <input
@@ -2298,14 +2298,12 @@ export function ContactSupport() {
                   accept="image/*,.pdf"
                   onChange={(e) => setProofImage(e.target.files[0])}
                   disabled={isSubmitting}
-                  style={{
-                    color: isContrast ? '#ffffff' : '#03045e',
-                    '--file-btn-bg': isContrast ? '#ffffff' : 'var(--color-primary, #2C7FFF)',
-                    '--file-btn-text': isContrast ? '#000000' : 'var(--color-buttonText, #ffffff)',
-                  }}
-                  className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${
-                    isContrast ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50'
-                  } file:bg-[var(--file-btn-bg)] file:text-[var(--file-btn-text)] hover:opacity-90`}
+                  className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors hover:opacity-90 ${
+                    isContrast 
+                      ? 'bg-black border-white/30 text-white placeholder-white/40 file:bg-white file:!text-black' 
+                      : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50 file:bg-[#2C7FFF] file:text-white'
+                  }`}
+                  style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
                 />
               </div>
 
@@ -2316,19 +2314,22 @@ export function ContactSupport() {
                 aria-label="Submit Request Ticket"
                 className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
                   isContrast 
-                    ? 'bg-white text-black border-white hover:bg-gray-200' 
+                    ? 'bg-white !text-black border-white hover:bg-gray-200' 
                     : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
                 }`}
+                style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
               >
-                <span className="flex items-center gap-2">
+                <span className={`flex items-center gap-2 ${isContrast ? '!text-black' : ''}`}>
                   {isSubmitting ? (
                     <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                   ) : (
-                    <span className={`w-2 h-2 rounded-full ${isContrast ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
+                    <span className={`w-2 h-2 rounded-full ${isContrast ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-gray-400 transition-colors`} />
                   )}
                   {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
                 </span>
-                <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-[#03045E]">
+                <span className={`w-7 h-7 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-1 ${
+                  isContrast ? 'bg-black/10 !text-black' : 'bg-white/20 text-[#03045E]'
+                }`}>
                   →
                 </span>
               </button>
@@ -2346,7 +2347,14 @@ export function ContactSupport() {
               <p className="text-sm font-medium mb-6 opacity-70">Are you sure you want to submit this support ticket?</p>
               <div className="flex w-full gap-3">
                 <button type="button" onClick={() => setConfirmModal({ show: false })} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'border-white/30 text-white' : 'border-[#03045E]/30 text-[#03045E]'}`}>Cancel</button>
-                <button type="button" onClick={submitTicket} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'bg-white text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`}>Yes, Submit</button>
+               <button 
+  type="button" 
+  onClick={submitTicket} 
+  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${isContrast ? 'bg-white !text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`}
+  style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
+>
+  Yes, Submit
+</button>
               </div>
             </div>
           </div>
@@ -2361,7 +2369,14 @@ export function ContactSupport() {
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-black mb-2">Ticket Submitted!</h3>
               <p className="text-sm font-medium mb-6 opacity-70">{successModal.message}</p>
-              <button type="button" onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }} className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-[#2C7FFF] text-white border-[#2C7FFF]">Got it, thanks!</button>
+            <button 
+  type="button" 
+  onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }} 
+  className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${isContrast ? 'bg-white !text-black border-white' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`}
+  style={isContrast ? { WebkitTextFillColor: '#000000' } : {}}
+>
+  Got it, thanks!
+</button>
             </div>
           </div>
         </div>,
