@@ -2169,15 +2169,15 @@ export function ContactSupport() {
     }
   };
 
-  return (
+   return (
     <PageLayout title="Help and Support">
-      {/* CHANGED: max-w-6xl to max-w-[1700px] to match the header/footer width */}
-      <div className="w-full max-w-[1700px] mx-auto flex flex-col gap-8 py-6 sm:py-10 px-4 sm:px-6 md:px-8">
+      {/* Fixed: Restored the proper standard width and removed the wide stretching */}
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 py-6 sm:py-10 px-4 sm:px-6">
         
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           
-          {/* LEFT SIDE: Information Cards (Identical to EmployerContact) */}
-         <div className="md:col-span-4 flex flex-col gap-4">
+          {/* LEFT SIDE: Information Cards */}
+          <div className="lg:col-span-4 flex flex-col gap-4">
             <div className={`p-5 rounded-xl border-2 shadow-sm ${isContrast ? 'bg-[#111111] border-white/20 text-white' : 'bg-white border-[#03045E]/10 text-[#03045E]'}`}>
               <h3 className="text-sm font-black uppercase tracking-wider mb-1">System Name</h3>
               <p className="text-sm font-semibold">ABLEWORK</p>
@@ -2215,8 +2215,8 @@ export function ContactSupport() {
             </div>
           </div>
 
-          {/* RIGHT SIDE: Submit Ticket Form (Identical to EmployerContact) */}
-         <div className="md:col-span-8">
+          {/* RIGHT SIDE: Submit Ticket Form */}
+          <div className="lg:col-span-8">
             <h2 className={`text-xl font-black mb-4 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>Submit a Support Ticket</h2>
             
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
