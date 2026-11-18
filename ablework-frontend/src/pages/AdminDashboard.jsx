@@ -39,7 +39,8 @@ export default function AdminDashboard() {
   const [employerModal, setEmployerModal] = useState({ isOpen: false, user: null });
   const [rejectModal, setRejectModal] = useState({ isOpen: false, userId: null, reason: '' });
   const [approveModal, setApproveModal] = useState({ isOpen: false, userId: null });
-  const [disableModal, setDisableModal] = useState({ isOpen: false, userId: null, user: null, reasons: [], days: 7 });
+// Updated to track both reported reasons (for display) and selected reasons (for calculation)
+  const [disableModal, setDisableModal] = useState({ isOpen: false, userId: null, user: null, reportedReasons: [], selectedReasons: [], days: 0 });
   const [restoreModal, setRestoreModal] = useState({ isOpen: false, userId: null });
   const [confirmPopup, setConfirmPopup] = useState({ isOpen: false, type: null, userId: null, reason: null, loading: false });
   const [approveLoading, setApproveLoading] = useState(false);
@@ -220,68 +221,74 @@ export default function AdminDashboard() {
     }
   };
 
-const openDisableModal = async (user) => {
-    let reasons = [];
-    let calculatedDays = 0;
-    
-    // Penalty mapping based on severity
-    const penaltyMap = {
-      'Fake or Scam Job Offer': 30,
-      'Harassment or Bullying': 14,
-      'Discriminatory Job Posting': 14,
-      'Payment or Fee Request': 14,
-      'Inappropriate or Offensive Content': 7,
-      'Account Impersonation': 7,
-      'Misleading Company Information': 7,
-      'Spam or Duplicate Posting': 3,
-      'Unresponsive Employer': 3,
-      'Other': 3
-    };
+const penaltyMap = {
+    'Fake or Scam Job Offer': 30,
+    'Payment or Fee Request': 30,
+    'Harassment or Bullying': 14,
+    'Discriminatory Job Posting': 14,
+    'Inappropriate or Offensive Content': 7,
+    'Account Impersonation': 7,
+    'Misleading Company Information': 7,
+    'Spam or Duplicate Posting': 3,
+    'Unresponsive Employer': 3,
+    'Other': 3
+  };
 
+  const openDisableModal = async (user) => {
+    let fetchedReportedReasons = [];
+    
     try {
-      // Fetch open tickets for this specific user
       const res = await fetch(`${API_BASE_URL}/api/admin/support/tickets?reported_user_id=${user.user_id}&status=Open`);
       if (res.ok) {
         const tickets = await res.json();
         
-        // Extract all unique reasons across all open tickets
-        reasons = tickets.flatMap(t => {
+        fetchedReportedReasons = tickets.flatMap(t => {
           let r = t.reasons;
           if (typeof r === 'string') { try { r = JSON.parse(r); } catch { r = []; } }
           return Array.isArray(r) ? r : [];
         });
-        reasons = [...new Set(reasons)];
-        
-        // Calculate total penalty days based on the highest severity reason
-        reasons.forEach(r => {
-          if (penaltyMap[r] && penaltyMap[r] > calculatedDays) {
-            calculatedDays = penaltyMap[r];
-          }
-        });
+        fetchedReportedReasons = [...new Set(fetchedReportedReasons)];
       }
     } catch (e) { 
       console.error(e); 
     }
 
-    // Fallback to 7 days if no reasons were found but admin still clicked disable
-    if (calculatedDays === 0) calculatedDays = 7;
-
-    setDisableModal({ isOpen: true, userId: user.user_id, user, reasons, days: calculatedDays });
+    setDisableModal({ 
+      isOpen: true, 
+      userId: user.user_id, 
+      user, 
+      reportedReasons: fetchedReportedReasons,
+      selectedReasons: [], 
+      days: 0 
+    });
   };
 
-const confirmDisable = () => {
+  const toggleDisableReason = (reason) => {
+    setDisableModal(prev => {
+      const newReasons = prev.selectedReasons.includes(reason)
+        ? prev.selectedReasons.filter(r => r !== reason)
+        : [...prev.selectedReasons, reason];
+
+      let maxDays = 0;
+      newReasons.forEach(r => {
+        if (penaltyMap[r] && penaltyMap[r] > maxDays) {
+          maxDays = penaltyMap[r];
+        }
+      });
+
+      return { ...prev, selectedReasons: newReasons, days: maxDays };
+    });
+  };
+
+  const confirmDisable = () => {
+    if (disableModal.selectedReasons.length === 0) {
+      alert("Please select at least one violation reason.");
+      return;
+    }
     if (disableModal.userId) {
       setDisableLoading(true);
       setTimeout(() => {
-        // Find the open ticket ID for this user if one exists
-        let ticketId = null;
-        if (disableModal.user && disableModal.user.user_id) {
-           // We pass a dummy parameter here, but in a full implementation you would 
-           // store the active ticket ID in the disableModal state during openDisableModal.
-           // For now, the backend will just ban them via the account-status route.
-        }
-        
-        handleAccountStatus(disableModal.userId, 'Disabled', Number(disableModal.days), disableModal.reasons);
+        handleAccountStatus(disableModal.userId, 'Disabled', Number(disableModal.days), disableModal.selectedReasons);
         setDisableLoading(false);
       }, 2000);
     }
@@ -1757,17 +1764,17 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
             </div>
           )}
 
-          {/* DISABLE ACCOUNT MODAL — with report reasons + penalty days */}
+{/* DISABLE ACCOUNT MODAL — Admin Manually Selects Reasons */}
           {disableModal.isOpen && disableModal.user && (
             <div
               className="fixed inset-0 z-[99999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-300"
               style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)' }}
             >
-              <div className={`relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border-2 ${isDark ? 'bg-black border-white' : 'bg-white border-[#DC2626]'}`}>
-                <div className="h-2 w-full bg-[#DC2626]" />
-                <div className="p-6 sm:p-8">
+              <div className={`relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border-2 flex flex-col max-h-[90vh] ${isDark ? 'bg-black border-white' : 'bg-white border-[#DC2626]'}`}>
+                <div className="h-2 w-full bg-[#DC2626] shrink-0" />
+                <div className="p-6 sm:p-8 overflow-y-auto flex-1">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 ${isDark ? 'border-white' : 'border-[#DC2626]'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 shrink-0 ${isDark ? 'border-white' : 'border-[#DC2626]'}`}>
                       <svg className={`w-6 h-6 ${isDark ? 'text-white' : 'text-[#DC2626]'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                       </svg>
@@ -1780,13 +1787,13 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     </div>
                   </div>
 
-                  {disableModal.reasons.length > 0 ? (
+                  {disableModal.reportedReasons.length > 0 ? (
                     <div className={`p-3 rounded-lg border-2 mb-4 ${isDark ? 'bg-zinc-900 border-white/20' : 'bg-amber-50 border-amber-300'}`}>
                       <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${isDark ? 'text-white/60' : 'text-amber-800'}`}>
-                        Report Reasons ({disableModal.reasons.length})
+                        Reported Reasons in Support Tickets ({disableModal.reportedReasons.length})
                       </p>
                       <div className="flex flex-wrap gap-1.5">
-                        {disableModal.reasons.map((r, i) => (
+                        {disableModal.reportedReasons.map((r, i) => (
                           <span key={i} className={`px-2 py-0.5 rounded text-[10px] font-bold border ${isDark ? 'bg-black text-white border-white/20' : 'bg-white text-amber-900 border-amber-300'}`}>
                             {r}
                           </span>
@@ -1801,21 +1808,52 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     </div>
                   )}
 
-                  <div className={`p-4 rounded-xl border-2 mb-6 ${isDark ? 'bg-black border-white/30' : 'bg-red-50 border-red-200'}`}>
+                  <p className={`text-xs font-bold mb-3 ${isDark ? 'text-white/80' : 'text-[#03045E]/80'}`}>
+                    Select the violation(s) committed by this user to calculate the penalty duration.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
+                    {Object.keys(penaltyMap).map(reason => {
+                      const isSelected = disableModal.selectedReasons.includes(reason);
+                      return (
+                        <label 
+                          key={reason} 
+                          className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
+                            isSelected
+                              ? 'bg-[#FEE2E2] border-[#DC2626]'
+                              : isDark ? 'bg-zinc-900 border-white/20 hover:border-white/50' : 'bg-gray-50 border-gray-200 hover:border-[#DC2626]/50'
+                          }`}
+                        >
+                          <input 
+                            type="checkbox" 
+                            checked={isSelected}
+                            onChange={() => toggleDisableReason(reason)}
+                            className="mt-0.5 accent-[#DC2626]"
+                          />
+                          <div className="flex flex-col">
+                            <span className={`text-[10px] font-black leading-tight ${isSelected ? 'text-[#B91C1C]' : isDark ? 'text-white' : 'text-[#03045E]'}`}>{reason}</span>
+                            <span className={`text-[9px] font-bold ${isSelected ? 'text-[#DC2626]' : isDark ? 'text-white/50' : 'text-gray-500'}`}>{penaltyMap[reason]} days</span>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  <div className={`p-4 rounded-xl border-2 mb-6 ${isDark ? 'bg-zinc-900 border-white/30' : 'bg-red-50 border-red-200'}`}>
                     <label className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${isDark ? 'text-white/60' : 'text-red-800'}`}>
                       Calculated Penalty Duration
                     </label>
-                    <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-[#DC2626]'}`}>
-                      {disableModal.days} Days
+                    <p className={`text-2xl font-black ${disableModal.days > 0 ? (isDark ? 'text-white' : 'text-[#DC2626]') : 'text-gray-400'}`}>
+                      {disableModal.days} Day{disableModal.days !== 1 ? 's' : ''}
                     </p>
                     <p className={`text-[10px] font-bold mt-2 ${isDark ? 'text-white/60' : 'text-red-700'}`}>
                       The system automatically calculated this penalty duration based on the severity of the reported violations. The account will auto-restore after expiry.
                     </p>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 mt-auto shrink-0">
                     <button
-                      onClick={() => setDisableModal({ isOpen: false, userId: null, user: null, reasons: [], days: 7 })}
+                      onClick={() => setDisableModal({ isOpen: false, userId: null, user: null, reportedReasons: [], selectedReasons: [], days: 0 })}
                       disabled={disableLoading}
                       className={`flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider border-2 transition cursor-pointer disabled:opacity-50 ${isDark ? 'text-white border-white hover:bg-white hover:text-black' : 'text-[#03045E] border-[#03045E] hover:bg-[#03045E] hover:text-white'}`}
                     >
@@ -1823,8 +1861,8 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     </button>
                     <button
                       onClick={confirmDisable}
-                      disabled={disableLoading}
-                      className="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider border-2 bg-[#DC2626] text-white border-[#DC2626] hover:bg-[#b91c1c] transition cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2"
+                      disabled={disableLoading || disableModal.days === 0}
+                      className="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider border-2 bg-[#DC2626] text-white border-[#DC2626] hover:bg-[#b91c1c] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {disableLoading ? (
                         <>
