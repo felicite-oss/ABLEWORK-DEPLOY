@@ -1753,89 +1753,79 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     </div>
 
                     {employerModal.user.verification_status !== 'Approved' && (
-                    <div className={`flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/10'} shrink-0`}>
-                      <button
-                        onClick={() => {
-                          const userId = employerModal.user.user_id;
-                          setEmployerModal({ isOpen: false, user: null });
-                          setRejectModal({ isOpen: true, userId: userId, reason: '' });
-                        }}
-                        className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
-                      >
-                        ✕ Reject & Cooldown
-                      </button>
-                      <button
-                        onClick={() => {
-                          const userId = employerModal.user.user_id;
-                          setEmployerModal({ isOpen: false, user: null });
-                          setConfirmPopup({ isOpen: true, type: 'approve', userId: userId, reason: null, loading: false });
-                        }}
-                        className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 shadow-md transition cursor-pointer flex items-center justify-center gap-2 bg-[#10b981] text-white border-[#10b981]`}
-                      >
-                        ✓ Approve Employer Permit
-                      </button>
-                    </div>
-                  )}
-                  </div>
-
-                  {/* Right Side: Verification Guide (1/3 width) */}
-                  <div className={`lg:col-span-1 flex flex-col ${surfaceBg} p-4 sm:p-6 lg:h-full lg:overflow-y-auto`}>
-                    <div className="flex items-center gap-3 mb-5 shrink-0 px-2 sm:px-0">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm shrink-0 ${isDark ? 'bg-white/10 text-white border-white/30' : 'bg-[#8b5cf6]/15 text-[#6d28d9] border-[#8b5cf6]/30'}`}>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className={`text-sm font-black leading-tight ${txtMain}`}>Verification Guide</h3>
-                        <p className={`text-[10px] font-bold ${txtMuted}`}>Official screening protocols</p>
-                      </div>
-                    </div>
-
-                    <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-1">
-                      
-                      {/* 1. DTI Certificate */}
-                      <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-black border-white/15' : 'bg-white border-[#03045E]/10'}`}>
-                        <h4 className={`text-xs font-black mb-2 flex items-center gap-1.5 ${txtMain}`}>
-                          <span className="w-2 h-2 rounded-full bg-[#2C7FFF] shrink-0"></span>
-                          1. DTI Certificate
-                        </h4>
-                        <ul className={`text-[10px] font-semibold leading-relaxed mb-4 space-y-2 pl-3 border-l-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/10'} ${txtMuted}`}>
-                          <li><strong className={txtMain}>Scan QR:</strong> Scan the QR code on the certificate with your phone to confirm details.</li>
-                          <li><strong className={txtMain}>Search Online:</strong> Go to the DTI Business Name Search portal to verify the exact details.</li>
-                          <li><strong className={txtMain}>Keep in mind:</strong> A DTI certificate registers a business name—it is not a permit to operate.</li>
-                        </ul>
-                        <button onClick={handleDtiPortalLaunch} className={`w-full py-3 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer`}>
-                          Launch DTI Portal ↗
+                      <div className={`flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/10'} shrink-0`}>
+                        <button
+                          onClick={() => {
+                            const userId = employerModal.user.user_id;
+                            setEmployerModal({ isOpen: false, user: null });
+                            setRejectModal({ isOpen: true, userId: userId, reason: '' });
+                          }}
+                          className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
+                        >
+                          ✕ Reject & Cooldown
+                        </button>
+                        <button
+                          onClick={() => {
+                            const userId = employerModal.user.user_id;
+                            setEmployerModal({ isOpen: false, user: null });
+                            setConfirmPopup({ isOpen: true, type: 'approve', userId: userId, reason: null, loading: false });
+                          }}
+                          className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 shadow-md transition cursor-pointer flex items-center justify-center gap-2 bg-[#10b981] text-white border-[#10b981]`}
+                        >
+                          ✓ Approve Employer Permit
                         </button>
                       </div>
+                    )}
+                  </div>
 
-                      {/* 2. SEC Registration */}
-                      <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-black border-white/15' : 'bg-white border-[#03045E]/10'}`}>
-                        <h4 className={`text-xs font-black mb-2 flex items-center gap-1.5 ${txtMain}`}>
-                          <span className="w-2 h-2 rounded-full bg-[#10B981] shrink-0"></span>
-                          2. SEC Registration
-                        </h4>
-                        <ul className={`text-[10px] font-semibold leading-relaxed space-y-2 pl-3 border-l-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/10'} ${txtMuted}`}>
-                          <li><strong className={txtMain}>Check Official Tools:</strong> Look up the company via sec.gov.ph, SEC Check App, or eSPARC portal.</li>
-                          <li><strong className={txtMain}>Match Details:</strong> Verify corporate name, status, and registered address align with what is presented.</li>
-                        </ul>
+                  {/* Right Side: Official Verification Links (1/3 width) */}
+                  <div className={`lg:col-span-1 flex flex-col ${surfaceBg} p-3 sm:p-6 justify-center items-center text-center lg:h-full lg:overflow-y-auto gap-4`}>
+                    
+                    {/* DTI Portal Link Card */}
+                    <div className={`w-full p-4 rounded-xl border shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
+                      <div className="w-9 h-9 rounded-lg bg-[#2C7FFF]/15 text-[#2C7FFF] flex items-center justify-center mx-auto mb-2 border border-[#2C7FFF]/30">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                       </div>
-
-                      {/* 3. Mayor's Permit */}
-                      <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-black border-white/15' : 'bg-white border-[#03045E]/10'}`}>
-                        <h4 className={`text-xs font-black mb-2 flex items-center gap-1.5 ${txtMain}`}>
-                          <span className="w-2 h-2 rounded-full bg-[#f59e0b] shrink-0"></span>
-                          3. Mayor's / Business Permit
-                        </h4>
-                        <ul className={`text-[10px] font-semibold leading-relaxed space-y-2 pl-3 border-l-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/10'} ${txtMuted}`}>
-                          <li><strong className={txtMain}>Scan QR:</strong> Verify details match the printed permit if a QR code is present.</li>
-                          <li><strong className={txtMain}>Check with LGU:</strong> Verify via Bacolod eBPLS / City Online Services.</li>
-                          <li><strong className={txtMain}>Watch Validity:</strong> Issued per calendar year. Check current year coverage.</li>
-                        </ul>
-                      </div>
-
+                      <h3 className="text-xs font-black mb-1">DTI Verification</h3>
+                      <p className="text-[10px] font-bold opacity-70 mb-3">Verify Sole Proprietorship Business Name.</p>
+                      <button
+                        onClick={handleDtiPortalLaunch}
+                        className={`w-full py-2.5 ${isDark ? 'bg-white text-black hover:bg-white/90' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} font-black text-[10px] uppercase tracking-wider rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer`}
+                      >
+                        Launch DTI Portal ↗
+                      </button>
                     </div>
+
+                    {/* SEC Portal Link Card */}
+                    <div className={`w-full p-4 rounded-xl border shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
+                      <div className="w-9 h-9 rounded-lg bg-[#10B981]/15 text-[#10B981] flex items-center justify-center mx-auto mb-2 border border-[#10B981]/30">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                      </div>
+                      <h3 className="text-xs font-black mb-1">SEC Portal (eSPARC)</h3>
+                      <p className="text-[10px] font-bold opacity-70 mb-3">Verify Corporations & Partnerships.</p>
+                      <button
+                        onClick={(e) => { e.preventDefault(); window.open('https://sec.gov.ph/', '_blank'); }}
+                        className={`w-full py-2.5 ${isDark ? 'bg-white text-black hover:bg-white/90' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} font-black text-[10px] uppercase tracking-wider rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer`}
+                      >
+                        Launch SEC Portal ↗
+                      </button>
+                    </div>
+
+                    {/* eBPLS Portal Link Card */}
+                    <div className={`w-full p-4 rounded-xl border shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
+                      <div className="w-9 h-9 rounded-lg bg-[#f59e0b]/15 text-[#f59e0b] flex items-center justify-center mx-auto mb-2 border border-[#f59e0b]/30">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                      </div>
+                      <h3 className="text-xs font-black mb-1">eBPLS / LGU Portal</h3>
+                      <p className="text-[10px] font-bold opacity-70 mb-3">Verify Mayor's / Business Permit.</p>
+                      <button
+                        onClick={(e) => { e.preventDefault(); window.open('https://dict.gov.ph/ebpls/', '_blank'); }}
+                        className={`w-full py-2.5 ${isDark ? 'bg-white text-black hover:bg-white/90' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} font-black text-[10px] uppercase tracking-wider rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer`}
+                      >
+                        Launch eBPLS Portal ↗
+                      </button>
+                    </div>
+
                   </div>
 
                 </div>
