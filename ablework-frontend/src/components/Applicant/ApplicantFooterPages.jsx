@@ -696,47 +696,41 @@ export function ApplicantTerms({ onBack }) {
 export function ApplicantContact({ onBack, profile, reportedUserId }) {
   const { mode } = useContext(AccessibilityContext);
   const { paletteKey } = useColorPalette();
-  // paletteKey is used indirectly via isHighContrastOrDarkComfort
   
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isDark = isContrast || isDarkMode;
-  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   const [reasons, setReasons] = useState([]);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [proofImage, setProofImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+  const [alertMsg, setAlertMsg] = useState({ show: false, type: '', text: '' });
 
-// SweetAlert-style modals
-const [confirmModal, setConfirmModal] = useState({ show: false });
-const [successModal, setSuccessModal] = useState({ show: false, message: '' });
+  // SweetAlert-style modals
+  const [confirmModal, setConfirmModal] = useState({ show: false });
+  const [successModal, setSuccessModal] = useState({ show: false, message: '' });
 
-  // Step 1: validate, then open the SweetAlert confirmation card
   const handleSubmit = (e) => {
     e.preventDefault();
     if (reasons.length === 0) {
-      setAlert({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
+      setAlertMsg({ show: true, type: 'error', text: 'Please select at least one reason for reporting.' });
       return;
     }
     if (!subject.trim() || !message.trim()) {
-      setAlert({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
+      setAlertMsg({ show: true, type: 'error', text: 'Please fill out both the subject and the message.' });
       return;
     }
-
-    setAlert({ show: false, type: '', text: '' });
-    setConfirmModal({ show: true }); // open confirmation card
+    setAlertMsg({ show: false, type: '', text: '' });
+    setConfirmModal({ show: true });
   };
 
-  // Step 2: actual submission after the user confirms (with 2s minimum loading)
   const submitTicket = async () => {
     setConfirmModal({ show: false });
     setIsSubmitting(true);
-    setAlert({ show: false, type: '', text: '' });
+    setAlertMsg({ show: false, type: '', text: '' });
 
-    // Minimum 2-second loading timer
     const loadingTimer = new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
@@ -749,9 +743,6 @@ const [successModal, setSuccessModal] = useState({ show: false, message: '' });
       formData.append('subject', subject);
       formData.append('message', message);
       
-      // 🚨 ADD THIS LINE:
-      // This tells the backend which user is being reported so the Admin can see their reasons.
-      // It will use the explicitly passed reportedUserId, or fallback to the profile ID.
       const targetReportedId = reportedUserId || profile?.user_id || profile?.id;
       if (targetReportedId) {
         formData.append('reported_user_id', targetReportedId);
@@ -761,7 +752,6 @@ const [successModal, setSuccessModal] = useState({ show: false, message: '' });
         formData.append('proof_image', proofImage);
       }
 
-      // Run fetch and the 2s timer in parallel so the loader is visible at least 2s
       const [res] = await Promise.all([
         fetch(`${API_BASE_URL}/api/support/ticket`, {
           method: 'POST',
@@ -782,35 +772,34 @@ const [successModal, setSuccessModal] = useState({ show: false, message: '' });
         setMessage('');
         setProofImage(null);
       } else {
-        setAlert({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
+        setAlertMsg({ show: true, type: 'error', text: data.message || 'Failed to submit.' });
       }
     } catch (err) {
       console.error(err);
       await loadingTimer;
-      setAlert({ show: true, type: 'error', text: 'Network error. Please try again later.' });
+      setAlertMsg({ show: true, type: 'error', text: 'Network error. Please try again later.' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   // Adaptive colors for the form
-  const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-white border-[#03045E]/10';
-  const textColor = isDark ? 'text-white' : 'text-[#03045E]';
+  const cardBg = isDark ? 'bg-[#111111] border-white/20' : 'bg-[var(--color-surface,#f4f4f4)] border-[var(--color-border,rgba(3,4,94,0.1))]';
+  const textColor = isDark ? 'text-white' : 'text-[var(--color-text,#03045E)]';
   const mutedText = isDark ? 'text-white/70' : 'text-[#03045E]/70';
- const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
+  const inputBg = isDark ? 'bg-black border-white/30 text-white placeholder-white/40' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] placeholder-[#03045E]/50';
 
-// Modal theme helpers
-const modalBg = isDark ? 'bg-[#111111]' : 'bg-white';
-const modalText = isDark ? 'text-white' : 'text-[#03045E]';
-const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+  const modalBg = isDark ? 'bg-[#111111]' : 'bg-white';
+  const modalText = isDark ? 'text-white' : 'text-[#03045E]';
+  const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
+
   return (
     <ApplicantPageLayout
       title="Help and Support"
       subtitle="Get assistance with your dashboard, applications, or report suspicious activity"
       onBack={onBack}
     >
-      <div className="grid md:grid-cols-2 gap-8">
-
+      <div className="grid md:grid-cols-2 gap-8 animate-in fade-in duration-300">
         {/* LEFT SIDE: INFO CARDS */}
         <div className="space-y-6">
           {[
@@ -832,24 +821,18 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
           ))}
         </div>
 
-{/* RIGHT SIDE: SUPPORT FORM */}
-        {/* ADDED noValidate to prevent native HTML floating tooltips */}
+        {/* RIGHT SIDE: SUPPORT FORM */}
         <form className="space-y-4" onSubmit={handleSubmit} noValidate>
           <h3 tabIndex="0" className={`text-lg font-bold focus:outline-none focus-visible:underline ${textColor}`}>
             Submit a Support Ticket
           </h3>
           
-          {/* ACCESSIBLE ALERT BANNER - STRICTLY BLUE */}
-          {alert.show && (
-            <div 
-              role="alert"
-              className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]"
-            >
-              {alert.text}
+          {alertMsg.show && (
+            <div role="alert" className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]">
+              {alertMsg.text}
             </div>
           )}
 
-          {/* REPORT REASON CHECKLIST */}
           <fieldset>
             <legend className={`block text-xs font-bold mb-2 ${mutedText}`}>
               What are you reporting? <span className="text-[#2C7FFF]">(select all that apply)</span>
@@ -886,61 +869,48 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             </div>
           </fieldset>
 
-          {/* RESTORED SUBJECT INPUT */}
-<div>
-  <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
-  <input
-    id="ticket-subject"
-    type="text"
-    value={subject}
-    onChange={(e) => setSubject(e.target.value)}
-    placeholder="Subject / Issue Summary"
-    style={{
-      color: isDark ? '#ffffff' : 'var(--color-text)',
-      caretColor: isDark ? '#ffffff' : 'var(--color-text)',
-    }}
-    className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] placeholder:text-[var(--color-textMuted)] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
-    disabled={isSubmitting}
-  />
-</div>
-
-<div>
-  <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
-  <textarea
-    id="ticket-message"
-    rows="4"
-    value={message}
-    onChange={(e) => setMessage(e.target.value)}
-    placeholder="Describe your issue, question, or report suspicious activity..."
-    style={{
-      color: isDark ? '#ffffff' : 'var(--color-text)',
-      caretColor: isDark ? '#ffffff' : 'var(--color-text)',
-    }}
-    className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] placeholder:text-[var(--color-textMuted)] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
-    disabled={isSubmitting}
-  />
-</div>
-
-          {/* PROOF IMAGE UPLOAD */}
           <div>
-            <label className={`block text-xs font-bold mb-2 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
-            <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
-              isDark ? 'bg-black border-white/30' : 'bg-white border-[#03045E]/15'
-            }`}>
-              <label className={`px-4 py-2 text-xs font-bold rounded cursor-pointer transition ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'}`}>
-                Choose File
-                <input 
-                  type="file" 
-                  className="hidden" 
-                  accept="image/*,.pdf" 
-                  disabled={isSubmitting}
-                  onChange={(e) => setProofImage(e.target.files[0])}
-                />
-              </label>
-              <span className={`text-xs font-medium opacity-60 ${textColor}`}>
-                {proofImage ? proofImage.name : 'No file chosen'}
-              </span>
-            </div>
+            <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
+            <input
+              id="ticket-subject"
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Subject / Issue Summary"
+              style={{ color: isDark ? '#ffffff' : 'var(--color-text)', caretColor: isDark ? '#ffffff' : 'var(--color-text)' }}
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] placeholder:text-[var(--color-textMuted)] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
+            <textarea
+              id="ticket-message"
+              rows="4"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Describe your issue, question, or report suspicious activity..."
+              style={{ color: isDark ? '#ffffff' : 'var(--color-text)', caretColor: isDark ? '#ffffff' : 'var(--color-text)' }}
+              className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] placeholder:text-[var(--color-textMuted)] ${isDark ? 'bg-black border-white/30' : 'bg-[#f4f4f4] border-[#03045E]/15'}`}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div>
+            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setProofImage(e.target.files[0])}
+              style={{
+                color: isDark ? '#ffffff' : '#03045e',
+                '--file-btn-bg': isDark ? '#ffffff' : 'var(--color-primary, #2C7FFF)',
+                '--file-btn-text': isDark ? '#000000' : 'var(--color-buttonText, #ffffff)',
+              }}
+              className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${inputBg} file:bg-[var(--file-btn-bg)] file:text-[var(--file-btn-text)] hover:opacity-90`}
+              disabled={isSubmitting}
+            />
           </div>
 
           <button
@@ -953,22 +923,23 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
             }`}
           >
-<span className="flex items-center gap-2">
-  {isSubmitting ? (
-    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-  ) : (
-    <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-white opacity-80'} group-hover:bg-white transition-colors`} />
-  )}
-  {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
-</span>
-                     <span className={`w-7 h-7 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-1 ${isDark ? 'bg-black/10 text-black' : 'bg-white/20 text-white'}`}>
+            <span className="flex items-center gap-2">
+              {isSubmitting ? (
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+              ) : (
+                <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-white opacity-80'} group-hover:bg-white transition-colors`} />
+              )}
+              {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
+            </span>
+            <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-white">
               →
             </span>
-            </button>
+          </button>
         </form>
       </div>
-      {/* ===== SUCCESS SWEETALERT CARD ===== */}
-      {successModal.show && ReactDOM.createPortal(
+
+      {/* ===== CONFIRMATION SWEETALERT CARD ===== */}
+      {confirmModal.show && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
           style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
@@ -977,7 +948,6 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
           aria-labelledby="confirm-title"
           onClick={() => setConfirmModal({ show: false })}
         >
-          {/* ... keep all the inner code exactly the same ... */}
           <div
             className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
             onClick={(e) => e.stopPropagation()}
@@ -995,7 +965,7 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 Are you sure you want to submit this support ticket? Please review your details before proceeding.
               </p>
               <div className="flex w-full gap-3">
-                             <button
+                <button
                   type="button"
                   onClick={() => setConfirmModal({ show: false })}
                   className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${
@@ -1006,7 +976,7 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
                 >
                   Cancel
                 </button>
-                                 <button
+                <button
                   type="button"
                   onClick={submitTicket}
                   className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer ${
@@ -1024,8 +994,8 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
         document.body
       )}
 
-          {/* ===== SUCCESS SWEETALERT CARD ===== */}
-      {successModal.show && createPortal(
+      {/* ===== SUCCESS SWEETALERT CARD ===== */}
+      {successModal.show && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in duration-200"
           style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)' }}
@@ -1038,18 +1008,16 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             className={`w-full max-w-md rounded-2xl p-6 shadow-2xl border-2 ${modalBg} ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} animate-in zoom-in-95`}
             onClick={(e) => e.stopPropagation()}
           >
-                           <div className="flex flex-col items-center text-center">
-              <div 
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg"
-                style={{ backgroundColor: 'var(--color-primary, #2C7FFF)' }}
-              >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#2C7FFF] flex items-center justify-center mb-4 shadow-lg">
                 <svg 
                   className="w-9 h-9" 
                   fill="none" 
-                  stroke="var(--color-background, #ffffff)" 
+                  stroke={isDark ? "#000000" : "currentColor"} 
                   strokeWidth="3" 
                   viewBox="0 0 24 24" 
                   aria-hidden="true"
+                  style={isDark ? { color: '#000000' } : { color: '#ffffff' }}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
@@ -1062,13 +1030,13 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
               </p>
               <button
                 type="button"
-                onClick={() => setSuccessModal({ show: false, message: '' })}
-                className="w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors hover:opacity-90"
-                style={{ 
-                  backgroundColor: 'var(--color-primary, #2C7FFF)', 
-                  borderColor: 'var(--color-primary, #2C7FFF)', 
-                  color: 'var(--color-background, #ffffff)' 
-                }}
+                onClick={() => { setSuccessModal({ show: false, message: '' }); if (onBack) onBack(); }}
+                className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${
+                  isDark 
+                    ? 'bg-[#2C7FFF] border-[#2C7FFF]' 
+                    : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
+                }`}
+                style={isDark ? { color: '#000000' } : {}}
               >
                 Got it, thanks!
               </button>
