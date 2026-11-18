@@ -2171,7 +2171,7 @@ export function ContactSupport() {
 
   return (
     <PageLayout title="Help and Support">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 ">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
           
