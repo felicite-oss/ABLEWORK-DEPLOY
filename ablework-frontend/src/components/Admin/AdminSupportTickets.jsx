@@ -136,11 +136,11 @@ export function AdminSupportTickets({ onTicketResolved }) {
                   <td className="py-4 px-6">
                     <p className={`text-sm font-black truncate max-w-[200px] sm:max-w-xs ${isDark ? 'text-white' : 'text-[#03045E]'}`}>{ticket.subject}</p>
                     <div className="flex flex-wrap items-center gap-1 mt-1">
-                      <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
-                        ticket.status === 'Open' ? 'bg-[#2C7FFF] !text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-gray-200 text-gray-600')
-                      }`}>
-                        {ticket.status}
-                      </span>
+                     <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+  ticket.status === 'Open' ? (isDark ? 'bg-white !text-black' : 'bg-[#2C7FFF] !text-white') : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-gray-200 text-gray-600')
+}`}>
+  {ticket.status}
+</span>
                     </div>
                     {/* Tags for reasons shown in the list view */}
                     {Array.isArray(ticket.reasons) && ticket.reasons.length > 0 && (
@@ -171,16 +171,16 @@ export function AdminSupportTickets({ onTicketResolved }) {
                     </p>
                   </td>
                   <td className="py-4 px-6 text-right">
-                    <button
-                      onClick={() => setSelectedTicket(ticket)}
-                      className={`px-4 py-2 border-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-colors cursor-pointer ${
-                        isDark 
-                          ? 'bg-white !text-black border-white hover:bg-gray-200' 
-                          : 'bg-[#2C7FFF] !text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
-                      }`}
-                    >
-                      View Details
-                    </button>
+<button
+  onClick={() => setSelectedTicket(ticket)}
+  className={`px-4 py-2 border-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-colors cursor-pointer ${
+    isDark 
+      ? 'bg-black !text-white border-white hover:bg-white/10' 
+      : 'bg-[#2C7FFF] !text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
+  }`}
+>
+  View Details
+</button>
                   </td>
                 </tr>
               ))}
@@ -295,17 +295,17 @@ export function AdminSupportTickets({ onTicketResolved }) {
             {/* Modal Footer */}
             {selectedTicket.status === 'Open' && (
               <div className={`p-6 border-t-2 flex flex-col sm:flex-row justify-end gap-3 mt-auto ${isDark ? 'border-white/10 bg-zinc-900' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
-                <button
-                  onClick={() => handleResolve(selectedTicket.id)}
-                  className={`px-8 py-3 border-2 text-xs font-black uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
-                    isDark 
-                      ? 'bg-white !text-black border-white hover:bg-gray-200' 
-                      : 'bg-[#03045E] !text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                  Mark as Resolved
-                </button>
+      <button
+  onClick={() => handleResolve(selectedTicket.id)}
+  className={`px-8 py-3 border-2 text-xs font-black uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
+    isDark 
+      ? 'bg-black !text-white border-white hover:bg-white/10' 
+      : 'bg-[#03045E] !text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+  }`}
+>
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+  Mark as Resolved
+</button>
               </div>
             )}
           </div>
