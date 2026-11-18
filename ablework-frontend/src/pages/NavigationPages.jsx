@@ -2170,8 +2170,8 @@ export function ContactSupport() {
   };
 
   return (
-    <PageLayout title="Help and Support">
-      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
+        <PageLayout title="Help and Support">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 py-6 sm:py-10">
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
           
@@ -2253,75 +2253,72 @@ export function ContactSupport() {
                 </div>
               </fieldset>
 
-              {/* Subject Input */}
+                           {/* Subject Input */}
               <div>
+                <label htmlFor="ticket-subject" className="sr-only">Subject / Issue Summary</label>
                 <input
+                  id="ticket-subject"
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   disabled={isSubmitting}
                   placeholder="Subject / Issue Summary"
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-[#03045E]'
+                  className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] placeholder:text-[var(--color-textMuted)] ${
+                    isContrast ? 'bg-black border-white/30 text-white' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E]'
                   }`}
                 />
               </div>
 
               {/* Description Textarea */}
               <div>
+                <label htmlFor="ticket-message" className="sr-only">Describe your issue or question</label>
                 <textarea
+                  id="ticket-message"
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   disabled={isSubmitting}
                   placeholder="Describe your issue, question, or report suspicious activity..."
-                  className={`w-full p-3 rounded-lg border-2 focus:outline-none focus:border-[#2C7FFF] text-sm font-medium resize-none ${
-                    isContrast ? 'bg-black border-zinc-600 text-white' : 'bg-white border-gray-200 text-[#03045E]'
+                  className={`w-full p-3.5 border-2 rounded-xl text-sm font-medium focus:outline-none focus:border-[#2C7FFF] placeholder:text-[var(--color-textMuted)] ${
+                    isContrast ? 'bg-black border-white/30 text-white' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E]'
                   }`}
                 />
               </div>
-
               {/* File Attachment */}
               <div>
-                <p className={`text-xs font-bold mb-2 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
-                <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
-                  isContrast ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-gray-200'
-                }`}>
-                  <label className="px-4 py-2 bg-[#03045E] text-white text-xs font-bold rounded cursor-pointer hover:bg-[#2C7FFF] transition">
-                    Choose File
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*,.pdf" 
-                      disabled={isSubmitting}
-                      onChange={(e) => setProofImage(e.target.files[0])}
-                    />
-                  </label>
-                  <span className={`text-xs font-medium opacity-60 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>
-                    {proofImage ? proofImage.name : 'No file chosen'}
-                  </span>
-                </div>
+                <p className={`text-xs font-bold mb-1 ${isContrast ? 'text-white' : 'text-[#03045E]'}`}>Attach Proof <span className="text-gray-500 font-normal">(Optional Image/PDF)</span></p>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setProofImage(e.target.files[0])}
+                  disabled={isSubmitting}
+                  className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${
+                    isContrast ? 'bg-black border-white/30 text-white file:bg-white file:text-black' : 'bg-[#f4f4f4] border-[#03045E]/15 text-[#03045E] file:bg-[#2C7FFF] file:text-white'
+                  }`}
+                />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 rounded-xl font-black text-white text-lg flex items-center justify-between px-6 shadow-md transition-transform hover:scale-[1.01] disabled:opacity-50"
-                style={{ backgroundColor: '#2C7FFF' }}
+                aria-label="Submit Request Ticket"
+                className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
+                  isContrast 
+                    ? 'bg-white text-black border-white hover:bg-gray-200' 
+                    : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+                }`}
               >
                 <span className="flex items-center gap-2">
                   {isSubmitting ? (
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                   ) : (
-                    <span className="w-2 h-2 rounded-full bg-white opacity-80" />
+                    <span className={`w-2 h-2 rounded-full ${isContrast ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
                   )}
                   {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
                 </span>
-                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
+                <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-[#03045E]">
+                  →
                 </span>
               </button>
             </form>
