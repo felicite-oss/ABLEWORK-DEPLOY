@@ -486,14 +486,13 @@ export function Home() {
             ></div>
 
          {/* --- MOBILE ONLY RADIANT CURVE OVERLAY --- */}
-            <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none block sm:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
-              <defs>
-                <linearGradient id="radiant-fill-mobile" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.92" />
-                  <stop offset="65%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.82" />
-                  <stop offset="100%" stopColor={paletteKey === 'default' ? "#2C7FFF" : (palette.colors.accent || "#2C7FFF")} stopOpacity="0.78" />
-                </linearGradient>
-
+            <svg key={`mobile-${paletteKey}`} className="absolute inset-0 w-full h-full z-10 pointer-events-none block sm:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
+  <defs>
+                <linearGradient id="radiant-edge-mobile" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stopColor={paletteKey === 'default' ? "#90E0EF" : (palette.colors.accent || "#90E0EF")} stopOpacity="0.9" />
+      <stop offset="50%" stopColor={paletteKey === 'default' ? "#2C7FFF" : (palette.colors.accent || "#2C7FFF")} stopOpacity="1" />
+      <stop offset="100%" stopColor={paletteKey === 'default' ? "#00B4D8" : (palette.colors.primary || "#00B4D8")} stopOpacity="0.9" />
+    </linearGradient>
                 <linearGradient id="radiant-edge-mobile" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#90E0EF" stopOpacity="0.9" />
                   <stop offset="50%" stopColor="#2C7FFF" stopOpacity="1" />
@@ -539,13 +538,13 @@ export function Home() {
             </svg>
 
             {/* --- DESKTOP ONLY RADIANT CURVE OVERLAY --- */}
-            <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden sm:block" preserveAspectRatio="none" viewBox="0 0 100 100">
-              <defs>
-                <linearGradient id="radiant-fill-desktop" x1="0%" y1="0%" x2="85%" y2="100%">
-                  <stop offset="0%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.92" />
-                  <stop offset="65%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.80" />
-                  <stop offset="100%" stopColor={paletteKey === 'default' ? "#2C7FFF" : (palette.colors.accent || "#2C7FFF")} stopOpacity="0.75" />
-                </linearGradient>
+            <svg key={`desktop-${paletteKey}`} className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden sm:block" preserveAspectRatio="none" viewBox="0 0 100 100">
+  <defs>
+             <linearGradient id="radiant-edge-desktop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stopColor={paletteKey === 'default' ? "#90E0EF" : (palette.colors.accent || "#90E0EF")} stopOpacity="0.85" />
+      <stop offset="50%" stopColor={paletteKey === 'default' ? "#2C7FFF" : (palette.colors.accent || "#2C7FFF")} stopOpacity="1" />
+      <stop offset="100%" stopColor={paletteKey === 'default' ? "#00B4D8" : (palette.colors.primary || "#00B4D8")} stopOpacity="0.85" />
+    </linearGradient>
 
                 <linearGradient id="radiant-edge-desktop" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#90E0EF" stopOpacity="0.85" />
