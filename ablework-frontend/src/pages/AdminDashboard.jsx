@@ -1796,20 +1796,6 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                       </button>
                     </div>
 
-                    {/* SEC Portal Link Card */}
-                    <div className={`w-full p-4 rounded-xl border shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
-                      <div className="w-9 h-9 rounded-lg bg-[#10B981]/15 text-[#10B981] flex items-center justify-center mx-auto mb-2 border border-[#10B981]/30">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                      </div>
-                      <h3 className="text-xs font-black mb-1">SEC Portal (eSPARC)</h3>
-                      <p className="text-[10px] font-bold opacity-70 mb-3">Verify Corporations & Partnerships.</p>
-                      <button
-                        onClick={(e) => { e.preventDefault(); window.open('https://sec.gov.ph/', '_blank'); }}
-                        className={`w-full py-2.5 ${isDark ? 'bg-white text-black hover:bg-white/90' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} font-black text-[10px] uppercase tracking-wider rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer`}
-                      >
-                        Launch SEC Portal ↗
-                      </button>
-                    </div>
 
                     {/* eBPLS Portal Link Card */}
                     <div className={`w-full p-4 rounded-xl border shadow-sm ${isDark ? 'bg-black border-white/20 text-white' : 'bg-white border-[#03045E]/20 text-[#03045E]'}`}>
