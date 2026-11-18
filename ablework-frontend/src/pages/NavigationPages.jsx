@@ -2293,7 +2293,7 @@ export function ContactSupport() {
               {/* File Attachment */}
               <div>
                 <label className={`block text-xs font-bold mb-1 ${isContrast ? 'text-white/70' : 'text-[#03045E]/70'}`}>Attach Proof (Optional Image/PDF)</label>
-                                  <input
+                               <input
                   type="file"
                   accept="image/*,.pdf"
                   onChange={(e) => setProofImage(e.target.files[0])}
@@ -2307,7 +2307,7 @@ export function ContactSupport() {
               </div>
 
               {/* Submit Button */}
-                        <button
+              <button
                 type="submit"
                 disabled={isSubmitting}
                 aria-label="Submit Request Ticket"
@@ -2360,7 +2360,7 @@ export function ContactSupport() {
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-black mb-2">Ticket Submitted!</h3>
               <p className="text-sm font-medium mb-6 opacity-70">{successModal.message}</p>
-              <button type="button" onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }} className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${isContrast ? 'bg-white !text-black border-white hover:bg-gray-200' : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E]'}`}>Got it, thanks!</button>
+                          <button type="button" onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }} className={`w-full py-3 px-4 rounded-xl font-bold text-sm border-2 cursor-pointer transition-colors ${isContrast ? 'bg-white !text-black border-white hover:bg-gray-200' : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E]'}`}>Got it, thanks!</button>
             </div>
           </div>
         </div>,
