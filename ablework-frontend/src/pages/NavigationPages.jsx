@@ -485,34 +485,112 @@ export function Home() {
               style={{ backgroundImage: `url(${backgroundImg})` }}
             ></div>
 
-            {/* --- MOBILE ONLY CURVE OVERLAY --- */}
+         {/* --- MOBILE ONLY RADIANT CURVE OVERLAY --- */}
             <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none block sm:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
               <defs>
-                <filter id="glass-blur-mobile">
-                  <feGaussianBlur stdDeviation="8" />
+                <linearGradient id="radiant-fill-mobile" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.92" />
+                  <stop offset="65%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.82" />
+                  <stop offset="100%" stopColor={paletteKey === 'default' ? "#2C7FFF" : (palette.colors.accent || "#2C7FFF")} stopOpacity="0.78" />
+                </linearGradient>
+
+                <linearGradient id="radiant-edge-mobile" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#90E0EF" stopOpacity="0.9" />
+                  <stop offset="50%" stopColor="#2C7FFF" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#00B4D8" stopOpacity="0.9" />
+                </linearGradient>
+
+                <filter id="radiant-glow-mobile" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
                 </filter>
               </defs>
+
+              {/* Main Gradient Curve Shape */}
               <path 
                 d="M0,0 L100,0 L100,100 L0,100 Z M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100 L100,100 L100,0 Z" 
-                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${palette.colors.primary || palette.colors.accent}B3`)} 
+                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : "url(#radiant-fill-mobile)"} 
                 fillRule="evenodd" 
                 style={{ backdropFilter: 'blur(16px)' }}
               />
+
+              {/* Radiant Glowing Rim Along the Curve */}
+              {!(isDarkMode || isContrast) && (
+                <>
+                  <path
+                    d="M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100"
+                    fill="none"
+                    stroke="url(#radiant-edge-mobile)"
+                    strokeWidth="2.5"
+                    strokeOpacity="0.5"
+                    filter="url(#radiant-glow-mobile)"
+                  />
+                  <path
+                    d="M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100"
+                    fill="none"
+                    stroke="url(#radiant-edge-mobile)"
+                    strokeWidth="0.7"
+                  />
+                </>
+              )}
             </svg>
 
-            {/* --- DESKTOP ONLY CURVE OVERLAY (Original untouched) --- */}
+            {/* --- DESKTOP ONLY RADIANT CURVE OVERLAY --- */}
             <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden sm:block" preserveAspectRatio="none" viewBox="0 0 100 100">
               <defs>
-                <filter id="glass-blur">
-                  <feGaussianBlur stdDeviation="8" />
+                <linearGradient id="radiant-fill-desktop" x1="0%" y1="0%" x2="85%" y2="100%">
+                  <stop offset="0%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.92" />
+                  <stop offset="65%" stopColor={paletteKey === 'default' ? "#03045E" : (palette.colors.primary || palette.colors.accent)} stopOpacity="0.80" />
+                  <stop offset="100%" stopColor={paletteKey === 'default' ? "#2C7FFF" : (palette.colors.accent || "#2C7FFF")} stopOpacity="0.75" />
+                </linearGradient>
+
+                <linearGradient id="radiant-edge-desktop" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#90E0EF" stopOpacity="0.85" />
+                  <stop offset="50%" stopColor="#2C7FFF" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#00B4D8" stopOpacity="0.85" />
+                </linearGradient>
+
+                <filter id="radiant-glow-desktop" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1.8" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
                 </filter>
               </defs>
+
+              {/* Main Gradient Curve Shape */}
               <path 
                 d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
-                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${palette.colors.primary || palette.colors.accent}B3`)} 
+                fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : "url(#radiant-fill-desktop)"} 
                 fillRule="evenodd" 
                 style={{ backdropFilter: 'blur(16px)' }}
               />
+
+              {/* Radiant Glowing Rim Along the Curve */}
+              {!(isDarkMode || isContrast) && (
+                <>
+                  {/* Outer Soft Aura */}
+                  <path
+                    d="M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100"
+                    fill="none"
+                    stroke="url(#radiant-edge-desktop)"
+                    strokeWidth="2.2"
+                    strokeOpacity="0.55"
+                    filter="url(#radiant-glow-desktop)"
+                  />
+                  {/* Crisp Radiant Highlight Line */}
+                  <path
+                    d="M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100"
+                    fill="none"
+                    stroke="url(#radiant-edge-desktop)"
+                    strokeWidth="0.5"
+                  />
+                </>
+              )}
             </svg>
 
             {/* Content Wrapper */}
