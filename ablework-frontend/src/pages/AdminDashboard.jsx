@@ -650,7 +650,7 @@ const penaltyMap = {
         </div>
       )}
 
-      <header className={`w-full ${cardBg} border-b-2 ${bdrMain} fixed top-0 left-0 z-50 transition-all duration-300 shadow-sm`}>
+<header className={`w-full ${cardBg} border-b-2 ${bdrMain} fixed top-0 left-0 z-[60] transition-all duration-300 shadow-sm`}>
         <div className="w-full h-14 sm:h-16 pl-3 pr-3 sm:pl-4 sm:pr-4 md:pr-8 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6 min-w-0 flex-shrink overflow-hidden">
             <div className="flex items-center flex-shrink min-w-0 cursor-pointer overflow-hidden py-1" onClick={() => setActiveTab('Overview')}>
@@ -1008,7 +1008,7 @@ const penaltyMap = {
             />
           ) : (
           <>
-                 <div className={`sticky top-0 z-40 ${isDark ? 'bg-black' : 'bg-[#f4f4f4]'} flex flex-col -mx-3 sm:-mx-6 md:-mx-10 px-3 sm:px-6 md:px-10 pt-2 sm:pt-4 md:pt-6 pb-2`}>
+                <div className={`sticky top-0 z-20 ${isDark ? 'bg-black' : 'bg-[#f4f4f4]'} flex flex-col -mx-3 sm:-mx-6 md:-mx-10 px-3 sm:px-6 md:px-10 pt-2 sm:pt-4 md:pt-6 pb-2`}>
             <div className={`pt-0 pb-5 border-b-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/15'} flex flex-col sm:flex-row sm:items-center justify-between gap-4 pl-0`}>
               <div>
                 <h1 className={`text-3xl font-black tracking-tight ${txtMain}`}>Admin Control Center</h1>
