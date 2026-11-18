@@ -75,7 +75,16 @@ const containerMaxWidth = 'max-w-[94%] sm:max-w-md md:max-w-xl lg:max-w-2xl';
             )}
           </button>
         </div>
-        <div id="mobile-menu" className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 border-b border-[#03045E]/10 shadow-lg' : 'max-h-0 opacity-0'}`}>
+       <div
+          id="mobile-menu"
+          aria-hidden={!isOpen}
+          inert={!isOpen ? '' : undefined}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen
+              ? 'max-h-96 opacity-100 visible border-b border-[#03045E]/10 shadow-lg'
+              : 'max-h-0 opacity-0 invisible pointer-events-none'
+          }`}
+        >
           <div className="w-full bg-[#f4f4f4]">
             <nav aria-label="Mobile navigation" className={`flex flex-col px-2.5 pt-2.5 pb-2.5 gap-2 sm:px-3 sm:pt-3 sm:pb-3 sm:gap-2.5 ${isAccessibilityMode ? 'text-white' : 'text-[#03045E]'} max-w-[1700px] mx-auto`}>
               <NavLink to="/" onClick={() => setIsOpen(false)} aria-label="Home" title="Home" className={({ isActive }) => `relative flex items-center gap-2.5 text-left pl-3 pr-2.5 py-2.5 rounded-xl font-extrabold transition-all duration-300 cursor-pointer border-2 group overflow-hidden ${isActive ? 'bg-white text-[#03045E] border-[#03045E] shadow-md' : 'bg-white text-[#03045E] border-[#03045E]/25'}`}>
