@@ -272,9 +272,13 @@ const handleLogin = async (e) => {
           </button>
         </div>
 
-        <div
+       <div
+          aria-hidden={!isOpen}
+          inert={!isOpen ? '' : undefined}
           className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? `${isContrast ? 'bg-black border-b-2 border-[#2C7FFF]' : 'bg-white border-b-2 border-[#03045E]/20'} max-h-96 opacity-100 shadow-lg` : 'max-h-0 opacity-0'
+            isOpen
+              ? `${isContrast ? 'bg-black border-b-2 border-[#2C7FFF]' : 'bg-white border-b-2 border-[#03045E]/20'} max-h-96 opacity-100 visible shadow-lg`
+              : 'max-h-0 opacity-0 invisible pointer-events-none'
           }`}
         >
           <div className={`w-full ${isContrast ? 'bg-black' : 'bg-white'}`}>
