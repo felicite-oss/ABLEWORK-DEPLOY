@@ -372,6 +372,18 @@ const penaltyMap = {
     );
   };
 
+  const handleDtiPortalLaunch = (e) => {
+    e.preventDefault();
+    const popupWidth = 650; 
+    const popupHeight = window.screen.availHeight;
+    const leftPosition = window.screen.availWidth - popupWidth;
+    window.open(
+      'https://bnrs.dti.gov.ph/search',
+      'DTI_Verification_Window',
+      `width=${popupWidth},height=${popupHeight},left=${leftPosition},top=0,menubar=no,toolbar=no,location=yes,status=no,scrollbars=yes,resizable=yes`
+    );
+  };
+
   const allUsers = [...employers.map(e => ({ ...e, userType: 'Employer' })), ...applicants.map(a => ({ ...a, userType: 'Applicant' }))];
 
   const filteredOverviewUsers = allUsers.filter(user => {
@@ -1599,28 +1611,30 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                       )}
                     </div>
 
-                    <div className={`flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/10'} shrink-0`}>
-                      <button
-                        onClick={() => {
-                          const userId = pwdModal.user.user_id;
-                          setPwdModal({ isOpen: false, user: null });
-                          setRejectModal({ isOpen: true, userId: userId, reason: '' });
-                        }}
-                        className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
-                      >
-                        ✕ Reject & Cooldown
-                      </button>
-                      <button
-                        onClick={() => {
-                          const userId = pwdModal.user.user_id;
-                          setPwdModal({ isOpen: false, user: null });
-                          setConfirmPopup({ isOpen: true, type: 'approve', userId: userId, reason: null, loading: false });
-                        }}
-                        className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 shadow-md transition cursor-pointer flex items-center justify-center gap-2 bg-[#10b981] text-white border-[#10b981]`}
-                      >
-                        ✓ Approve PWD ID
-                      </button>
-                    </div>
+                    {pwdModal.user.verification_status !== 'Approved' && (
+                      <div className={`flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/10'} shrink-0`}>
+                        <button
+                          onClick={() => {
+                            const userId = pwdModal.user.user_id;
+                            setPwdModal({ isOpen: false, user: null });
+                            setRejectModal({ isOpen: true, userId: userId, reason: '' });
+                          }}
+                          className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
+                        >
+                          ✕ Reject & Cooldown
+                        </button>
+                        <button
+                          onClick={() => {
+                            const userId = pwdModal.user.user_id;
+                            setPwdModal({ isOpen: false, user: null });
+                            setConfirmPopup({ isOpen: true, type: 'approve', userId: userId, reason: null, loading: false });
+                          }}
+                          className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 shadow-md transition cursor-pointer flex items-center justify-center gap-2 bg-[#10b981] text-white border-[#10b981]`}
+                        >
+                          ✓ Approve PWD ID
+                        </button>
+                      </div>
+                    )}
 
                   </div>
 
@@ -1649,116 +1663,181 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
             </div>
           )}
 
-          {employerModal.isOpen && employerModal.user && (
+{employerModal.isOpen && employerModal.user && (
             <div
-              className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300"
+              className="fixed inset-0 z-[9999999] flex items-center justify-center p-2 sm:p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300 overflow-y-auto"
               style={{ backgroundColor: 'rgba(72, 71, 71, 0.6)', filter: 'none' }}
             >
-              <div className={`${cardBg} rounded-xl sm:rounded-2xl w-full max-w-4xl h-[85vh] shadow-[0_25px_60px_rgba(3,4,94,0.4)] border-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/20'} flex flex-col overflow-hidden`}>
+              <div className={`${cardBg} rounded-xl sm:rounded-2xl w-full max-w-[95vw] sm:max-w-7xl my-4 sm:my-0 shadow-[0_25px_60px_rgba(3,4,94,0.4)] border-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/20'} flex flex-col overflow-hidden h-auto max-h-[95vh] sm:h-[90vh]`}>
                 
-                <div className={`px-6 py-4 ${surfaceBg} border-b-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} flex items-center justify-between shrink-0`}>
-                  <div>
-                    <h2 className={`text-lg sm:text-xl font-black tracking-tight ${txtMain}`}>
+                <div className={`px-3 sm:px-6 py-3 sm:py-4 ${surfaceBg} border-b-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} flex items-center justify-between shrink-0 gap-2`}>
+                  <div className="min-w-0 flex-1">
+                    <h2 className={`text-xs sm:text-lg md:text-xl font-black tracking-tight truncate ${txtMain}`}>
                       Business Registration: {employerModal.user.company_name}
                     </h2>
-                    <p className={`text-xs font-bold ${txtMuted}`}>
-                      Review company registration permit or DTI/SEC document.
+                    <p className={`text-[9px] sm:text-xs font-bold truncate ${txtMuted}`}>
+                      Review company registration permit or DTI/SEC document and cross-reference.
                     </p>
                   </div>
                   <button
                     onClick={() => setEmployerModal({ isOpen: false, user: null })}
-                    className={`w-10 h-10 rounded-lg ${cardBg} ${txtMain} border-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/20'} flex items-center justify-center font-black transition cursor-pointer`}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${cardBg} ${txtMain} border-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/20'} flex items-center justify-center font-black transition cursor-pointer shrink-0 text-xs sm:text-base`}
                   >
                     ✕
                   </button>
                 </div>
 
-                <div className={`flex-1 flex flex-col ${cardBg} p-6 gap-6 overflow-hidden`}>
-                  <div className="flex items-center justify-between shrink-0">
-                    <span className={`text-xs font-black uppercase tracking-wider ${txtMain}`}>Uploaded Verification File</span>
-                    <span 
-                      className={`px-3 py-1 rounded-md text-xs font-black border ${isDark ? 'bg-white/10 text-white border-white/30' : 'bg-[#8b5cf6]/10 text-[#6d28d9] border-[#8b5cf6]'}`}
-                    >
-                      Industry: {employerModal.user.industry || 'N/A'}
-                    </span>
-                  </div>
+                <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-3 lg:divide-x-2 ${isDark ? 'divide-white/15' : 'divide-[#03045E]/15'} overflow-y-auto lg:overflow-hidden`}>
+                  
+                  {/* Left Side: Documents (2/3 width) */}
+                  <div className={`lg:col-span-2 flex flex-col ${cardBg} p-3 sm:p-6 gap-3 sm:gap-6 lg:h-full lg:overflow-y-auto`}>
+                    <div className="flex items-center justify-between shrink-0 gap-2 flex-wrap">
+                      <span className={`text-[10px] sm:text-xs font-black uppercase tracking-wider ${txtMain}`}>Uploaded Verification File</span>
+                      <span 
+                        className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-black border whitespace-nowrap ${isDark ? 'bg-white/10 text-white border-white/30' : 'bg-[#8b5cf6]/10 text-[#6d28d9] border-[#8b5cf6]'}`}
+                      >
+                        Industry: {employerModal.user.industry || 'N/A'}
+                      </span>
+                    </div>
 
-                  <div className={`flex-1 ${surfaceBg} rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} overflow-hidden flex flex-col md:flex-row items-center justify-center relative shadow-inner p-2 gap-3 overflow-y-auto`}>
-                    {(() => {
-                      if (!employerModal.user.verification_document) {
-                        return <p className={`text-sm font-bold ${txtMuted}`}>No document uploaded.</p>;
-                      }
+                    <div className={`min-h-[200px] sm:min-h-[350px] lg:flex-1 ${surfaceBg} rounded-xl border-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/15'} overflow-hidden flex flex-col md:flex-row items-center justify-center relative shadow-inner p-2 gap-3`}>
+                      {(() => {
+                        if (!employerModal.user.verification_document) {
+                          return <p className={`text-sm font-bold ${txtMuted}`}>No document uploaded.</p>;
+                        }
 
-                      let docs = [];
-                      try {
-                        docs = JSON.parse(employerModal.user.verification_document);
-                        if (!Array.isArray(docs)) docs = [employerModal.user.verification_document];
-                      } catch (e) {
-                        docs = [employerModal.user.verification_document];
-                      }
+                        let docs = [];
+                        try {
+                          docs = JSON.parse(employerModal.user.verification_document);
+                          if (!Array.isArray(docs)) docs = [employerModal.user.verification_document];
+                        } catch (e) {
+                          docs = [employerModal.user.verification_document];
+                        }
 
-                      return docs.map((doc, index) => {
-                        const rawPath = String(doc).trim();
-                        const cleanPath = rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^uploads[\\/]/, '');
-                        
-                        const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
-                          ? rawPath
-                          : `${API_BASE_URL}/uploads/${cleanPath}`;
-                          
-                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(rawPath);
+                        return docs.map((doc, index) => {
+                          const rawPath = String(doc).trim();
+                          const cleanPath = rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^uploads[\\/]/, '');
+                          const fileUrl = rawPath.startsWith('http://') || rawPath.startsWith('https://')
+                            ? rawPath
+                            : `${API_BASE_URL}/uploads/${cleanPath}`;
+                          const isImage = /\.(jpeg|jpg|png|gif)$/i.test(rawPath);
 
-                        return (
-                          <div key={index} className="flex-1 w-full h-full min-h-[250px] flex flex-col rounded-lg overflow-hidden border border-[#03045E]/10 bg-white/50">
-                            {docs.length > 1 && (
-                              <div className="bg-[#03045E] text-white text-[10px] font-black uppercase tracking-widest py-1.5 px-3 text-center shrink-0">
-                                Document {index + 1}
-                              </div>
-                            )}
-                            <div className="flex-1 relative p-1">
-                              {isImage ? (
-                                <img
-                                  src={fileUrl}
-                                  alt={`Business Verification Document ${index + 1}`}
-                                  onClick={() => window.open(fileUrl, '_blank')}
-                                  title="Click to view full size and zoom"
-                                  className="w-full h-full object-contain rounded shadow-sm cursor-zoom-in hover:opacity-80 transition-opacity"
-                                />
-                              ) : (
-                                <iframe
-                                  src={fileUrl}
-                                  title={`Business Document PDF ${index + 1}`}
-                                  className="w-full h-full rounded shadow-sm border-0"
-                                ></iframe>
+                          return (
+                            <div key={index} className="flex-1 w-full h-full min-h-[250px] flex flex-col rounded-lg overflow-hidden border border-[#03045E]/10 bg-white/50 relative">
+                              {docs.length > 1 && (
+                                <div className="absolute top-0 left-0 right-0 bg-[#03045E]/80 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest py-1.5 px-3 text-center z-10">
+                                  Document {index + 1}
+                                </div>
                               )}
+                              <div className="flex-1 relative p-1 mt-2">
+                                {isImage ? (
+                                  <img
+                                    src={fileUrl}
+                                    alt={`Business Verification Document ${index + 1}`}
+                                    onClick={() => window.open(fileUrl, '_blank')}
+                                    title="Click to view full size and zoom"
+                                    className="w-full h-full object-contain rounded shadow-sm cursor-zoom-in hover:opacity-80 transition-opacity"
+                                  />
+                                ) : (
+                                  <iframe
+                                    src={fileUrl}
+                                    title={`Business Document PDF ${index + 1}`}
+                                    className="w-full h-full rounded shadow-sm border-0"
+                                  ></iframe>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      });
-                    })()}
+                          );
+                        });
+                      })()}
+                    </div>
+
+                    {employerModal.user.verification_status !== 'Approved' && (
+                    <div className={`flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/10'} shrink-0`}>
+                      <button
+                        onClick={() => {
+                          const userId = employerModal.user.user_id;
+                          setEmployerModal({ isOpen: false, user: null });
+                          setRejectModal({ isOpen: true, userId: userId, reason: '' });
+                        }}
+                        className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
+                      >
+                        ✕ Reject & Cooldown
+                      </button>
+                      <button
+                        onClick={() => {
+                          const userId = employerModal.user.user_id;
+                          setEmployerModal({ isOpen: false, user: null });
+                          setConfirmPopup({ isOpen: true, type: 'approve', userId: userId, reason: null, loading: false });
+                        }}
+                        className={`flex-1 py-3 sm:py-3.5 font-black text-xs sm:text-sm rounded-lg border-2 shadow-md transition cursor-pointer flex items-center justify-center gap-2 bg-[#10b981] text-white border-[#10b981]`}
+                      >
+                        ✓ Approve Employer Permit
+                      </button>
+                    </div>
+                  )}
                   </div>
 
-                  <div className={`flex gap-3 pt-2 border-t-2 ${isDark ? 'border-white/15' : 'border-[#03045E]/10'} shrink-0`}>
-                    <button
-                      onClick={() => {
-                        const userId = employerModal.user.user_id;
-                        setEmployerModal({ isOpen: false, user: null });
-                        setRejectModal({ isOpen: true, userId: userId, reason: '' });
-                      }}
-                      className={`flex-1 py-3.5 font-black text-sm rounded-lg border-2 transition cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#FEE2E2] text-[#B91C1C] border-[#DC2626]`}
-                    >
-                      ✕ Reject & Cooldown
-                    </button>
-                    <button
-                      onClick={() => {
-                        const userId = employerModal.user.user_id;
-                        setEmployerModal({ isOpen: false, user: null });
-                        setConfirmPopup({ isOpen: true, type: 'approve', userId: userId, reason: null, loading: false });
-                      }}
-                      className={`flex-1 py-3.5 font-black text-sm rounded-lg border-2 shadow-md transition cursor-pointer flex items-center justify-center gap-2 bg-[#10b981] text-white border-[#10b981]`}
-                    >
-                      ✓ Approve Employer Permit
-                    </button>
-                                   </div>
+                  {/* Right Side: Verification Guide (1/3 width) */}
+                  <div className={`lg:col-span-1 flex flex-col ${surfaceBg} p-4 sm:p-6 lg:h-full lg:overflow-y-auto`}>
+                    <div className="flex items-center gap-3 mb-5 shrink-0 px-2 sm:px-0">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm shrink-0 ${isDark ? 'bg-white/10 text-white border-white/30' : 'bg-[#8b5cf6]/15 text-[#6d28d9] border-[#8b5cf6]/30'}`}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className={`text-sm font-black leading-tight ${txtMain}`}>Verification Guide</h3>
+                        <p className={`text-[10px] font-bold ${txtMuted}`}>Official screening protocols</p>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-1">
+                      
+                      {/* 1. DTI Certificate */}
+                      <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-black border-white/15' : 'bg-white border-[#03045E]/10'}`}>
+                        <h4 className={`text-xs font-black mb-2 flex items-center gap-1.5 ${txtMain}`}>
+                          <span className="w-2 h-2 rounded-full bg-[#2C7FFF] shrink-0"></span>
+                          1. DTI Certificate
+                        </h4>
+                        <ul className={`text-[10px] font-semibold leading-relaxed mb-4 space-y-2 pl-3 border-l-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/10'} ${txtMuted}`}>
+                          <li><strong className={txtMain}>Scan QR:</strong> Scan the QR code on the certificate with your phone to confirm details.</li>
+                          <li><strong className={txtMain}>Search Online:</strong> Go to the DTI Business Name Search portal to verify the exact details.</li>
+                          <li><strong className={txtMain}>Keep in mind:</strong> A DTI certificate registers a business name—it is not a permit to operate.</li>
+                        </ul>
+                        <button onClick={handleDtiPortalLaunch} className={`w-full py-3 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer`}>
+                          Launch DTI Portal ↗
+                        </button>
+                      </div>
+
+                      {/* 2. SEC Registration */}
+                      <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-black border-white/15' : 'bg-white border-[#03045E]/10'}`}>
+                        <h4 className={`text-xs font-black mb-2 flex items-center gap-1.5 ${txtMain}`}>
+                          <span className="w-2 h-2 rounded-full bg-[#10B981] shrink-0"></span>
+                          2. SEC Registration
+                        </h4>
+                        <ul className={`text-[10px] font-semibold leading-relaxed space-y-2 pl-3 border-l-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/10'} ${txtMuted}`}>
+                          <li><strong className={txtMain}>Check Official Tools:</strong> Look up the company via sec.gov.ph, SEC Check App, or eSPARC portal.</li>
+                          <li><strong className={txtMain}>Match Details:</strong> Verify corporate name, status, and registered address align with what is presented.</li>
+                        </ul>
+                      </div>
+
+                      {/* 3. Mayor's Permit */}
+                      <div className={`p-4 rounded-xl border-2 ${isDark ? 'bg-black border-white/15' : 'bg-white border-[#03045E]/10'}`}>
+                        <h4 className={`text-xs font-black mb-2 flex items-center gap-1.5 ${txtMain}`}>
+                          <span className="w-2 h-2 rounded-full bg-[#f59e0b] shrink-0"></span>
+                          3. Mayor's / Business Permit
+                        </h4>
+                        <ul className={`text-[10px] font-semibold leading-relaxed space-y-2 pl-3 border-l-2 ${isDark ? 'border-white/20' : 'border-[#03045E]/10'} ${txtMuted}`}>
+                          <li><strong className={txtMain}>Scan QR:</strong> Verify details match the printed permit if a QR code is present.</li>
+                          <li><strong className={txtMain}>Check with LGU:</strong> Verify via Bacolod eBPLS / City Online Services.</li>
+                          <li><strong className={txtMain}>Watch Validity:</strong> Issued per calendar year. Check current year coverage.</li>
+                        </ul>
+                      </div>
+
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
