@@ -2228,9 +2228,17 @@ export function ContactSupport() {
             
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
               
-              {/* Alert Banner */}
+             {/* Alert Banner */}
               {alertMsg.show && (
-                <div role="alert" className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 ${isContrast ? 'bg-[#2C7FFF] text-white border-[#2C7FFF]' : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'}`}>
+                <div
+                  role="alert"
+                  style={isDarkMode ? { color: '#000000' } : undefined}
+                  className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 ${
+                    isDarkMode
+                      ? 'dark-black-btn bg-[#2C7FFF] !text-black border-[#2C7FFF]'
+                      : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
+                  }`}
+                >
                   {alertMsg.text}
                 </div>
               )}
@@ -2359,13 +2367,13 @@ export function ContactSupport() {
               <p className="text-sm font-medium mb-6 opacity-70">Are you sure you want to submit this support ticket?</p>
               <div className="flex w-full gap-3">
                 <button type="button" onClick={() => setConfirmModal({ show: false })} className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${isContrast ? 'border-white/30 text-white' : 'border-[#03045E]/30 text-[#03045E]'}`}>Cancel</button>
-            <button
+           <button
                   type="button"
                   onClick={submitTicket}
-                  style={isDarkMode ? { color: '#ffffff' } : undefined}
-                  className={`dark-white-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${
+                  style={isDarkMode ? { color: '#000000' } : undefined}
+                  className={`dark-black-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 ${
                     isDarkMode
-                      ? 'bg-[#2C7FFF] !text-white border-[#2C7FFF]'
+                      ? 'bg-[#2C7FFF] !text-black border-[#2C7FFF]'
                       : isContrast
                         ? 'bg-white text-black border-white'
                         : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
@@ -2390,10 +2398,10 @@ export function ContactSupport() {
 <button
                 type="button"
                 onClick={() => { setSuccessModal({ show: false, message: '' }); navigate(-1); }}
-                style={isDarkMode ? { color: '#ffffff' } : undefined}
-                className={`dark-white-btn w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${
+                style={isDarkMode ? { color: '#000000' } : undefined}
+                className={`dark-black-btn w-full py-3 px-4 rounded-xl font-bold text-sm border-2 ${
                   isDarkMode
-                    ? 'bg-[#2C7FFF] !text-white border-[#2C7FFF]'
+                    ? 'bg-[#2C7FFF] !text-black border-[#2C7FFF]'
                     : 'bg-[#2C7FFF] text-white border-[#2C7FFF]'
                 }`}
               >
