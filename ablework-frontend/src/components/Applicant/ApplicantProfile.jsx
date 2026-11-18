@@ -321,14 +321,27 @@ export default function ApplicantProfile({ profile, refreshData, setProfile }) {
     setIsModalOpen(false);
   };
 
+ const commitSkillInput = (rawValue) => {
+    const val = rawValue.trim().replace(/,/g, '');
+    if (val && !skills.some(s => s.toLowerCase() === val.toLowerCase())) {
+      setSkills([...skills, val]);
+    }
+    setSkillInput('');
+  };
+
   const handleSkillKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === 'Enter' || e.key === ',' || e.keyCode === 13) {
       e.preventDefault();
-      const val = skillInput.trim().replace(/,/g, '');
-      if (val && !skills.includes(val)) {
-        setSkills([...skills, val]);
-        setSkillInput('');
-      }
+      commitSkillInput(skillInput);
+    }
+  };
+
+  const handleSkillChange = (e) => {
+    const val = e.target.value;
+    if (val.endsWith(',') || val.endsWith('\n')) {
+      commitSkillInput(val);
+    } else {
+      setSkillInput(val);
     }
   };
 
@@ -823,19 +836,21 @@ export default function ApplicantProfile({ profile, refreshData, setProfile }) {
                   </button>
                 </span>
               ))}
-              <input 
+<input 
                 id="skills-input"
-                type="text" 
+                type="text"
+                enterKeyHint="done"
                 value={skillInput} 
-                onChange={(e) => setSkillInput(e.target.value)} 
+                onChange={handleSkillChange} 
                 onKeyDown={handleSkillKeyDown}
+                onBlur={() => { if (skillInput.trim()) commitSkillInput(skillInput); }}
                 aria-label={skills.length === 0 ? "Add a skill" : "Add more..."}
                 placeholder={skills.length === 0 ? "Type a skill and press Enter..." : "Add more..."}
                 style={{
                   color: isDarkScreen ? '#ffffff' : 'var(--color-text)',
                   '--placeholder-color': isDarkScreen ? 'rgba(255, 255, 255, 0.6)' : 'var(--color-primary, #2C7FFF)'
                 }}
-                className="flex-1 min-w-[120px] outline-none bg-transparent text-xs sm:text-sm font-medium placeholder:text-[var(--placeholder-color)] p-1"
+                className="w-full sm:w-auto sm:flex-1 min-w-0 sm:min-w-[140px] outline-none bg-transparent text-xs sm:text-sm font-medium placeholder:text-[var(--placeholder-color)] p-1.5 sm:p-1"
               />
             </div>
             
