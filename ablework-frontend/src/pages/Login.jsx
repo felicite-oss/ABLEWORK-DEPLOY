@@ -366,37 +366,7 @@ const handleLogin = async (e) => {
     style={{ backgroundImage: `url(${backgroundImg})` }}
   ></div>
 
-  {/* 2. MOBILE CURVE */}
-  <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none block md:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
-    <defs>
-      <filter id="glass-blur-mobile">
-        <feGaussianBlur stdDeviation="8" />
-      </filter>
-    </defs>
-    <path 
-      d="M0,0 L100,0 L100,100 L0,100 Z M98,0 C88,10 93,30 83,40 C73,50 68,60 78,70 C88,80 78,90 63,100 L100,100 L100,0 Z" 
-      fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${colors?.primary || colors?.accent}B3`)} 
-      fillRule="evenodd" 
-      style={{ backdropFilter: 'blur(16px)' }}
-    />
-  </svg>
-
-  {/* 3. DESKTOP CURVE */}
-  <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none hidden md:block" preserveAspectRatio="none" viewBox="0 0 100 100">
-    <defs>
-      <filter id="glass-blur">
-        <feGaussianBlur stdDeviation="8" />
-      </filter>
-    </defs>
-    <path 
-      d="M0,0 L100,0 L100,100 L0,100 Z M70,0 C60,10 65,30 55,40 C45,50 40,60 50,70 C60,80 50,90 35,100 L100,100 L100,0 Z" 
-      fill={(isDarkMode || isContrast) ? "rgba(0, 0, 0, 0.85)" : (paletteKey === 'default' ? "rgba(3, 4, 94, 0.7)" : `${colors?.primary || colors?.accent}B3`)} 
-      fillRule="evenodd" 
-      style={{ backdropFilter: 'blur(16px)' }}
-    />
-  </svg>
-
-  {/* 4. YOUR EXACT FORM CONTAINER (z-20 to sit on the curve) */}
+  {/* 4. YOUR EXACT FORM CONTAINER */}
   <div
     className={`w-full ${isAssist ? 'max-w-[480px] sm:max-w-xl' : 'max-w-[400px] sm:max-w-md'} flex flex-col items-center justify-start ${containerGap} relative z-20
       ${isContrast ? 'bg-black/90 text-white border-2 border-blue-400 shadow-[0_0_25px_rgba(0,204,21,0.4)]' : 'bg-white/40 sm:bg-white/85 text-[#03045E] border border-[#03045E]/15'} backdrop-blur-[1px] sm:backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl
