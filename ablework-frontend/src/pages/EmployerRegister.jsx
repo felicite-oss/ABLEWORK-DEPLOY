@@ -843,7 +843,7 @@ const handleAddressType = (e) => {
               <hr className="border-[#03045E]/10" />
 
               <div className="p-4 rounded-md border-2 border-dashed border-[#03045E]/20 bg-[#f4f4f4]/50">
-                <label htmlFor="verificationDoc" className="block text-xs sm:text-sm font-bold text-[#03045E] mb-1 rounded">Company Registration (DTI / SEC / Mayor's Permit) <span className="text-[#03045E]">*</span></label>
+                <label htmlFor="verificationDoc" className="block text-xs sm:text-sm font-bold text-[#03045E] mb-1 rounded">Company Registration (DTI / Business Permit/ Mayor's Permit) <span className="text-[#03045E]">*</span></label>
                 <input
                   id="verificationDocs"
                   type="file"
