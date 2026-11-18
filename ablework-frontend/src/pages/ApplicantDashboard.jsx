@@ -1322,7 +1322,7 @@ export default function ApplicantDashboard() {
               {activeTab === 'applicant-contact' && (
                 <ApplicantContact 
                   onBack={() => setActiveTab('overview')} 
-                  profile={applicantProfile} 
+                  profile={profile} 
                   reportedUserId={selectedApplicant?.user_id || selectedApplicant?.id} 
                 />
               )}
