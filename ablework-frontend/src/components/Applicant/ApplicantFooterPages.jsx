@@ -827,8 +827,24 @@ export function ApplicantContact({ onBack, profile, reportedUserId }) {
             Submit a Support Ticket
           </h3>
           
-          {alertMsg.show && (
-            <div role="alert" className="p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] text-white border-[#2C7FFF]">
+         {alertMsg.show && (
+            <div
+              role="alert"
+              style={isDark ? { color: '#000000' } : undefined}
+              className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] border-[#2C7FFF] ${
+                isDark ? 'text-black' : 'text-white'
+              }`}
+            >
+              {alertMsg.text}
+            </div>
+          )}{alertMsg.show && (
+            <div
+              role="alert"
+              style={isDark ? { color: '#000000' } : undefined}
+              className={`p-4 rounded-xl border-2 text-sm font-bold animate-in fade-in slide-in-from-top-2 bg-[#2C7FFF] border-[#2C7FFF] ${
+                isDark ? 'text-black' : 'text-white'
+              }`}
+            >
               {alertMsg.text}
             </div>
           )}
