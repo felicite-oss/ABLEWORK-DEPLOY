@@ -192,13 +192,12 @@ function SiteHeader() {
         </button>
       </div>
 
-<div
+      <div
         id="site-mobile-menu"
-        aria-hidden={!isOpen}
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-b-2 ${
-          isContrast ? 'bg-black border-[#2C7FFF]' : 'bg-white border-[#03045E]/20'
-        } ${
-          isOpen ? 'max-h-96 opacity-100 shadow-xl' : 'hidden max-h-0 opacity-0 pointer-events-none'
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen
+            ? `max-h-96 opacity-100 shadow-xl border-b-2 ${isContrast ? 'bg-black border-[#2C7FFF]' : 'bg-white border-[#03045E]/20'}`
+            : 'max-h-0 opacity-0 border-b-0'
         }`}
       >
         <div className={`w-full ${isContrast ? 'bg-black' : 'bg-white'}`}>
@@ -470,9 +469,9 @@ export function Home() {
         `}</style>
       )}
 
-      <SiteHeader />
+     <SiteHeader />
 
-      <div className="flex-1 overflow-y-auto flex flex-col pt-16">
+      <div className="flex-1 overflow-y-auto flex flex-col pt-14 sm:pt-16">
 
                 {/* --- NEW HERO SECTION (MATCHING REFERENCE IMAGE) --- */}
         <div className="w-full bg-[#f4f4f4] py-6 lg:py-8 px-3 sm:px-4 md:px-8 flex flex-col items-center justify-center">
@@ -2548,9 +2547,9 @@ function PageLayout({ title, children }) {
         `}</style>
       )}
 
-      <SiteHeader />
+    <SiteHeader />
 
-      <div className="flex-1 overflow-y-auto flex flex-col pt-16">
+      <div className="flex-1 overflow-y-auto flex flex-col pt-14 sm:pt-16">
 
 <main role="main" aria-label={`${title} Screen`} className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14">
           <h1 tabIndex="0" title={title} className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
@@ -2699,7 +2698,7 @@ function SimpleFooter() {
         tabIndex="0"
         className={`max-w-[1700px] mx-auto pt-3 sm:pt-6 flex flex-col items-center justify-center gap-2 sm:gap-4 text-[9px] sm:text-xs font-bold text-white text-center`}
       >
-        <p>© {new Date().getFullYear()} Ablework Inc. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} AbleWork Inc. All rights reserved.</p>
         <p className="font-bold">Empowering Abilities, Connecting Opportunities.</p>
       </div>
 
