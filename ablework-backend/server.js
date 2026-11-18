@@ -2038,7 +2038,6 @@ app.put('/api/admin/users/:id/account-status', async (req, res) => {
     }
 });
 
-
 app.get('/api/setup-admin', async (req, res) => {
     try {
         const adminEmail = "admin@ablework.com";

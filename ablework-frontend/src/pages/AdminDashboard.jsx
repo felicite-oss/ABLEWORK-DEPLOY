@@ -220,7 +220,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const openDisableModal = async (user) => {
+const openDisableModal = async (user) => {
     let reasons = [];
     let calculatedDays = 0;
     
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
         });
         reasons = [...new Set(reasons)];
         
-        // Calculate total penalty days based on the highest severity reason (or sum them, depending on preference. Here we take the MAX severity)
+        // Calculate total penalty days based on the highest severity reason
         reasons.forEach(r => {
           if (penaltyMap[r] && penaltyMap[r] > calculatedDays) {
             calculatedDays = penaltyMap[r];

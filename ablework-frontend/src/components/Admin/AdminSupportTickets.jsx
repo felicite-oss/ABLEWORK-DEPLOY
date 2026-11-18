@@ -281,9 +281,9 @@ export function AdminSupportTickets({ onTicketResolved }) {
               )}
             </div>
 
-            {/* Modal Footer - Simplified to just Resolve */}
+          {/* Modal Footer */}
             {selectedTicket.status === 'Open' && (
-              <div className={`p-6 border-t-2 flex justify-end gap-3 mt-auto ${isDark ? 'border-white/10 bg-zinc-900' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
+              <div className={`p-6 border-t-2 flex flex-col sm:flex-row justify-end gap-3 mt-auto ${isDark ? 'border-white/10 bg-zinc-900' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
                 <button
                   onClick={() => handleResolve(selectedTicket.id)}
                   className={`px-8 py-3 border-2 text-xs font-black uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
