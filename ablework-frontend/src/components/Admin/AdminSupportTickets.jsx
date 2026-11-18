@@ -189,17 +189,15 @@ export function AdminSupportTickets({ onTicketResolved }) {
         </div>
       )}
 
-      {/* Ticket Details Modal */}
-      {selectedTicket && (
+ {selectedTicket && (
         <div 
-          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[2px] animate-in fade-in duration-200"
-          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(3, 4, 94, 0.6)' }}
+          className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 backdrop-blur-[1px] animate-in fade-in transition-all duration-300"
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(72, 71, 71, 0.6)', filter: 'none' }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="ticket-modal-title"
         >
-          <div className={`relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl border-2 overflow-hidden ${isDark ? 'bg-black border-white/20' : 'bg-white border-[#03045E]/20'}`}>
-            
+                  <div className={`relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-[0_25px_60px_rgba(3,4,94,0.25)] border-2 overflow-hidden ${isDark ? 'bg-black border-white/20' : 'bg-white border-[#03045E]/30'}`}>
             {/* Modal Header */}
             <div className={`flex justify-between items-start p-6 border-b-2 ${isDark ? 'border-white/10 bg-zinc-900' : 'border-[#03045E]/10 bg-[#f4f4f4]'}`}>
               <div className="pr-4">
