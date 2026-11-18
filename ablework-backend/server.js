@@ -1963,7 +1963,11 @@ app.put('/api/admin/users/:id/verify', async (req, res) => {
 
 app.put('/api/admin/users/:id/account-status', async (req, res) => {
     const { id } = req.params;
-    const { account_status, penalty_days, reasons } = req.body;
+    // Added ticket_id here so we can resolve it in the same transaction
+    const { account_status, penalty_days, reasons, ticket_id } = req.body;
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
 
     try {
         if (account_status === 'Disabled') {
@@ -1971,8 +1975,8 @@ app.put('/api/admin/users/:id/account-status', async (req, res) => {
             const disabledUntil = new Date();
             disabledUntil.setDate(disabledUntil.getDate() + days);
 
-            // MySQL: Use '?' placeholders, 'id' column (not 'user_id'), and JSON.stringify for JSON columns
-            await db.execute(
+            // 1. Update user database status
+            await connection.execute(
                 `UPDATE users 
                  SET account_status = 'Disabled',
                      disabled_until = ?,
@@ -1981,32 +1985,44 @@ app.put('/api/admin/users/:id/account-status', async (req, res) => {
                 [disabledUntil, JSON.stringify(reasons || []), id]
             );
 
-            // Send notification to the disabled user
-            const reasonText = reasons && reasons.length > 0 
-                ? `Reasons: ${reasons.join(', ')}.` 
-                : '';
+            // 2. Resolve the open support ticket if provided
+            if (ticket_id) {
+                await connection.execute(
+                    `UPDATE support_tickets SET status = 'Resolved' WHERE id = ?`,
+                    [ticket_id]
+                );
+            }
+
+            await connection.commit();
+
+            // 3. Construct explicit email notification for the disabled user
+            const reasonText = (reasons && reasons.length > 0) 
+                ? `The specific violations reported against your account include: <strong>${reasons.join(', ')}</strong>.` 
+                : 'Your account was reported for violations of our community standards.';
             
-            await sendNotification(
-                id, 
-                'Account Disabled', 
-                `Your account has been disabled for ${days} days due to a violation of our terms. ${reasonText} It will automatically be restored after this period.`, 
-                'system'
-            );
+            const unlockDate = disabledUntil.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            
+            const emailTitle = 'Important: Your AbleWork Account has been Suspended';
+            const emailMessage = `Your account has been temporarily disabled for a period of <strong>${days} days</strong> following an administrative review. <br><br> ${reasonText} <br><br> Your account will automatically be restored and accessible again on <strong>${unlockDate}</strong>. If you believe this was in error, please contact our support team.`;
+            
+            await sendNotification(id, emailTitle, emailMessage, 'system');
 
         } else {
-            // Restore / Active
-            await db.execute(
+            // Restore / Active User
+            await connection.execute(
                 `UPDATE users 
                  SET account_status = ?, disabled_until = NULL, disable_reasons = NULL
                  WHERE id = ?`,
                 [account_status, id]
             );
+            
+            await connection.commit();
 
             if (account_status === 'Active') {
                 await sendNotification(
                     id, 
                     'Account Restored', 
-                    'Your account access has been restored. You can now use all platform features again.', 
+                    'Good news! Your account access has been restored. You can now log in and use all platform features again.', 
                     'system'
                 );
             }
@@ -2014,63 +2030,9 @@ app.put('/api/admin/users/:id/account-status', async (req, res) => {
 
         res.status(200).json({ success: true, message: `Account status updated to ${account_status}.` });
     } catch (error) {
+        await connection.rollback();
         console.error("Account Status Update Error:", error.message);
         res.status(500).json({ message: 'Failed to update account status' });
-    }
-});
-
-// ---------------------------------------------------------
-// ROUTE: ADMIN - DISABLE USER WITH PENALTY & RESOLVE TICKET
-// ---------------------------------------------------------
-app.put('/api/admin/users/:id/disable-with-penalty', async (req, res) => {
-    const { id } = req.params;
-    const { penalty_days, reasons, ticket_id } = req.body;
-
-    const connection = await db.getConnection();
-    await connection.beginTransaction();
-
-    try {
-        const days = Number(penalty_days) || 7;
-        const disabledUntil = new Date();
-        disabledUntil.setDate(disabledUntil.getDate() + days);
-
-        // 1. Disable the user
-        await connection.execute(
-            `UPDATE users 
-             SET account_status = 'Disabled',
-                 disabled_until = ?,
-                 disable_reasons = ?
-             WHERE id = ?`,
-            [disabledUntil, JSON.stringify(reasons || []), id]
-        );
-
-        // 2. Resolve the ticket (if provided)
-        if (ticket_id) {
-            await connection.execute(
-                `UPDATE support_tickets SET status = 'Resolved' WHERE id = ?`,
-                [ticket_id]
-            );
-        }
-
-        await connection.commit();
-
-        // 3. Notify the user
-        const reasonText = reasons && reasons.length > 0 
-            ? `Reasons: ${reasons.join(', ')}.` 
-            : '';
-
-        await sendNotification(
-            id, 
-            'Account Disabled', 
-            `Your account has been disabled for ${days} days due to a violation of our terms. ${reasonText} It will automatically be restored after this period.`, 
-            'system'
-        );
-
-        res.status(200).json({ success: true, message: `User disabled for ${days} days and ticket resolved.` });
-    } catch (error) {
-        await connection.rollback();
-        console.error("Disable With Penalty Error:", error.message);
-        res.status(500).json({ message: 'Failed to disable user with penalty.' });
     } finally {
         connection.release();
     }

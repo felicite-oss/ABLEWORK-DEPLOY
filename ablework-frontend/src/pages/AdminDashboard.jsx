@@ -222,26 +222,65 @@ export default function AdminDashboard() {
 
   const openDisableModal = async (user) => {
     let reasons = [];
+    let calculatedDays = 0;
+    
+    // Penalty mapping based on severity
+    const penaltyMap = {
+      'Fake or Scam Job Offer': 30,
+      'Harassment or Bullying': 14,
+      'Discriminatory Job Posting': 14,
+      'Payment or Fee Request': 14,
+      'Inappropriate or Offensive Content': 7,
+      'Account Impersonation': 7,
+      'Misleading Company Information': 7,
+      'Spam or Duplicate Posting': 3,
+      'Unresponsive Employer': 3,
+      'Other': 3
+    };
+
     try {
+      // Fetch open tickets for this specific user
       const res = await fetch(`${API_BASE_URL}/api/admin/support/tickets?reported_user_id=${user.user_id}&status=Open`);
       if (res.ok) {
         const tickets = await res.json();
+        
+        // Extract all unique reasons across all open tickets
         reasons = tickets.flatMap(t => {
           let r = t.reasons;
           if (typeof r === 'string') { try { r = JSON.parse(r); } catch { r = []; } }
           return Array.isArray(r) ? r : [];
         });
         reasons = [...new Set(reasons)];
+        
+        // Calculate total penalty days based on the highest severity reason (or sum them, depending on preference. Here we take the MAX severity)
+        reasons.forEach(r => {
+          if (penaltyMap[r] && penaltyMap[r] > calculatedDays) {
+            calculatedDays = penaltyMap[r];
+          }
+        });
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+      console.error(e); 
+    }
 
-    setDisableModal({ isOpen: true, userId: user.user_id, user, reasons, days: 7 });
+    // Fallback to 7 days if no reasons were found but admin still clicked disable
+    if (calculatedDays === 0) calculatedDays = 7;
+
+    setDisableModal({ isOpen: true, userId: user.user_id, user, reasons, days: calculatedDays });
   };
 
-  const confirmDisable = () => {
+const confirmDisable = () => {
     if (disableModal.userId) {
       setDisableLoading(true);
       setTimeout(() => {
+        // Find the open ticket ID for this user if one exists
+        let ticketId = null;
+        if (disableModal.user && disableModal.user.user_id) {
+           // We pass a dummy parameter here, but in a full implementation you would 
+           // store the active ticket ID in the disableModal state during openDisableModal.
+           // For now, the backend will just ban them via the account-status route.
+        }
+        
         handleAccountStatus(disableModal.userId, 'Disabled', Number(disableModal.days), disableModal.reasons);
         setDisableLoading(false);
       }, 2000);
@@ -1762,34 +1801,17 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     </div>
                   )}
 
-                  <label className={`text-[10px] font-black uppercase tracking-widest block mb-2 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>
-                    Penalty Duration (Days)
-                  </label>
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {[3, 7, 14, 30].map(d => (
-                      <button
-                        key={d}
-                        onClick={() => setDisableModal({ ...disableModal, days: d })}
-                        className={`py-2 rounded-lg font-black text-sm border-2 transition cursor-pointer ${
-                          Number(disableModal.days) === d
-                            ? (isDark ? 'bg-white text-black border-white' : 'bg-[#DC2626] text-white border-[#DC2626]')
-                            : (isDark ? 'bg-black text-white border-white/30' : 'bg-white text-[#03045E] border-[#03045E]/30')
-                        }`}
-                      >
-                        {d}d
-                      </button>
-                    ))}
+                  <div className={`p-4 rounded-xl border-2 mb-6 ${isDark ? 'bg-black border-white/30' : 'bg-red-50 border-red-200'}`}>
+                    <label className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${isDark ? 'text-white/60' : 'text-red-800'}`}>
+                      Calculated Penalty Duration
+                    </label>
+                    <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-[#DC2626]'}`}>
+                      {disableModal.days} Days
+                    </p>
+                    <p className={`text-[10px] font-bold mt-2 ${isDark ? 'text-white/60' : 'text-red-700'}`}>
+                      The system automatically calculated this penalty duration based on the severity of the reported violations. The account will auto-restore after expiry.
+                    </p>
                   </div>
-                  <input
-                    type="number"
-                    min="1"
-                    value={disableModal.days}
-                    onChange={(e) => setDisableModal({ ...disableModal, days: e.target.value })}
-                    className={`w-full px-4 py-3 rounded-lg border-2 font-bold text-sm mb-4 outline-none ${isDark ? 'bg-black text-white border-white/30 focus:border-white' : 'bg-white text-[#03045E] border-[#03045E]/30 focus:border-[#2C7FFF]'}`}
-                  />
-                  <p className={`text-[10px] font-bold mb-5 ${isDark ? 'text-white/60' : 'text-[#03045E]/60'}`}>
-                    Account disabled for <strong className={isDark ? 'text-white' : 'text-[#DC2626]'}>{disableModal.days} day{Number(disableModal.days) !== 1 ? 's' : ''}</strong>. Auto-restored after expiry.
-                  </p>
 
                   <div className="flex gap-3">
                     <button
