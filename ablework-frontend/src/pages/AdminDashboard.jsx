@@ -1805,7 +1805,7 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                       <h3 className="text-xs font-black mb-1">eBPLS / LGU Portal</h3>
                       <p className="text-[10px] font-bold opacity-70 mb-3">Verify Mayor's / Business Permit.</p>
                       <button
-                        onClick={(e) => { e.preventDefault(); window.open('https://ebpls.bacolodcity.gov.ph/tracking', '_blank'); }}
+                        onClick={(e) => { e.preventDefault(); window.open('https://ebpls.bacolodcity.gov.ph/', '_blank'); }}
                         className={`w-full py-2.5 ${isDark ? 'bg-white text-black hover:bg-white/90' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'} font-black text-[10px] uppercase tracking-wider rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer`}
                       >
                         Launch eBPLS Portal ↗
