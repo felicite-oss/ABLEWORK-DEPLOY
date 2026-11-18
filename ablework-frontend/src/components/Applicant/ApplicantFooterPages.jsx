@@ -832,8 +832,9 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
           ))}
         </div>
 
-        {/* RIGHT SIDE: SUPPORT FORM */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
+{/* RIGHT SIDE: SUPPORT FORM */}
+        {/* ADDED noValidate to prevent native HTML floating tooltips */}
+        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
           <h3 tabIndex="0" className={`text-lg font-bold focus:outline-none focus-visible:underline ${textColor}`}>
             Submit a Support Ticket
           </h3>
@@ -920,21 +921,26 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
   />
 </div>
 
-                    {/* PROOF IMAGE UPLOAD */}
+          {/* PROOF IMAGE UPLOAD */}
           <div>
-            <label className={`block text-xs font-bold mb-1 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => setProofImage(e.target.files[0])}
-              style={{
-                color: isDark ? '#ffffff' : '#03045e', // Forces "No file chosen" text color
-                '--file-btn-bg': isDark ? '#ffffff' : 'var(--color-primary, #2C7FFF)',
-                '--file-btn-text': isDark ? '#000000' : 'var(--color-buttonText, #ffffff)',
-              }}
-              className={`w-full p-2 border-2 rounded-xl text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold transition-colors ${inputBg} file:bg-[var(--file-btn-bg)] file:text-[var(--file-btn-text)] hover:opacity-90`}
-              disabled={isSubmitting}
-            />
+            <label className={`block text-xs font-bold mb-2 ${mutedText}`}>Attach Proof (Optional Image/PDF)</label>
+            <div className={`flex items-center gap-3 p-2 rounded-lg border-2 ${
+              isDark ? 'bg-black border-white/30' : 'bg-white border-[#03045E]/15'
+            }`}>
+              <label className={`px-4 py-2 text-xs font-bold rounded cursor-pointer transition ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#03045E] text-white hover:bg-[#2C7FFF]'}`}>
+                Choose File
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*,.pdf" 
+                  disabled={isSubmitting}
+                  onChange={(e) => setProofImage(e.target.files[0])}
+                />
+              </label>
+              <span className={`text-xs font-medium opacity-60 ${textColor}`}>
+                {proofImage ? proofImage.name : 'No file chosen'}
+              </span>
+            </div>
           </div>
 
           <button
@@ -944,18 +950,18 @@ const modalMuted = isDark ? 'text-white/70' : 'text-[#03045E]/70';
             className={`group w-full py-4 px-6 font-extrabold text-sm rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-md flex items-center justify-between disabled:opacity-50 ${
               isDark 
                 ? 'bg-white text-black border-white hover:bg-gray-200' 
-                : 'bg-[#03045E] text-white border-[#03045E] hover:bg-[#2C7FFF] hover:border-[#2C7FFF]'
+                : 'bg-[#2C7FFF] text-white border-[#2C7FFF] hover:bg-[#03045E] hover:border-[#03045E]'
             }`}
           >
 <span className="flex items-center gap-2">
   {isSubmitting ? (
     <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
   ) : (
-    <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-[#2C7FFF]'} group-hover:bg-white transition-colors`} />
+    <span className={`w-2 h-2 rounded-full ${isDark ? 'bg-black' : 'bg-white opacity-80'} group-hover:bg-white transition-colors`} />
   )}
   {isSubmitting ? 'Submitting...' : 'Submit Request Ticket'}
 </span>
-                     <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1 text-[#03045E]">
+                     <span className={`w-7 h-7 rounded-xl flex items-center justify-center transition-transform group-hover:translate-x-1 ${isDark ? 'bg-black/10 text-black' : 'bg-white/20 text-white'}`}>
               →
             </span>
             </button>
