@@ -157,10 +157,11 @@ export default function AdminDashboard() {
     return () => clearInterval(syncInterval);
   }, [navigate]);
 
-   useEffect(() => {
+      useEffect(() => {
     setCurrentPage(1);
-    if (mainRef.current) {
-      mainRef.current.scrollTop = 0;
+    // Scroll the Users Overview container into view instead of the whole page
+    if (usersOverviewRef.current) {
+      usersOverviewRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [activeTab, overviewFilter, listFilter]);
   
