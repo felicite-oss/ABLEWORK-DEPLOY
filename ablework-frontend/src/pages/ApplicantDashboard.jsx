@@ -1319,11 +1319,11 @@ export default function ApplicantDashboard() {
                 <ApplicantTerms onBack={() => handleTabChange('overview')} />
               )}
 
+            
               {activeTab === 'applicant-contact' && (
                 <ApplicantContact 
-                  onBack={() => setActiveTab('overview')} 
+                  onBack={() => handleTabChange('overview')} 
                   profile={profile} 
-                  reportedUserId={selectedApplicant?.user_id || selectedApplicant?.id} 
                 />
               )}
             </div>
