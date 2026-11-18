@@ -1863,17 +1863,18 @@ borderColor: user.account_status === 'Disabled' ? '#dc2626' :
                     })}
                   </div>
 
-                  <div className={`p-4 rounded-xl border-2 mb-6 ${isDark ? 'bg-zinc-900 border-white/30' : 'bg-red-50 border-red-200'}`}>
-                    <label className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${isDark ? 'text-white/60' : 'text-red-800'}`}>
-                      Calculated Penalty Duration
-                    </label>
-                    <p className={`text-2xl font-black ${disableModal.days > 0 ? (isDark ? 'text-white' : 'text-[#DC2626]') : 'text-gray-400'}`}>
-                      {disableModal.days} Day{disableModal.days !== 1 ? 's' : ''}
-                    </p>
-                    <p className={`text-[10px] font-bold mt-2 ${isDark ? 'text-white/60' : 'text-red-700'}`}>
-                      The system automatically calculated this penalty duration based on the severity of the reported violations. The account will auto-restore after expiry.
-                    </p>
-                  </div>
+                  {/* Calculated Penalty Duration */}
+<div className={`mt-6 p-4 rounded-xl border-2 ${isDark ? 'border-white/20 bg-black' : 'border-[#03045E]/20 bg-[#f4f4f4]'}`}>
+  <h3 className={`text-sm font-black uppercase tracking-wider ${isDark ? 'text-white' : 'text-[#03045E]'}`}>
+    Calculated Penalty Duration
+  </h3>
+  <p className={`text-3xl font-black mt-1 ${isDark ? 'text-white' : 'text-[#DC2626]'}`}>
+    {disableModal.days} Days
+  </p>
+  <p className={`text-xs font-bold mt-2 leading-relaxed ${isDark ? 'text-white/80' : 'text-[#03045E]/70'}`}>
+    The system automatically calculated this penalty duration based on the severity of the reported violations. The account will auto-restore after expiry.
+  </p>
+</div>
 
                   <div className="flex gap-3 mt-auto shrink-0">
                     <button
