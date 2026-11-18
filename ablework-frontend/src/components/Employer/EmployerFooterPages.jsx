@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AccessibilityContext } from '../../context/AccessibilityContext';
 import { useColorPalette } from '../../context/ColorPaletteContext';
 import FinalLogo from '../../assets/DARK MODE.png';
@@ -29,6 +30,18 @@ export function EmployerPolicy({ onBack }) {
 
   return (
     <main role="main" aria-label="Privacy Policy Screen" className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14 animate-in fade-in duration-300">
+      <div className="w-full max-w-4xl mx-auto mb-6">
+        <button
+          onClick={onBack}
+          aria-label="Go back"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm border-2 transition-colors cursor-pointer ${isDark ? 'bg-transparent text-white border-white/30 hover:bg-white/10' : 'bg-transparent text-[#03045E] border-[#03045E]/30 hover:bg-[#03045E]/5'}`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
       <h1 className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
         Privacy Policy
       </h1>
@@ -311,6 +324,18 @@ export function EmployerTerms({ onBack }) {
 
   return (
     <main role="main" aria-label="Terms of Service Screen" className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14 animate-in fade-in duration-300">
+      <div className="w-full max-w-4xl mx-auto mb-6">
+        <button
+          onClick={onBack}
+          aria-label="Go back"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm border-2 transition-colors cursor-pointer ${isDark ? 'bg-transparent text-white border-white/30 hover:bg-white/10' : 'bg-transparent text-[#03045E] border-[#03045E]/30 hover:bg-[#03045E]/5'}`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
       <h1 className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
         Terms of Service
       </h1>
@@ -629,12 +654,10 @@ export function EmployerTerms({ onBack }) {
 
 export function EmployerContact({ onBack, profile, reportedUserId }) {
   const { mode } = useContext(AccessibilityContext);
-  const { paletteKey } = useColorPalette();
   
   const isContrast = mode && typeof mode === 'string' && mode.toLowerCase().includes('contrast');
   const isDarkMode = mode && typeof mode === 'string' && (mode.toLowerCase().includes('dark') || mode.toLowerCase().includes('comfort'));
   const isDark = isContrast || isDarkMode;
-  const isHighContrastOrDarkComfort = paletteKey === 'highContrast' || paletteKey === 'darkComfort';
 
   const [reasons, setReasons] = useState([]);
   const [subject, setSubject] = useState('');
@@ -1116,10 +1139,28 @@ function ApplicantPageLayout({ title, subtitle, children, onBack }) {
 
   return (
     <main role="main" aria-label={`${title} Screen`} className="flex-grow w-full p-3 pt-6 sm:p-6 sm:pt-10 md:p-10 md:pt-14 space-y-6 animate-in fade-in duration-300">
+      <div className="w-full max-w-4xl mx-auto">
+        <button
+          onClick={onBack}
+          aria-label="Go back"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm border-2 transition-colors cursor-pointer ${isDark ? 'bg-transparent text-white border-white/30 hover:bg-white/10' : 'bg-transparent text-[#03045E] border-[#03045E]/30 hover:bg-[#03045E]/5'}`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
 
       <h1 className={`text-2xl sm:text-4xl md:text-5xl font-black text-center mb-8 sm:mb-12 ${isContrast ? 'text-[var(--color-text)]' : 'text-[#03045E]'}`}>
         {title}
       </h1>
+
+      {subtitle && (
+        <p className={`text-center text-sm sm:text-base font-semibold mb-8 sm:mb-12 max-w-2xl mx-auto ${isDark ? 'text-white/70' : 'text-[#03045E]/70'}`}>
+          {subtitle}
+        </p>
+      )}
 
       <div style={isDark ? { backgroundColor: 'transparent', borderColor: '#D1D5DB' } : {}} className="bg-transparent rounded-3xl border border-[#D1D5DB] shadow-[0_4px_20px_rgba(3,4,94,0.03)] p-6 sm:p-10 text-[var(--color-text,#03045E)]">
         {children}
