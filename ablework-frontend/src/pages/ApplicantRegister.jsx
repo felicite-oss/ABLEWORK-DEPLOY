@@ -156,17 +156,14 @@ const availableDisabilities = [
     }
   };
 
-  const availableAccommodations = ['Screen Reader', 'Wheelchair Access', 'Sign Language Interpreter', 'Flexible Hours', 'Quiet Workspace', 'Travel Assistant'];
-  
-  const extendedAccommodations = [
-    'Ergonomic Setup', 'Noise-Cancelling Headphones', 'Screen Magnifier', 'Braille Keyboard', 
-    'Captioning Services', 'Remote Work', 'Frequent Breaks', 'Service Animal',
-    'Adjustable Desk', 'Voice-to-Text Software', 'Large Print Documents', 'Step-Free Access',
-   'Walking Assistant', 'Accessible Parking'
+const availableAccommodations = [
+    'Screen Reader', 'Wheelchair Access', 'Sign Language Interpreter', 'Flexible Hours', 
+    'Quiet Workspace', 'Travel Assistant', 'Ergonomic Setup', 'Noise-Cancelling Headphones', 
+    'Screen Magnifier', 'Braille Keyboard', 'Captioning Services', 'Remote Work', 
+    'Frequent Breaks', 'Service Animal', 'Adjustable Desk', 'Voice-to-Text Software', 
+    'Large Print Documents', 'Step-Free Access', 'Walking Assistant', 'Accessible Parking'
   ];
   const [selectedAccommodations, setSelectedAccommodations] = useState([]);
-  const [showOtherAccommodation, setShowOtherAccommodation] = useState(false);
-  const [otherAccommodation, setOtherAccommodation] = useState('');
 
 const defaultAvailable = [
     'Data Entry', 
@@ -1298,57 +1295,7 @@ const handleAddressType = (e) => {
                       {acc} {selectedAccommodations.includes(acc) ? '✓' : '+'}
                     </button>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => setShowOtherAccommodation(!showOtherAccommodation)}
-                    className={`px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border transition ${
-                      showOtherAccommodation
-                        ? 'bg-[#03045E] text-white border-[#03045E]'
-                        : 'bg-white text-[#03045E] border-[#03045E]/30 hover:border-[#2C7FFF]'
-                    }`}
-                    title="Click to type an unlisted workplace accommodation"
-                    aria-label="Add other workplace accommodation"
-                    aria-expanded={showOtherAccommodation}
-                  >
-                    Other {showOtherAccommodation ? '✓' : '+'}
-                  </button>
-                </div>
-
-                {showOtherAccommodation && (
-                  <div className="flex flex-col gap-2 mt-1">
-                    <input
-                      type="text"
-                      value={otherAccommodation}
-                      onChange={(e) => setOtherAccommodation(e.target.value)}
-                      placeholder="Type custom accommodation and press Enter..."
-                      className="w-full p-3 border border-[#03045E]/20 rounded-lg bg-white text-[#03045E]"
-                      title="Type a custom workplace accommodation and press Enter."
-                      aria-label="Custom accommodation input. Type a custom workplace accommodation and press Enter to add it."
-                    />
-                    {otherAccommodation.length > 0 && (
-                      <div className="flex flex-wrap gap-2 animate-fadeIn">
-                        {extendedAccommodations
-                          .filter(a => a.toLowerCase().includes(otherAccommodation.toLowerCase()) && !selectedAccommodations.includes(a))
-                          .slice(0, 6)
-                          .map(suggestion => (
-                            <button
-                              key={suggestion}
-                              type="button"
-                              onClick={() => {
-                                toggleSelection(suggestion, selectedAccommodations, setSelectedAccommodations);
-                                setOtherAccommodation(''); 
-                              }}
-                              className={`suggestion-btn px-3 py-1.5 bg-[#2C7FFF]/10 ${isDarkMode ? 'text-white' : 'text-[#03045E]'} text-[10px] sm:text-xs font-bold rounded-md border border-[#2C7FFF]/20`}
-                              title={`Click to add ${suggestion}`}
-                              aria-label={`Add suggested accommodation ${suggestion}`}
-                            >
-                              + {suggestion}
-                            </button>
-                          ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+</div>
               </fieldset>
 
               {/* --- SEMANTIC AI ALIGNED SKILLS SECTION --- */}
